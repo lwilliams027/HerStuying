@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mitosis & Meiosis Study Guide — From Landon to Anhelina 💜</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0D0A1A; --card: #1A1230; --card-hover: #241A42;
+    --accent: #9B59FF; --accent-glow: #B07AFF; --accent-dim: #6B3FA0;
+    --highlight: #E0C6FF; --text: #E8DFF5; --text-dim: #9B8FBB;
+    --success: #7CFF8E; --error: #FF6B8A; --warning: #FFD166;
+    --border: #2E2250; --grad-start: #1A0A3E; --grad-end: #0D0A1A;
+  }
+  body {
+    min-height: 100vh;
+    background: linear-gradient(170deg, var(--grad-start) 0%, var(--bg) 40%, #0A0718 100%);
+    color: var(--text);
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    overflow-x: hidden;
+  }
+  @keyframes sparkle { 0%,100% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 0.7; transform: scale(1.2); } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: translateX(0); } }
+  .sparkle {
+    position: fixed; width: 4px; height: 4px; border-radius: 50%;
+    background: var(--accent); box-shadow: 0 0 6px var(--accent-glow);
+    opacity: 0.4; animation: sparkle 3s ease-in-out infinite; pointer-events: none;
+  }
+  .header { text-align: center; padding: 48px 24px 16px; animation: fadeUp 0.8s ease; }
+  .badge {
+    display: inline-block; padding: 6px 20px; border-radius: 99px;
+    background: rgba(155,89,255,0.09); border: 1px solid rgba(155,89,255,0.2);
+    font-size: 13px; color: var(--accent-glow); letter-spacing: 1.5px;
+    text-transform: uppercase; margin-bottom: 16px; font-weight: 600;
+  }
+  h1 {
+    font-size: clamp(28px, 5vw, 44px); font-weight: 800;
+    background: linear-gradient(135deg, var(--highlight), var(--accent), var(--accent-glow));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; margin: 8px 0; line-height: 1.15;
+  }
+  .subtitle { color: var(--text-dim); font-size: 16px; margin: 4px 0 0; }
+  .tabs { display: flex; justify-content: center; gap: 12px; padding: 16px 24px 24px; flex-wrap: wrap; }
+  .tab-btn {
+    transition: all 0.3s ease; cursor: pointer; border: none; padding: 12px 28px;
+    border-radius: 99px; font-size: 15px; font-weight: 600; letter-spacing: 0.3px;
+    font-family: inherit; color: var(--text-dim); background: rgba(26,18,48,0.8);
+    border: 1px solid var(--border);
+  }
+  .tab-btn:hover { transform: translateY(-1px); }
+  .tab-btn.active {
+    background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+    color: #fff; box-shadow: 0 4px 20px rgba(155,89,255,0.27); border: none;
+  }
+  .content { max-width: 780px; margin: 0 auto; padding: 0 20px 60px; }
+  .section-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+    padding: 20px 24px; margin-bottom: 14px; cursor: pointer;
+    transition: all 0.35s ease; animation: slideIn 0.4s ease both;
+  }
+  .section-card:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(155,89,255,0.13); }
+  .section-card.expanded { background: linear-gradient(135deg, var(--card), var(--card-hover)); border-color: rgba(155,89,255,0.33); }
+  .section-header { display: flex; align-items: center; justify-content: space-between; }
+  .section-left { display: flex; align-items: center; gap: 14px; }
+  .section-icon { font-size: 28px; }
+  .section-title { font-size: 18px; font-weight: 700; }
+  .section-card.expanded .section-title { color: var(--highlight); }
+  .section-arrow { font-size: 20px; color: var(--accent); transition: transform 0.3s ease; }
+  .section-card.expanded .section-arrow { transform: rotate(180deg); }
+  .section-body { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); display: none; }
+  .section-card.expanded .section-body { display: block; }
+  .study-item { margin-bottom: 16px; padding-left: 16px; border-left: 3px solid rgba(155,89,255,0.4); animation: slideIn 0.3s ease both; }
+  .study-item:last-child { margin-bottom: 0; }
+  .study-heading { font-weight: 700; color: var(--accent-glow); font-size: 14px; margin-bottom: 4px; letter-spacing: 0.3px; }
+  .study-text { color: var(--text-dim); font-size: 14.5px; line-height: 1.65; }
+
+  /* Quiz styles */
+  .quiz-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+    padding: 32px 28px; animation: fadeUp 0.4s ease;
+  }
+  .quiz-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .quiz-counter { font-size: 13px; color: var(--text-dim); font-weight: 600; }
+  .quiz-section-badge {
+    font-size: 12px; padding: 4px 12px; border-radius: 99px;
+    background: rgba(155,89,255,0.12); color: var(--accent-glow); font-weight: 600;
+  }
+  .progress-bar { height: 4px; border-radius: 2px; background: var(--border); margin-bottom: 24px; }
+  .progress-fill {
+    height: 100%; border-radius: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-glow));
+    transition: width 0.5s ease;
+  }
+  .quiz-question { font-size: 18px; font-weight: 700; margin-bottom: 22px; line-height: 1.45; }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .opt-btn {
+    background: transparent; border: 1.5px solid var(--border); border-radius: 12px;
+    padding: 14px 18px; text-align: left; cursor: pointer; color: var(--text);
+    font-size: 15px; font-family: inherit; display: flex; align-items: center;
+    gap: 12px; transition: all 0.25s ease;
+  }
+  .opt-btn:hover:not(.answered) { border-color: var(--accent); background: rgba(155,89,255,0.08); }
+  .opt-btn.correct { background: rgba(124,255,142,0.08); border-color: var(--success); }
+  .opt-btn.wrong { background: rgba(255,107,138,0.08); border-color: var(--error); }
+  .opt-circle {
+    width: 28px; height: 28px; border-radius: 50%; display: flex;
+    align-items: center; justify-content: center; font-size: 13px;
+    font-weight: 700; flex-shrink: 0; background: rgba(155,89,255,0.13); color: var(--accent);
+  }
+  .opt-btn.correct .opt-circle { background: var(--success); color: #000; }
+  .opt-btn.wrong .opt-circle { background: var(--error); color: #000; }
+  .quiz-feedback { margin-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+  .feedback-text { font-size: 14px; font-weight: 600; }
+  .feedback-text.right { color: var(--success); }
+  .feedback-text.wrong { color: var(--error); }
+  .next-btn, .submit-btn, .retry-btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+    border: none; border-radius: 10px; padding: 10px 22px;
+    color: #fff; font-weight: 700; cursor: pointer; font-size: 14px; font-family: inherit;
+    transition: transform 0.2s;
+  }
+  .next-btn:hover, .submit-btn:hover, .retry-btn:hover { transform: translateY(-1px); }
+  .submit-btn { border-radius: 14px; padding: 14px 48px; font-size: 16px; }
+  .submit-btn:disabled { background: var(--border); cursor: not-allowed; }
+  .retry-btn { border-radius: 12px; padding: 12px 32px; font-size: 15px; }
+  .score-tracker { margin-top: 16px; display: flex; justify-content: center; gap: 24px; font-size: 14px; color: var(--text-dim); }
+
+  /* Results */
+  .results-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+    padding: 40px 28px; text-align: center; animation: fadeUp 0.5s ease;
+  }
+  .results-emoji { font-size: 48px; margin-bottom: 12px; }
+  .results-score {
+    font-size: 28px; font-weight: 800;
+    background: linear-gradient(135deg, var(--highlight), var(--accent));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .results-pct { font-size: 36px; }
+  .results-msg { color: var(--text-dim); font-size: 16px; margin: 8px 0 24px; }
+
+  /* Test */
+  .test-info {
+    background: rgba(155,89,255,0.07); border: 1px solid rgba(155,89,255,0.2);
+    border-radius: 14px; padding: 16px 20px; margin-bottom: 24px;
+    font-size: 14px; color: var(--accent-glow); text-align: center;
+  }
+  .test-info small { font-size: 12px; color: var(--text-dim); }
+  .test-q {
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+    padding: 22px 24px; margin-bottom: 14px; animation: slideIn 0.3s ease both;
+  }
+  .test-q.answered-q { border-color: rgba(155,89,255,0.27); }
+  .test-q-top { display: flex; justify-content: space-between; margin-bottom: 12px; }
+  .test-q-num { font-size: 13px; font-weight: 700; color: var(--text-dim); }
+  .test-q-section {
+    font-size: 11px; padding: 3px 10px; border-radius: 99px;
+    background: rgba(155,89,255,0.09); color: var(--accent-glow); font-weight: 600;
+  }
+  .test-q-text { font-size: 15px; font-weight: 600; margin-bottom: 14px; line-height: 1.45; }
+  .test-opt {
+    background: transparent; border: 1.5px solid var(--border); border-radius: 10px;
+    padding: 11px 16px; text-align: left; cursor: pointer; color: var(--text);
+    font-size: 14px; font-family: inherit; display: flex; align-items: center;
+    gap: 10px; transition: all 0.2s ease; width: 100%; margin-bottom: 8px;
+  }
+  .test-opt:hover { border-color: var(--accent); background: rgba(155,89,255,0.08); }
+  .test-opt.selected { background: rgba(155,89,255,0.12); border-color: var(--accent); }
+  .test-opt-circle {
+    width: 24px; height: 24px; border-radius: 50%; display: flex;
+    align-items: center; justify-content: center; font-size: 12px;
+    font-weight: 700; flex-shrink: 0; background: rgba(155,89,255,0.09); color: var(--accent);
+  }
+  .test-opt.selected .test-opt-circle { background: var(--accent); color: #fff; }
+  .test-submit-wrap { text-align: center; padding: 20px 0; }
+
+  /* Review wrong */
+  .review-wrong {
+    background: rgba(255,107,138,0.03); border: 1px solid rgba(255,107,138,0.2);
+    border-radius: 14px; padding: 18px 22px; margin-bottom: 12px;
+  }
+  .review-q { font-size: 14px; font-weight: 600; margin-bottom: 10px; }
+  .review-yours { font-size: 13px; color: var(--error); margin-bottom: 4px; }
+  .review-correct { font-size: 13px; color: var(--success); }
+
+  .footer {
+    text-align: center; padding: 20px 24px 32px; font-size: 13px;
+    color: var(--text-dim); border-top: 1px solid var(--border);
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: rgba(155,89,255,0.27); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- Sparkles -->
+<div id="sparkles"></div>
+
+<!-- Header -->
+<div class="header">
+  <div class="badge">From Landon to Anhelina 💜</div>
+  <h1>Mitosis &amp; Meiosis</h1>
+  <p class="subtitle">Interactive Study Guide &amp; Quiz</p>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab-btn active" data-tab="study" onclick="switchTab('study')">📖 Study Guide</button>
+  <button class="tab-btn" data-tab="practice" onclick="switchTab('practice')">✏️ Practice Quiz</button>
+  <button class="tab-btn" data-tab="test" onclick="switchTab('test')">📝 Full Test</button>
+</div>
+
+<!-- Content -->
+<div class="content" id="content"></div>
+
+<!-- Footer -->
+<div class="footer">Made with 💜 from Landon to Anhelina — You've got this!</div>
+
+<script>
+// ============ DATA ============
+const studySections = [
+  { title: "The Cell Cycle", icon: "🔄", content: [
+    { heading: "Four Stages", text: "G1 (gap/resting — no DNA synthesis) → S (DNA synthesis & chromosome duplication) → G2 (gap 2 — double DNA level) → M (mitosis — chromosomes visible, active division, ~0.5–2 hrs)" },
+    { heading: "Interphase", text: "G1 + S + G2 = Interphase. Duration varies by cell type. Cultured cells double every 18–24 hours. Most cells rest in G0 (non-dividing), which always stops in G1 before S phase." },
+    { heading: "Why G0 Matters", text: "Limits excessive divisions that can occur in diseases like cancer. Embryonic cells skip extended G0 because they must build a whole organism quickly." },
+  ]},
+  { title: "Stages of Mitosis", icon: "🧬", content: [
+    { heading: "Prophase", text: "Chromosomes condense (shorter & thicker). Paired chromatids held together at the centromere. Nuclear membrane disappears at the end of prophase." },
+    { heading: "Metaphase", text: "Mitotic spindle forms from 2 centrosomes. Spindle microtubules attach to kinetochores at each centromere. Chromosomes align at the metaphase plate. Spindle checkpoint monitors attachment." },
+    { heading: "Anaphase", text: "Chromatids separate and are pulled by kinetochores toward opposite centrosomes." },
+    { heading: "Telophase", text: "Nuclear envelope reforms. Mitotic spindle disappears. Chromosomes decondense. Cleavage furrow separates cytoplasm (cytokinesis)." },
+  ]},
+  { title: "Cell Cycle Control", icon: "🛑", content: [
+    { heading: "Cyclins & Checkpoints", text: "Cyclins are proteins made progressively during the cycle. Checkpoints verify key events completed. Rb protein must be phosphorylated for cells to leave G1 and enter S phase." },
+    { heading: "Growth Factors", text: "Protein hormones that bind cell-surface receptors and signal division. Cells need the right receptor to respond." },
+    { heading: "Inhibition Types", text: "Contact (density-dependent) inhibition: blocks division when crowded. Anchorage-dependent inhibition: cells must be attached to divide. Loss of contact inhibition → benign tumors. Loss of contact + cell cycle control → malignant tumors. Loss of anchorage dependence → metastatic tumors." },
+  ]},
+  { title: "Meiosis Overview", icon: "🔬", content: [
+    { heading: "Purpose", text: "Reduces chromosome number by half to produce haploid gametes. Occurs immediately after a normal cell division with no second S phase. Mendel's 'determinants' = chromosomes — gametes get half." },
+    { heading: "Recombination", text: "Allows gametes to combine traits from both parents. Only occurs when all 4 chromosomes (tetrad) are lined up. Random — different children get different mixes." },
+    { heading: "Mitosis vs Meiosis", text: "Mitosis: 46 → 46 (same count). Meiosis: 46 → 23 (halved). Meiosis gives genetic diversity through crossing over and independent assortment." },
+  ]},
+  { title: "Stages of Meiosis (Prophase I)", icon: "🌀", content: [
+    { heading: "1. Leptotene", text: "Initial condensation. Chromosomes appear as thin threads with irregular dense granules (chromomeres)." },
+    { heading: "2. Zygotene", text: "Lateral pairing (synapsis) of homologous chromosomes. Synapsed pair = bivalent." },
+    { heading: "3. Pachytene ⭐", text: "Further condensation. Tetrad forms (4 chromosomes). Crossing over begins — genetic exchange between chromosomes. MOST IMPORTANT STAGE!" },
+    { heading: "4. Diplotene", text: "Chromosomes begin to separate. Crossing over becomes visible. Chiasma = cross-shaped connection from breakage and rejoining." },
+    { heading: "5. Diakinesis", text: "Homologous chromosomes repel each other (except at chiasmata). Chromosomes maximally condensed. Nuclear membrane breaks down. Last stage of Prophase I." },
+  ]},
+  { title: "Where Meiosis Occurs", icon: "🧪", content: [
+    { heading: "Meiocytes", text: "Cells that undergo meiosis: primary spermatocytes and oocytes." },
+    { heading: "In Females", text: "Only 1 of 4 haploid daughter cells survives as the oocyte. The other 3 become polar bodies and are absorbed." },
+    { heading: "In Males", text: "All 4 haploid daughter cells survive as sperm." },
+    { heading: "In Plants", text: "Haploid daughters form spores → replicate by mitosis → form haploid gametophyte. Gametophytes form gametes by mitosis. Fusion of haploid gametes → diploid zygote → sporophyte." },
+  ]},
+];
+
+const quizData = [
+  { q: "What are the 4 stages of the cell cycle?", a: ["G1, S, G2, M", "G1, G2, S, M", "Prophase, Metaphase, Anaphase, Telophase", "Leptotene, Zygotene, Pachytene, Diplotene"], correct: 0, section: "Cell Cycle" },
+  { q: "During which phase does DNA synthesis and chromosome duplication occur?", a: ["G1 phase", "S phase", "G2 phase", "M phase"], correct: 1, section: "Cell Cycle" },
+  { q: "What is G0?", a: ["A phase of rapid division", "The non-dividing stage of the cell cycle", "The phase after mitosis", "DNA synthesis phase"], correct: 1, section: "Cell Cycle" },
+  { q: "How long does it typically take cells growing in culture to double?", a: ["5-10 hours", "18-24 hours", "48-72 hours", "1 week"], correct: 1, section: "Cell Cycle" },
+  { q: "What is the correct order of mitosis stages?", a: ["Prophase, Metaphase, Anaphase, Telophase", "Metaphase, Prophase, Anaphase, Telophase", "Prophase, Anaphase, Metaphase, Telophase", "Telophase, Anaphase, Metaphase, Prophase"], correct: 0, section: "Mitosis" },
+  { q: "During which stage do chromosomes become shorter and thicker, and the nuclear membrane disappears?", a: ["Metaphase", "Prophase", "Anaphase", "Telophase"], correct: 1, section: "Mitosis" },
+  { q: "What is the kinetochore?", a: ["A type of cyclin protein", "The structure at the centromere that binds the spindle", "A growth factor receptor", "The cleavage furrow"], correct: 1, section: "Mitosis" },
+  { q: "During which phase do chromatids separate and move toward opposite centrosomes?", a: ["Prophase", "Metaphase", "Anaphase", "Telophase"], correct: 2, section: "Mitosis" },
+  { q: "What happens during Telophase?", a: ["Chromosomes condense", "Chromosomes line up at metaphase plate", "Nuclear envelope reforms and spindle disappears", "DNA replicates"], correct: 2, section: "Mitosis" },
+  { q: "What are cyclins?", a: ["Chromosomes that cycle through phases", "Proteins that control the cell cycle", "Enzymes that break down DNA", "Lipids in the cell membrane"], correct: 1, section: "Mitosis" },
+  { q: "What must happen to the protein Rb for cells to enter S phase?", a: ["It must be destroyed", "It must be phosphorylated", "It must be duplicated", "It must bind to cyclins"], correct: 1, section: "Cell Cycle Control" },
+  { q: "What is contact inhibition?", a: ["When cells attach to a surface", "A block in the cell cycle when cells are crowded", "When cells stop responding to hormones", "When cancer cells metastasize"], correct: 1, section: "Cell Cycle Control" },
+  { q: "What type of tumor has lost contact inhibition AND cell cycle control?", a: ["Benign tumor", "Metastatic tumor", "Malignant tumor", "No tumor type"], correct: 2, section: "Cell Cycle Control" },
+  { q: "What type of tumor has also lost anchorage-dependent inhibition?", a: ["Benign", "Malignant", "Metastatic", "Dormant"], correct: 2, section: "Cell Cycle Control" },
+  { q: "What is the primary purpose of meiosis?", a: ["To duplicate cells", "To reduce chromosome number by half", "To repair damaged DNA", "To increase cell size"], correct: 1, section: "Meiosis" },
+  { q: "During which stage of meiosis does crossing over occur?", a: ["Leptotene", "Zygotene", "Pachytene", "Diplotene"], correct: 2, section: "Meiosis" },
+  { q: "What is a bivalent?", a: ["A pair of crossing-over points", "A synapsed pair of homologous chromosomes", "Four chromosomes together", "A haploid cell"], correct: 1, section: "Meiosis" },
+  { q: "What is a chiasma?", a: ["A type of spindle fiber", "A cross connection between two chromosomes from crossing over", "A condensed chromosome", "An enzyme that breaks chromosomes"], correct: 1, section: "Meiosis" },
+  { q: "In women, how many of the 4 haploid daughter cells survive as an oocyte?", a: ["All 4", "3", "2", "Only 1"], correct: 3, section: "Meiosis" },
+  { q: "What is a tetrad?", a: ["A group of 2 chromosomes", "A pairing of 4 chromosomes during pachytene", "4 haploid cells after meiosis", "A spindle checkpoint"], correct: 1, section: "Meiosis" },
+  { q: "What happens during Diakinesis?", a: ["Chromosomes begin to condense", "Homologous chromosomes repel each other; nuclear membrane breaks down", "Crossing over occurs", "Chromosomes pair up"], correct: 1, section: "Meiosis" },
+  { q: "What are meiocytes?", a: ["Haploid cells", "Cells which can undergo meiosis", "Cancer cells", "Bacterial cells"], correct: 1, section: "Meiosis" },
+];
+
+// ============ STATE ============
+let currentTab = "study";
+let expandedSection = null;
+let shuffledQuiz = [];
+let practiceState = { currentQ: 0, selected: null, showAnswer: false, score: 0, answered: 0 };
+let testState = { answers: {}, submitted: false, score: 0 };
+
+function shuffle(arr) { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+// ============ SPARKLES ============
+(function() {
+  const c = document.getElementById("sparkles");
+  for (let i = 0; i < 12; i++) {
+    const s = document.createElement("div");
+    s.className = "sparkle";
+    s.style.top = (8 + i * 7.5) + "%";
+    s.style.left = (5 + (i * 8) % 90) + "%";
+    s.style.animationDelay = (i * 0.4) + "s";
+    c.appendChild(s);
+  }
+})();
+
+// ============ RENDER ============
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
+  if (tab === "practice" || tab === "test") {
+    shuffledQuiz = shuffle(quizData);
+    practiceState = { currentQ: 0, selected: null, showAnswer: false, score: 0, answered: 0 };
+    testState = { answers: {}, submitted: false, score: 0 };
+  }
+  render();
+}
+
+function render() {
+  const el = document.getElementById("content");
+  if (currentTab === "study") el.innerHTML = renderStudy();
+  else if (currentTab === "practice") el.innerHTML = renderPractice();
+  else el.innerHTML = renderTest();
+}
+
+function renderStudy() {
+  return studySections.map((sec, si) => {
+    const exp = expandedSection === si;
+    return `<div class="section-card ${exp ? 'expanded' : ''}" style="animation-delay:${si*0.08}s" onclick="toggleSection(${si})">
+      <div class="section-header">
+        <div class="section-left">
+          <span class="section-icon">${sec.icon}</span>
+          <span class="section-title">${sec.title}</span>
+        </div>
+        <span class="section-arrow">▼</span>
+      </div>
+      <div class="section-body">
+        ${sec.content.map((item, ii) => `<div class="study-item" style="animation-delay:${ii*0.06}s">
+          <div class="study-heading">${item.heading}</div>
+          <div class="study-text">${item.text}</div>
+        </div>`).join("")}
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function toggleSection(i) { expandedSection = expandedSection === i ? null : i; render(); }
+
+function renderPractice() {
+  const s = practiceState;
+  if (s.currentQ >= shuffledQuiz.length) {
+    const pct = Math.round((s.score / shuffledQuiz.length) * 100);
+    const emoji = pct >= 80 ? "🏆" : pct >= 60 ? "👍" : "📚";
+    const msg = pct >= 90 ? "Amazing work, Anhelina! 🌟" : pct >= 70 ? "Great job! Keep studying the tricky parts." : "Keep reviewing — you'll get there!";
+    return `<div class="results-card">
+      <div class="results-emoji">${emoji}</div>
+      <div class="results-score">${s.score} / ${shuffledQuiz.length}</div>
+      <p class="results-msg">${msg}</p>
+      <button class="retry-btn" onclick="switchTab('practice')">Try Again</button>
+    </div>`;
+  }
+  const q = shuffledQuiz[s.currentQ];
+  const pct = (s.currentQ / shuffledQuiz.length) * 100;
+  return `<div class="quiz-card">
+    <div class="quiz-top">
+      <span class="quiz-counter">Question ${s.currentQ + 1} / ${shuffledQuiz.length}</span>
+      <span class="quiz-section-badge">${q.section}</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div class="quiz-question">${q.q}</div>
+    <div class="options">
+      ${q.a.map((opt, oi) => {
+        let cls = "opt-btn";
+        let circle = String.fromCharCode(65 + oi);
+        if (s.showAnswer) {
+          cls += " answered";
+          if (oi === q.correct) { cls += " correct"; circle = "✓"; }
+          else if (oi === s.selected) { cls += " wrong"; circle = "✗"; }
+        }
+        return `<button class="${cls}" onclick="practiceAnswer(${oi})">
+          <span class="opt-circle">${circle}</span>${opt}
+        </button>`;
+      }).join("")}
+    </div>
+    ${s.showAnswer ? `<div class="quiz-feedback">
+      <span class="feedback-text ${s.selected === q.correct ? 'right' : 'wrong'}">
+        ${s.selected === q.correct ? "Correct! 🎉" : "Not quite — review the highlighted answer above."}
+      </span>
+      <button class="next-btn" onclick="practiceNext()">${s.currentQ + 1 < shuffledQuiz.length ? "Next →" : "See Results"}</button>
+    </div>` : ""}
+  </div>
+  <div class="score-tracker">
+    <span>✅ ${s.score} correct</span>
+    <span>❌ ${s.answered - s.score} wrong</span>
+  </div>`;
+}
+
+function practiceAnswer(idx) {
+  if (practiceState.showAnswer) return;
+  practiceState.selected = idx;
+  practiceState.showAnswer = true;
+  practiceState.answered++;
+  if (idx === shuffledQuiz[practiceState.currentQ].correct) practiceState.score++;
+  render();
+}
+function practiceNext() {
+  practiceState.currentQ++;
+  practiceState.selected = null;
+  practiceState.showAnswer = false;
+  render();
+}
+
+function renderTest() {
+  const t = testState;
+  if (t.submitted) {
+    const pct = Math.round((t.score / shuffledQuiz.length) * 100);
+    const emoji = pct >= 90 ? "🏆" : pct >= 70 ? "🌟" : pct >= 50 ? "👍" : "📚";
+    const msg = pct >= 90 ? "You crushed it, Anhelina! 💜" : pct >= 70 ? "Solid work! Review the ones you missed." : "Keep studying — check the review below!";
+    let wrongHtml = "";
+    shuffledQuiz.forEach((q, qi) => {
+      if (t.answers[qi] !== q.correct) {
+        wrongHtml += `<div class="review-wrong">
+          <div class="review-q">${q.q}</div>
+          <div class="review-yours">Your answer: ${q.a[t.answers[qi]] || "No answer"}</div>
+          <div class="review-correct">Correct answer: ${q.a[q.correct]}</div>
+        </div>`;
+      }
+    });
+    return `<div class="results-card" style="margin-bottom:28px">
+      <div style="font-size:52px;margin-bottom:8px">${emoji}</div>
+      <div class="results-score results-pct">${pct}%</div>
+      <p style="font-size:18px;color:var(--text-dim);margin:4px 0">${t.score} / ${shuffledQuiz.length} correct</p>
+      <p class="results-msg">${msg}</p>
+      <button class="retry-btn" onclick="switchTab('test')">Retake Test</button>
+    </div>${wrongHtml}`;
+  }
+
+  const answeredCount = Object.keys(t.answers).length;
+  let html = `<div class="test-info">
+    Answer all ${shuffledQuiz.length} questions, then submit to see your grade.<br>
+    <small>Answered: ${answeredCount} / ${shuffledQuiz.length}</small>
+  </div>`;
+  shuffledQuiz.forEach((q, qi) => {
+    html += `<div class="test-q ${t.answers[qi] !== undefined ? 'answered-q' : ''}" style="animation-delay:${Math.min(qi*0.04,0.6)}s">
+      <div class="test-q-top">
+        <span class="test-q-num">#${qi+1}</span>
+        <span class="test-q-section">${q.section}</span>
+      </div>
+      <div class="test-q-text">${q.q}</div>
+      ${q.a.map((opt, oi) => `<button class="test-opt ${t.answers[qi] === oi ? 'selected' : ''}" onclick="testAnswer(${qi},${oi})">
+        <span class="test-opt-circle">${String.fromCharCode(65+oi)}</span>${opt}
+      </button>`).join("")}
+    </div>`;
+  });
+  html += `<div class="test-submit-wrap">
+    <button class="submit-btn" ${answeredCount < shuffledQuiz.length ? 'disabled' : ''} onclick="submitTest()">Submit Test</button>
+  </div>`;
+  return html;
+}
+
+function testAnswer(qi, oi) {
+  if (testState.submitted) return;
+  testState.answers[qi] = oi;
+  render();
+}
+function submitTest() {
+  let s = 0;
+  shuffledQuiz.forEach((q, i) => { if (testState.answers[i] === q.correct) s++; });
+  testState.score = s;
+  testState.submitted = true;
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// Initial render
+render();
+</script>
+</body>
+</html>
