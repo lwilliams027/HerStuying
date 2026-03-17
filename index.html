@@ -3,477 +3,382 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mitosis & Meiosis Study Guide — From Landon to Anhelina 💜</title>
+<title>Anhelina's Study Hub 💜</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #0D0A1A; --card: #1A1230; --card-hover: #241A42;
-    --accent: #9B59FF; --accent-glow: #B07AFF; --accent-dim: #6B3FA0;
-    --highlight: #E0C6FF; --text: #E8DFF5; --text-dim: #9B8FBB;
-    --success: #7CFF8E; --error: #FF6B8A; --warning: #FFD166;
-    --border: #2E2250; --grad-start: #1A0A3E; --grad-end: #0D0A1A;
-  }
-  body {
-    min-height: 100vh;
-    background: linear-gradient(170deg, var(--grad-start) 0%, var(--bg) 40%, #0A0718 100%);
-    color: var(--text);
-    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-    overflow-x: hidden;
-  }
-  @keyframes sparkle { 0%,100% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 0.7; transform: scale(1.2); } }
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-  @keyframes slideIn { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: translateX(0); } }
-  .sparkle {
-    position: fixed; width: 4px; height: 4px; border-radius: 50%;
-    background: var(--accent); box-shadow: 0 0 6px var(--accent-glow);
-    opacity: 0.4; animation: sparkle 3s ease-in-out infinite; pointer-events: none;
-  }
-  .header { text-align: center; padding: 48px 24px 16px; animation: fadeUp 0.8s ease; }
-  .badge {
-    display: inline-block; padding: 6px 20px; border-radius: 99px;
-    background: rgba(155,89,255,0.09); border: 1px solid rgba(155,89,255,0.2);
-    font-size: 13px; color: var(--accent-glow); letter-spacing: 1.5px;
-    text-transform: uppercase; margin-bottom: 16px; font-weight: 600;
-  }
-  h1 {
-    font-size: clamp(28px, 5vw, 44px); font-weight: 800;
-    background: linear-gradient(135deg, var(--highlight), var(--accent), var(--accent-glow));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text; margin: 8px 0; line-height: 1.15;
-  }
-  .subtitle { color: var(--text-dim); font-size: 16px; margin: 4px 0 0; }
-  .tabs { display: flex; justify-content: center; gap: 12px; padding: 16px 24px 24px; flex-wrap: wrap; }
-  .tab-btn {
-    transition: all 0.3s ease; cursor: pointer; border: none; padding: 12px 28px;
-    border-radius: 99px; font-size: 15px; font-weight: 600; letter-spacing: 0.3px;
-    font-family: inherit; color: var(--text-dim); background: rgba(26,18,48,0.8);
-    border: 1px solid var(--border);
-  }
-  .tab-btn:hover { transform: translateY(-1px); }
-  .tab-btn.active {
-    background: linear-gradient(135deg, var(--accent), var(--accent-dim));
-    color: #fff; box-shadow: 0 4px 20px rgba(155,89,255,0.27); border: none;
-  }
-  .content { max-width: 780px; margin: 0 auto; padding: 0 20px 60px; }
-  .section-card {
-    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
-    padding: 20px 24px; margin-bottom: 14px; cursor: pointer;
-    transition: all 0.35s ease; animation: slideIn 0.4s ease both;
-  }
-  .section-card:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(155,89,255,0.13); }
-  .section-card.expanded { background: linear-gradient(135deg, var(--card), var(--card-hover)); border-color: rgba(155,89,255,0.33); }
-  .section-header { display: flex; align-items: center; justify-content: space-between; }
-  .section-left { display: flex; align-items: center; gap: 14px; }
-  .section-icon { font-size: 28px; }
-  .section-title { font-size: 18px; font-weight: 700; }
-  .section-card.expanded .section-title { color: var(--highlight); }
-  .section-arrow { font-size: 20px; color: var(--accent); transition: transform 0.3s ease; }
-  .section-card.expanded .section-arrow { transform: rotate(180deg); }
-  .section-body { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); display: none; }
-  .section-card.expanded .section-body { display: block; }
-  .study-item { margin-bottom: 16px; padding-left: 16px; border-left: 3px solid rgba(155,89,255,0.4); animation: slideIn 0.3s ease both; }
-  .study-item:last-child { margin-bottom: 0; }
-  .study-heading { font-weight: 700; color: var(--accent-glow); font-size: 14px; margin-bottom: 4px; letter-spacing: 0.3px; }
-  .study-text { color: var(--text-dim); font-size: 14.5px; line-height: 1.65; }
-
-  /* Quiz styles */
-  .quiz-card {
-    background: var(--card); border: 1px solid var(--border); border-radius: 20px;
-    padding: 32px 28px; animation: fadeUp 0.4s ease;
-  }
-  .quiz-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-  .quiz-counter { font-size: 13px; color: var(--text-dim); font-weight: 600; }
-  .quiz-section-badge {
-    font-size: 12px; padding: 4px 12px; border-radius: 99px;
-    background: rgba(155,89,255,0.12); color: var(--accent-glow); font-weight: 600;
-  }
-  .progress-bar { height: 4px; border-radius: 2px; background: var(--border); margin-bottom: 24px; }
-  .progress-fill {
-    height: 100%; border-radius: 2px;
-    background: linear-gradient(90deg, var(--accent), var(--accent-glow));
-    transition: width 0.5s ease;
-  }
-  .quiz-question { font-size: 18px; font-weight: 700; margin-bottom: 22px; line-height: 1.45; }
-  .options { display: flex; flex-direction: column; gap: 10px; }
-  .opt-btn {
-    background: transparent; border: 1.5px solid var(--border); border-radius: 12px;
-    padding: 14px 18px; text-align: left; cursor: pointer; color: var(--text);
-    font-size: 15px; font-family: inherit; display: flex; align-items: center;
-    gap: 12px; transition: all 0.25s ease;
-  }
-  .opt-btn:hover:not(.answered) { border-color: var(--accent); background: rgba(155,89,255,0.08); }
-  .opt-btn.correct { background: rgba(124,255,142,0.08); border-color: var(--success); }
-  .opt-btn.wrong { background: rgba(255,107,138,0.08); border-color: var(--error); }
-  .opt-circle {
-    width: 28px; height: 28px; border-radius: 50%; display: flex;
-    align-items: center; justify-content: center; font-size: 13px;
-    font-weight: 700; flex-shrink: 0; background: rgba(155,89,255,0.13); color: var(--accent);
-  }
-  .opt-btn.correct .opt-circle { background: var(--success); color: #000; }
-  .opt-btn.wrong .opt-circle { background: var(--error); color: #000; }
-  .quiz-feedback { margin-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-  .feedback-text { font-size: 14px; font-weight: 600; }
-  .feedback-text.right { color: var(--success); }
-  .feedback-text.wrong { color: var(--error); }
-  .next-btn, .submit-btn, .retry-btn {
-    background: linear-gradient(135deg, var(--accent), var(--accent-dim));
-    border: none; border-radius: 10px; padding: 10px 22px;
-    color: #fff; font-weight: 700; cursor: pointer; font-size: 14px; font-family: inherit;
-    transition: transform 0.2s;
-  }
-  .next-btn:hover, .submit-btn:hover, .retry-btn:hover { transform: translateY(-1px); }
-  .submit-btn { border-radius: 14px; padding: 14px 48px; font-size: 16px; }
-  .submit-btn:disabled { background: var(--border); cursor: not-allowed; }
-  .retry-btn { border-radius: 12px; padding: 12px 32px; font-size: 15px; }
-  .score-tracker { margin-top: 16px; display: flex; justify-content: center; gap: 24px; font-size: 14px; color: var(--text-dim); }
-
-  /* Results */
-  .results-card {
-    background: var(--card); border: 1px solid var(--border); border-radius: 20px;
-    padding: 40px 28px; text-align: center; animation: fadeUp 0.5s ease;
-  }
-  .results-emoji { font-size: 48px; margin-bottom: 12px; }
-  .results-score {
-    font-size: 28px; font-weight: 800;
-    background: linear-gradient(135deg, var(--highlight), var(--accent));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  }
-  .results-pct { font-size: 36px; }
-  .results-msg { color: var(--text-dim); font-size: 16px; margin: 8px 0 24px; }
-
-  /* Test */
-  .test-info {
-    background: rgba(155,89,255,0.07); border: 1px solid rgba(155,89,255,0.2);
-    border-radius: 14px; padding: 16px 20px; margin-bottom: 24px;
-    font-size: 14px; color: var(--accent-glow); text-align: center;
-  }
-  .test-info small { font-size: 12px; color: var(--text-dim); }
-  .test-q {
-    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
-    padding: 22px 24px; margin-bottom: 14px; animation: slideIn 0.3s ease both;
-  }
-  .test-q.answered-q { border-color: rgba(155,89,255,0.27); }
-  .test-q-top { display: flex; justify-content: space-between; margin-bottom: 12px; }
-  .test-q-num { font-size: 13px; font-weight: 700; color: var(--text-dim); }
-  .test-q-section {
-    font-size: 11px; padding: 3px 10px; border-radius: 99px;
-    background: rgba(155,89,255,0.09); color: var(--accent-glow); font-weight: 600;
-  }
-  .test-q-text { font-size: 15px; font-weight: 600; margin-bottom: 14px; line-height: 1.45; }
-  .test-opt {
-    background: transparent; border: 1.5px solid var(--border); border-radius: 10px;
-    padding: 11px 16px; text-align: left; cursor: pointer; color: var(--text);
-    font-size: 14px; font-family: inherit; display: flex; align-items: center;
-    gap: 10px; transition: all 0.2s ease; width: 100%; margin-bottom: 8px;
-  }
-  .test-opt:hover { border-color: var(--accent); background: rgba(155,89,255,0.08); }
-  .test-opt.selected { background: rgba(155,89,255,0.12); border-color: var(--accent); }
-  .test-opt-circle {
-    width: 24px; height: 24px; border-radius: 50%; display: flex;
-    align-items: center; justify-content: center; font-size: 12px;
-    font-weight: 700; flex-shrink: 0; background: rgba(155,89,255,0.09); color: var(--accent);
-  }
-  .test-opt.selected .test-opt-circle { background: var(--accent); color: #fff; }
-  .test-submit-wrap { text-align: center; padding: 20px 0; }
-
-  /* Review wrong */
-  .review-wrong {
-    background: rgba(255,107,138,0.03); border: 1px solid rgba(255,107,138,0.2);
-    border-radius: 14px; padding: 18px 22px; margin-bottom: 12px;
-  }
-  .review-q { font-size: 14px; font-weight: 600; margin-bottom: 10px; }
-  .review-yours { font-size: 13px; color: var(--error); margin-bottom: 4px; }
-  .review-correct { font-size: 13px; color: var(--success); }
-
-  .footer {
-    text-align: center; padding: 20px 24px 32px; font-size: 13px;
-    color: var(--text-dim); border-top: 1px solid var(--border);
-  }
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: rgba(155,89,255,0.27); border-radius: 3px; }
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0D0A1A;--card:#1A1230;--card2:#241A42;--accent:#9B59FF;--glow:#B07AFF;--dim:#6B3FA0;--hi:#E0C6FF;--tx:#E8DFF5;--txd:#9B8FBB;--ok:#7CFF8E;--err:#FF6B8A;--bdr:#2E2250;--gs:#1A0A3E}
+body{min-height:100vh;background:linear-gradient(170deg,var(--gs) 0%,var(--bg) 40%,#0A0718 100%);color:var(--tx);font-family:'Segoe UI','Helvetica Neue',sans-serif;overflow-x:hidden}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
+@keyframes sparkle{0%,100%{opacity:.2;transform:scale(.8)}50%{opacity:.7;transform:scale(1.2)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 20px rgba(155,89,255,.15)}50%{box-shadow:0 0 40px rgba(155,89,255,.3)}}
+.sparkle{position:fixed;width:4px;height:4px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--glow);opacity:.4;animation:sparkle 3s ease-in-out infinite;pointer-events:none}
+.wrap{max-width:820px;margin:0 auto;padding:0 20px 60px}
+.badge{display:inline-block;padding:6px 20px;border-radius:99px;background:rgba(155,89,255,.09);border:1px solid rgba(155,89,255,.2);font-size:13px;color:var(--glow);letter-spacing:1.5px;text-transform:uppercase;font-weight:600}
+h1{font-size:clamp(28px,5vw,44px);font-weight:800;background:linear-gradient(135deg,var(--hi),var(--accent),var(--glow));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.15}
+.sub{color:var(--txd);font-size:16px}
+.btn{cursor:pointer;border:none;font-family:inherit;transition:all .25s ease}
+.btn:hover{transform:translateY(-2px)}
+.pill{padding:12px 28px;border-radius:99px;font-size:15px;font-weight:600}
+.pill-active{background:linear-gradient(135deg,var(--accent),var(--dim));color:#fff;box-shadow:0 4px 20px rgba(155,89,255,.27)}
+.pill-inactive{background:rgba(26,18,48,.8);color:var(--txd);border:1px solid var(--bdr)}
+.card{background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:20px 24px;margin-bottom:14px;cursor:pointer;transition:all .35s ease}
+.card:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(155,89,255,.13)}
+.card.exp{background:linear-gradient(135deg,var(--card),var(--card2));border-color:rgba(155,89,255,.33)}
+.arrow{font-size:20px;color:var(--accent);transition:transform .3s ease;display:inline-block}
+.card.exp .arrow{transform:rotate(180deg)}
+.study-item{margin-bottom:16px;padding-left:16px;border-left:3px solid rgba(155,89,255,.4)}
+.study-item:last-child{margin-bottom:0}
+.sh{font-weight:700;color:var(--glow);font-size:14px;margin-bottom:4px;letter-spacing:.3px}
+.st{color:var(--txd);font-size:14.5px;line-height:1.65}
+.quiz-card{background:var(--card);border:1px solid var(--bdr);border-radius:20px;padding:32px 28px;animation:fadeUp .4s ease}
+.pbar{height:4px;border-radius:2px;background:var(--bdr);margin-bottom:24px}
+.pfill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--accent),var(--glow));transition:width .5s ease}
+.opt{background:transparent;border:1.5px solid var(--bdr);border-radius:12px;padding:14px 18px;text-align:left;cursor:pointer;color:var(--tx);font-size:15px;font-family:inherit;display:flex;align-items:center;gap:12px;transition:all .25s ease;width:100%;margin-bottom:10px}
+.opt:hover:not(.ans){border-color:var(--accent);background:rgba(155,89,255,.08)}
+.opt.ok{background:rgba(124,255,142,.08);border-color:var(--ok)}
+.opt.no{background:rgba(255,107,138,.08);border-color:var(--err)}
+.circ{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;background:rgba(155,89,255,.13);color:var(--accent)}
+.opt.ok .circ{background:var(--ok);color:#000}.opt.no .circ{background:var(--err);color:#000}
+.accent-btn{background:linear-gradient(135deg,var(--accent),var(--dim));border:none;border-radius:12px;padding:12px 32px;color:#fff;font-weight:700;cursor:pointer;font-size:15px;font-family:inherit}
+.accent-btn:hover{transform:translateY(-1px)}
+.accent-btn:disabled{background:var(--bdr);cursor:not-allowed;transform:none}
+.res-card{background:var(--card);border:1px solid var(--bdr);border-radius:20px;padding:40px 28px;text-align:center;animation:fadeUp .5s ease}
+.back-btn{background:transparent;border:1px solid var(--bdr);border-radius:10px;padding:8px 18px;color:var(--txd);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+.back-btn:hover{border-color:var(--accent);color:var(--hi)}
+.class-card{background:var(--card);border:1px solid var(--bdr);border-radius:20px;padding:32px;cursor:pointer;transition:all .35s ease;text-align:center;animation:fadeUp .5s ease}
+.class-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(155,89,255,.2);border-color:rgba(155,89,255,.4)}
+.topic-card{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:18px 22px;cursor:pointer;transition:all .3s ease;display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.topic-card:hover{transform:translateX(4px);border-color:rgba(155,89,255,.4);background:var(--card2)}
+.review-wrong{background:rgba(255,107,138,.03);border:1px solid rgba(255,107,138,.2);border-radius:14px;padding:18px 22px;margin-bottom:12px}
+.footer{text-align:center;padding:20px 24px 32px;font-size:13px;color:var(--txd);border-top:1px solid var(--bdr);margin-top:40px}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:rgba(155,89,255,.27);border-radius:3px}
+.test-info{background:rgba(155,89,255,.07);border:1px solid rgba(155,89,255,.2);border-radius:14px;padding:16px 20px;margin-bottom:24px;font-size:14px;color:var(--glow);text-align:center}
 </style>
 </head>
 <body>
-
-<!-- Sparkles -->
 <div id="sparkles"></div>
-
-<!-- Header -->
-<div class="header">
+<div style="text-align:center;padding:48px 24px 16px;animation:fadeUp .8s ease">
   <div class="badge">From Landon to Anhelina 💜</div>
-  <h1>Mitosis &amp; Meiosis</h1>
-  <p class="subtitle">Interactive Study Guide &amp; Quiz</p>
+  <h1 id="mainTitle">Anhelina's Study Hub</h1>
+  <p class="sub" id="mainSub">Pick a class to start studying</p>
 </div>
-
-<!-- Tabs -->
-<div class="tabs">
-  <button class="tab-btn active" data-tab="study" onclick="switchTab('study')">📖 Study Guide</button>
-  <button class="tab-btn" data-tab="practice" onclick="switchTab('practice')">✏️ Practice Quiz</button>
-  <button class="tab-btn" data-tab="test" onclick="switchTab('test')">📝 Full Test</button>
-</div>
-
-<!-- Content -->
-<div class="content" id="content"></div>
-
-<!-- Footer -->
+<div id="nav" style="text-align:center;padding:0 20px 20px"></div>
+<div class="wrap" id="content"></div>
 <div class="footer">Made with 💜 from Landon to Anhelina — You've got this!</div>
 
 <script>
-// ============ DATA ============
-const studySections = [
-  { title: "The Cell Cycle", icon: "🔄", content: [
-    { heading: "Four Stages", text: "G1 (gap/resting — no DNA synthesis) → S (DNA synthesis & chromosome duplication) → G2 (gap 2 — double DNA level) → M (mitosis — chromosomes visible, active division, ~0.5–2 hrs)" },
-    { heading: "Interphase", text: "G1 + S + G2 = Interphase. Duration varies by cell type. Cultured cells double every 18–24 hours. Most cells rest in G0 (non-dividing), which always stops in G1 before S phase." },
-    { heading: "Why G0 Matters", text: "Limits excessive divisions that can occur in diseases like cancer. Embryonic cells skip extended G0 because they must build a whole organism quickly." },
-  ]},
-  { title: "Stages of Mitosis", icon: "🧬", content: [
-    { heading: "Prophase", text: "Chromosomes condense (shorter & thicker). Paired chromatids held together at the centromere. Nuclear membrane disappears at the end of prophase." },
-    { heading: "Metaphase", text: "Mitotic spindle forms from 2 centrosomes. Spindle microtubules attach to kinetochores at each centromere. Chromosomes align at the metaphase plate. Spindle checkpoint monitors attachment." },
-    { heading: "Anaphase", text: "Chromatids separate and are pulled by kinetochores toward opposite centrosomes." },
-    { heading: "Telophase", text: "Nuclear envelope reforms. Mitotic spindle disappears. Chromosomes decondense. Cleavage furrow separates cytoplasm (cytokinesis)." },
-  ]},
-  { title: "Cell Cycle Control", icon: "🛑", content: [
-    { heading: "Cyclins & Checkpoints", text: "Cyclins are proteins made progressively during the cycle. Checkpoints verify key events completed. Rb protein must be phosphorylated for cells to leave G1 and enter S phase." },
-    { heading: "Growth Factors", text: "Protein hormones that bind cell-surface receptors and signal division. Cells need the right receptor to respond." },
-    { heading: "Inhibition Types", text: "Contact (density-dependent) inhibition: blocks division when crowded. Anchorage-dependent inhibition: cells must be attached to divide. Loss of contact inhibition → benign tumors. Loss of contact + cell cycle control → malignant tumors. Loss of anchorage dependence → metastatic tumors." },
-  ]},
-  { title: "Meiosis Overview", icon: "🔬", content: [
-    { heading: "Purpose", text: "Reduces chromosome number by half to produce haploid gametes. Occurs immediately after a normal cell division with no second S phase. Mendel's 'determinants' = chromosomes — gametes get half." },
-    { heading: "Recombination", text: "Allows gametes to combine traits from both parents. Only occurs when all 4 chromosomes (tetrad) are lined up. Random — different children get different mixes." },
-    { heading: "Mitosis vs Meiosis", text: "Mitosis: 46 → 46 (same count). Meiosis: 46 → 23 (halved). Meiosis gives genetic diversity through crossing over and independent assortment." },
-  ]},
-  { title: "Stages of Meiosis (Prophase I)", icon: "🌀", content: [
-    { heading: "1. Leptotene", text: "Initial condensation. Chromosomes appear as thin threads with irregular dense granules (chromomeres)." },
-    { heading: "2. Zygotene", text: "Lateral pairing (synapsis) of homologous chromosomes. Synapsed pair = bivalent." },
-    { heading: "3. Pachytene ⭐", text: "Further condensation. Tetrad forms (4 chromosomes). Crossing over begins — genetic exchange between chromosomes. MOST IMPORTANT STAGE!" },
-    { heading: "4. Diplotene", text: "Chromosomes begin to separate. Crossing over becomes visible. Chiasma = cross-shaped connection from breakage and rejoining." },
-    { heading: "5. Diakinesis", text: "Homologous chromosomes repel each other (except at chiasmata). Chromosomes maximally condensed. Nuclear membrane breaks down. Last stage of Prophase I." },
-  ]},
-  { title: "Where Meiosis Occurs", icon: "🧪", content: [
-    { heading: "Meiocytes", text: "Cells that undergo meiosis: primary spermatocytes and oocytes." },
-    { heading: "In Females", text: "Only 1 of 4 haploid daughter cells survives as the oocyte. The other 3 become polar bodies and are absorbed." },
-    { heading: "In Males", text: "All 4 haploid daughter cells survive as sperm." },
-    { heading: "In Plants", text: "Haploid daughters form spores → replicate by mitosis → form haploid gametophyte. Gametophytes form gametes by mitosis. Fusion of haploid gametes → diploid zygote → sporophyte." },
-  ]},
-];
+// Sparkles
+(function(){const c=document.getElementById("sparkles");for(let i=0;i<12;i++){const s=document.createElement("div");s.className="sparkle";s.style.top=(8+i*7.5)+"%";s.style.left=(5+(i*8)%90)+"%";s.style.animationDelay=(i*.4)+"s";c.appendChild(s)}})();
 
-const quizData = [
-  { q: "What are the 4 stages of the cell cycle?", a: ["G1, S, G2, M", "G1, G2, S, M", "Prophase, Metaphase, Anaphase, Telophase", "Leptotene, Zygotene, Pachytene, Diplotene"], correct: 0, section: "Cell Cycle" },
-  { q: "During which phase does DNA synthesis and chromosome duplication occur?", a: ["G1 phase", "S phase", "G2 phase", "M phase"], correct: 1, section: "Cell Cycle" },
-  { q: "What is G0?", a: ["A phase of rapid division", "The non-dividing stage of the cell cycle", "The phase after mitosis", "DNA synthesis phase"], correct: 1, section: "Cell Cycle" },
-  { q: "How long does it typically take cells growing in culture to double?", a: ["5-10 hours", "18-24 hours", "48-72 hours", "1 week"], correct: 1, section: "Cell Cycle" },
-  { q: "What is the correct order of mitosis stages?", a: ["Prophase, Metaphase, Anaphase, Telophase", "Metaphase, Prophase, Anaphase, Telophase", "Prophase, Anaphase, Metaphase, Telophase", "Telophase, Anaphase, Metaphase, Prophase"], correct: 0, section: "Mitosis" },
-  { q: "During which stage do chromosomes become shorter and thicker, and the nuclear membrane disappears?", a: ["Metaphase", "Prophase", "Anaphase", "Telophase"], correct: 1, section: "Mitosis" },
-  { q: "What is the kinetochore?", a: ["A type of cyclin protein", "The structure at the centromere that binds the spindle", "A growth factor receptor", "The cleavage furrow"], correct: 1, section: "Mitosis" },
-  { q: "During which phase do chromatids separate and move toward opposite centrosomes?", a: ["Prophase", "Metaphase", "Anaphase", "Telophase"], correct: 2, section: "Mitosis" },
-  { q: "What happens during Telophase?", a: ["Chromosomes condense", "Chromosomes line up at metaphase plate", "Nuclear envelope reforms and spindle disappears", "DNA replicates"], correct: 2, section: "Mitosis" },
-  { q: "What are cyclins?", a: ["Chromosomes that cycle through phases", "Proteins that control the cell cycle", "Enzymes that break down DNA", "Lipids in the cell membrane"], correct: 1, section: "Mitosis" },
-  { q: "What must happen to the protein Rb for cells to enter S phase?", a: ["It must be destroyed", "It must be phosphorylated", "It must be duplicated", "It must bind to cyclins"], correct: 1, section: "Cell Cycle Control" },
-  { q: "What is contact inhibition?", a: ["When cells attach to a surface", "A block in the cell cycle when cells are crowded", "When cells stop responding to hormones", "When cancer cells metastasize"], correct: 1, section: "Cell Cycle Control" },
-  { q: "What type of tumor has lost contact inhibition AND cell cycle control?", a: ["Benign tumor", "Metastatic tumor", "Malignant tumor", "No tumor type"], correct: 2, section: "Cell Cycle Control" },
-  { q: "What type of tumor has also lost anchorage-dependent inhibition?", a: ["Benign", "Malignant", "Metastatic", "Dormant"], correct: 2, section: "Cell Cycle Control" },
-  { q: "What is the primary purpose of meiosis?", a: ["To duplicate cells", "To reduce chromosome number by half", "To repair damaged DNA", "To increase cell size"], correct: 1, section: "Meiosis" },
-  { q: "During which stage of meiosis does crossing over occur?", a: ["Leptotene", "Zygotene", "Pachytene", "Diplotene"], correct: 2, section: "Meiosis" },
-  { q: "What is a bivalent?", a: ["A pair of crossing-over points", "A synapsed pair of homologous chromosomes", "Four chromosomes together", "A haploid cell"], correct: 1, section: "Meiosis" },
-  { q: "What is a chiasma?", a: ["A type of spindle fiber", "A cross connection between two chromosomes from crossing over", "A condensed chromosome", "An enzyme that breaks chromosomes"], correct: 1, section: "Meiosis" },
-  { q: "In women, how many of the 4 haploid daughter cells survive as an oocyte?", a: ["All 4", "3", "2", "Only 1"], correct: 3, section: "Meiosis" },
-  { q: "What is a tetrad?", a: ["A group of 2 chromosomes", "A pairing of 4 chromosomes during pachytene", "4 haploid cells after meiosis", "A spindle checkpoint"], correct: 1, section: "Meiosis" },
-  { q: "What happens during Diakinesis?", a: ["Chromosomes begin to condense", "Homologous chromosomes repel each other; nuclear membrane breaks down", "Crossing over occurs", "Chromosomes pair up"], correct: 1, section: "Meiosis" },
-  { q: "What are meiocytes?", a: ["Haploid cells", "Cells which can undergo meiosis", "Cancer cells", "Bacterial cells"], correct: 1, section: "Meiosis" },
-];
+// ========== ALL DATA ==========
+const DATA={
+chemistry:[
+{id:"ch1",title:"Ch 1: Matter & Properties",icon:"🧊",study:[
+{heading:"States of Matter",text:"Solid: atoms close-packed, NOT free to move. Liquid: atoms close-packed, free to move — fixed volume, no fixed shape. Gas: atoms NOT close-packed, free to move — no fixed volume or shape (compressible). Freedom increases: solid → liquid → gas."},
+{heading:"Classification of Matter",text:"Pure substance: one component, invariant composition. Mixture: two or more components in variable proportions. Pure substances split into elements (cannot be broken down) and compounds (two or more elements in fixed proportions)."},
+{heading:"Mixtures",text:"Heterogeneous: composition varies by region — you can see different parts (sand + salt). Homogeneous: appears uniform throughout — all portions same composition (sweetened tea, solutions)."},
+{heading:"Separating Mixtures",text:"Decanting: pour off liquid from solid. Distillation: boil off more volatile liquid, then recondense. Filtration: pour through filter paper to separate insoluble solid from liquid."},
+{heading:"Physical vs Chemical Properties",text:"Physical change: atoms/molecules don't change identity — only state or appearance changes. Chemical change: substances transform into new substances with different composition and properties."},
+],quiz:[
+{q:"Which state of matter has atoms close-packed but free to move?",a:["Solid","Liquid","Gas","Plasma"],c:1},
+{q:"What is a pure substance?",a:["Two or more components mixed","One component with invariant composition","A homogeneous mixture","An element only"],c:1},
+{q:"Sand and salt mixed together is an example of what?",a:["Homogeneous mixture","Pure substance","Heterogeneous mixture","Compound"],c:2},
+{q:"Which separation technique uses boiling and recondensing?",a:["Filtration","Decanting","Distillation","Chromatography"],c:2},
+{q:"Which is a chemical change?",a:["Melting ice","Dissolving sugar","Burning wood","Boiling water"],c:2},
+{q:"A compound is different from an element because it:",a:["Cannot be broken down","Can be broken into simpler substances","Is always a gas","Has variable composition"],c:1},
+]},
+{id:"ch2",title:"Ch 2: Formulas, Periodic Table & Ions",icon:"⚛️",study:[
+{heading:"Chemical Formulas",text:"Three types: Empirical (simplest ratio, e.g. CH), Molecular (actual count, e.g. C₆H₆), Structural (shows bonds with lines). Isomers: same molecular formula but different structures and properties."},
+{heading:"The Periodic Table",text:"Mendeleev & Meyer proposed it independently (~1869-70). Groups = vertical columns (18 total). Periods = horizontal rows (7 total). Three classes: metals (shiny, malleable, conduct), nonmetals (dull, poor conductors), metalloids (in between)."},
+{heading:"Ions",text:"Cation: lost electrons → positive charge. Anion: gained electrons → negative charge. Metals tend to lose electrons (form cations). Nonmetals tend to gain (form anions). Monatomic = one atom. Polyatomic = group of bonded atoms with charge."},
+{heading:"Polyatomic Ion Naming",text:"-ate = more oxygen atoms. -ite = fewer oxygen atoms. per- prefix = most oxygen. hypo- prefix = least oxygen. Example: perchlorate ClO₄⁻, chlorate ClO₃⁻, chlorite ClO₂⁻, hypochlorite ClO⁻."},
+{heading:"Acids",text:"Binary acids: hydro- prefix + nonmetal root + -ic suffix + 'acid' (e.g. hydrochloric acid). Oxyacids: root of anion, replace -ate→-ic or -ite→-ous, add 'acid' (e.g. sulfuric acid from sulfate)."},
+],quiz:[
+{q:"What does the empirical formula represent?",a:["Actual atom count","Simplest whole-number ratio","Bond structure","Molecular weight"],c:1},
+{q:"How many groups are in the periodic table?",a:["7","14","18","20"],c:2},
+{q:"What is a cation?",a:["An atom that gained electrons","An atom that lost electrons","A neutral atom","A polyatomic ion"],c:1},
+{q:"The suffix -ate in polyatomic ion naming indicates:",a:["Fewer oxygen atoms","More oxygen atoms","No oxygen","A metal ion"],c:1},
+{q:"Compounds with the same formula but different structures are called:",a:["Isotopes","Ions","Isomers","Allotropes"],c:2},
+{q:"Which class of elements are shiny and good conductors?",a:["Nonmetals","Metalloids","Metals","Noble gases"],c:2},
+]},
+{id:"ch3",title:"Ch 3: Moles & Composition",icon:"⚖️",study:[
+{heading:"Formula Mass",text:"Sum of average atomic masses of all atoms in the formula. Also called molecular mass/weight. Example: H₂O = 2(1.01) + 16.00 = 18.02 amu."},
+{heading:"The Mole & Avogadro's Number",text:"1 mole = 6.022 × 10²³ particles (Avogadro's number, Nₐ). The mole is the chemist's 'dozen.' Molar mass (g/mol) is numerically equal to atomic/formula mass in amu."},
+{heading:"Mole Conversions",text:"Grams → moles: divide by molar mass. Moles → atoms/molecules: multiply by Nₐ. Example: 150.0 g Mg ÷ 24.305 g/mol = 6.171 mol → × 6.022×10²³ = 3.716×10²⁴ atoms."},
+{heading:"Percent Composition",text:"% by mass of each element = (mass of element in formula / formula mass) × 100. For NH₃: %N = 14.01/17.03 × 100 = 82.27%."},
+{heading:"Empirical Formula from Composition",text:"1) Convert masses to moles. 2) Divide each by smallest mole value. 3) If needed, multiply to get whole numbers. From % composition: assume 100 g sample first."},
+],quiz:[
+{q:"What is Avogadro's number?",a:["6.022 × 10²³","3.14 × 10²³","6.022 × 10²⁶","1.602 × 10⁻¹⁹"],c:0},
+{q:"The molar mass of a substance in g/mol is numerically equal to its:",a:["Density","Atomic number","Formula mass in amu","Electron count"],c:2},
+{q:"To find moles from grams, you:",a:["Multiply by molar mass","Divide by Avogadro's number","Divide by molar mass","Multiply by Avogadro's number"],c:2},
+{q:"How many molecules in 1.3 mol H₂O?",a:["7.83 × 10²³","6.02 × 10²³","1.3 × 10²³","4.63 × 10²³"],c:0},
+{q:"To find empirical formula from percent composition, first:",a:["Find molecular weight","Assume 100 g sample and convert to moles","Balance the equation","Calculate density"],c:1},
+]},
+{id:"ch4",title:"Ch 4: Stoichiometry & Reactions",icon:"⚗️",study:[
+{heading:"Balancing Equations",text:"'Balanced' = equal numbers of each element on both sides. Adjust coefficients (never subscripts) to obey the Law of Conservation of Mass. Example: CH₄ + 2O₂ → CO₂ + 2H₂O."},
+{heading:"Types of Ionic Reactions",text:"Molecular equation: regular formulas. Complete ionic: shows all dissolved ions. Net ionic: removes spectator ions. Spectator ions = present but unchanged."},
+{heading:"Reaction Types",text:"Precipitation: two solutions mix → insoluble solid forms. Acid-Base: H⁺ transferred between species. Strong acids fully dissociate (HCl, H₂SO₄), weak acids partially. Redox: oxidation numbers change."},
+{heading:"Oxidation Numbers",text:"Element = 0. Monatomic ion = ion's charge. H = +1 (with nonmetals), -1 (with metals). O = -2 (usually). F always = -1. Sum for molecule = 0, for ion = charge. Oxidation = increase, Reduction = decrease."},
+{heading:"Limiting Reagent & Yield",text:"Limiting reagent: runs out first, determines max product. Convert each reactant to moles of product → smallest amount = limiting. Theoretical yield = max product from limiting reagent. Percent yield = (actual/theoretical) × 100%."},
+],quiz:[
+{q:"When balancing equations, you adjust:",a:["Subscripts","Coefficients","Atomic numbers","Electron counts"],c:1},
+{q:"Spectator ions are:",a:["Ions that form precipitates","Ions unchanged in the reaction","Ions that are oxidized","Ions with no charge"],c:1},
+{q:"Oxidation means:",a:["Decrease in oxidation number","Gain of electrons","Increase in oxidation number","Loss of protons"],c:2},
+{q:"The limiting reagent determines the:",a:["Speed of reaction","Maximum amount of product","Color of solution","Temperature change"],c:1},
+{q:"What is theoretical yield?",a:["Actual amount produced","Max product assuming complete reaction","Amount of excess reagent","Mass of limiting reagent"],c:1},
+{q:"In a combustion reaction, the fuel reacts with:",a:["Water","Nitrogen","Oxygen","Helium"],c:2},
+]},
+{id:"ch5",title:"Ch 5: Thermochemistry",icon:"🔥",study:[
+{heading:"Energy Units",text:"1 cal = 4.184 J. Heat capacity (C) = heat to raise entire body by 1°C (extensive). Specific heat capacity (c) = heat to raise 1 gram by 1°C (intensive). q = mcΔT."},
+{heading:"Calorimetry",text:"Measures heat in chemical/physical processes. Coffee cup calorimeter: simple, constant pressure. Key principle: q_system = −q_surroundings (in insulated systems)."},
+{heading:"Enthalpy",text:"H = U + PV. State function (path independent). ΔH > 0 = endothermic (absorbs heat). ΔH < 0 = exothermic (releases heat). First Law: ΔU = q + w."},
+{heading:"Thermochemical Equations",text:"Show both matter and energy changes. Coefficients multiplied by a factor → ΔH multiplied by same factor. Reversing reaction → sign of ΔH flips."},
+{heading:"Standard Enthalpy & Hess's Law",text:"Standard state: 1 bar pressure, 1 M solutions, 25°C assumed. Standard enthalpy of formation (ΔH°f): enthalpy to form 1 mol from elements in standard states. Elements in standard state: ΔH°f = 0. Hess's Law: ΔH_total = sum of ΔH of individual steps."},
+],quiz:[
+{q:"What does q = mcΔT calculate?",a:["Pressure change","Work done","Heat absorbed or released","Enthalpy of formation"],c:2},
+{q:"An exothermic reaction has ΔH that is:",a:["Positive","Zero","Negative","Undefined"],c:2},
+{q:"1 calorie equals how many joules?",a:["1.000 J","4.184 J","2.718 J","0.239 J"],c:1},
+{q:"Hess's Law states that enthalpy change:",a:["Depends on the path taken","Equals the sum of enthalpy changes of individual steps","Is always negative","Cannot be calculated"],c:1},
+{q:"The standard enthalpy of formation of an element in its standard state is:",a:["-273 kJ","Unknown","0","Variable"],c:2},
+{q:"Specific heat capacity is which type of property?",a:["Extensive","Intensive","Chemical","Nuclear"],c:1},
+]},
+{id:"ch6",title:"Ch 6: Electronic Structure",icon:"💡",study:[
+{heading:"Electromagnetic Radiation",text:"Waves characterized by wavelength (λ), frequency (ν), and amplitude. c = λν (speed of light = 3×10⁸ m/s). Spectrum: radio → microwave → infrared → visible → UV → X-ray → gamma."},
+{heading:"Photoelectric Effect",text:"Metals emit electrons when light hits surface. Energy of photon: E = hν = hc/λ (h = 6.626×10⁻³⁴ J·s). Light must exceed threshold energy. Shorter λ = higher energy."},
+{heading:"Bohr Model",text:"Electrons occupy specific energy levels (quantized). Energy levels: E = -k/n² (k = 2.179×10⁻¹⁸ J for hydrogen). Energy change between levels: ΔE = E_final - E_initial."},
+{heading:"Quantum Numbers",text:"Principal (n): energy level, any integer ≥ 1, larger = higher energy/larger orbital. Angular momentum (l): shape, 0 to n-1 (s=0, p=1, d=2, f=3). Magnetic (mₗ): orientation, -l to +l. Spin (mₛ): +½ or -½."},
+{heading:"Orbital Shapes",text:"s orbitals: spherical, 1 per shell. p orbitals: dumbbell/two balloons, 3 per shell (px, py, pz), start at n=2. d orbitals: 5 per shell, start at n=3. f orbitals: 7 per shell, start at n=4."},
+{heading:"Electron Configuration",text:"Aufbau principle: fill lowest energy first (1s→2s→2p→3s→3p→4s→3d...). Pauli exclusion: max 2 electrons per orbital (opposite spins). Hund's rule: one electron in each orbital of same energy before pairing. Core electrons = inner shells. Valence electrons = outermost shell."},
+],quiz:[
+{q:"The equation c = λν relates:",a:["Energy and mass","Speed of light, wavelength, frequency","Charge and voltage","Pressure and volume"],c:1},
+{q:"What is the energy of a photon formula?",a:["E = mc²","E = hν","E = ½mv²","E = PV"],c:1},
+{q:"The principal quantum number (n) determines:",a:["Shape of orbital","Orientation","Energy level and size","Spin direction"],c:2},
+{q:"How many p orbitals exist per energy level?",a:["1","2","3","5"],c:2},
+{q:"The Aufbau principle states electrons:",a:["Fill highest energy first","Fill lowest energy first","Always pair up immediately","Skip s orbitals"],c:1},
+{q:"Hund's rule says to:",a:["Pair electrons immediately","Place one electron in each equal-energy orbital before pairing","Fill d before p","Skip empty orbitals"],c:1},
+{q:"Which quantum number determines orbital shape?",a:["n","l","mₗ","mₛ"],c:1},
+]},
+{id:"ch7",title:"Ch 7: Chemical Bonding & Geometry",icon:"🔗",study:[
+{heading:"Ionic vs Covalent Bonds",text:"Ionic: metal + nonmetal, electron transfer, electrostatic attraction between ions. Strong bonds. Covalent: nonmetal + nonmetal, electrons shared. Pure covalent = identical atoms (equal sharing). Polar covalent = different atoms (unequal sharing, δ+ and δ-)."},
+{heading:"Electronegativity",text:"Tendency of an atom to attract electrons. Increases going RIGHT and UP on periodic table. ΔEN determines bond type: ~0 = nonpolar covalent, 0.4-1.8 = polar covalent, >1.8 = ionic."},
+{heading:"Lewis Structures",text:"Show bonding (dashes) and lone pairs (dots). Octet rule: atoms tend to get 8 valence electrons. Steps: 1) Count total valence e⁻. 2) Draw skeleton (least electronegative = center). 3) Distribute lone pairs for octets. 4) Remaining e⁻ on central atom. 5) Form multiple bonds if needed."},
+{heading:"Formal Charge & Resonance",text:"Formal charge = valence e⁻ - (lone pair e⁻ + ½ bonding e⁻). Preferred structure: all formal charges = 0, or smallest charges, negative on more electronegative atom. Resonance: when multiple valid Lewis structures exist — real structure is average of all."},
+{heading:"VSEPR Theory",text:"Electron pairs repel and maximize distance. Repulsion order: lone-lone > lone-bonding > bonding-bonding. Electron-pair geometry ≠ molecular structure (unless no lone pairs). Lone pairs cause bond angle distortion."},
+{heading:"Molecular Geometries",text:"2 regions: linear (180°). 3 regions: trigonal planar (120°). 4 regions: tetrahedral (109.5°). With lone pairs: 3 bonding + 1 lone = trigonal pyramidal. 2 bonding + 2 lone = bent. 5 regions: trigonal bipyramidal. 6 regions: octahedral."},
+{heading:"Bond Energy & Lattice Energy",text:"Bond dissociation energy: energy to break a covalent bond. ΔH = Σ(bonds broken) - Σ(bonds formed). Lattice energy: strength of ionic bond attraction in crystal."},
+],quiz:[
+{q:"Ionic bonds form between:",a:["Two nonmetals","Two metals","A metal and nonmetal","Two noble gases"],c:2},
+{q:"Electronegativity increases going:",a:["Down and left","Up and right","Down and right","Up and left"],c:1},
+{q:"In a Lewis structure, which atom goes in the center?",a:["Most electronegative","Least electronegative","Smallest atom","Hydrogen"],c:1},
+{q:"VSEPR theory predicts molecular shape based on:",a:["Atomic mass","Electron pair repulsion","Bond energy","Electronegativity"],c:1},
+{q:"A molecule with 4 electron regions and no lone pairs has what geometry?",a:["Trigonal planar","Linear","Tetrahedral","Octahedral"],c:2},
+{q:"Resonance occurs when:",a:["Atoms vibrate","Multiple valid Lewis structures exist","Bonds break","Electrons are lost"],c:1},
+{q:"The order of electron-pair repulsion (strongest first) is:",a:["Bonding-bonding > lone-bonding > lone-lone","Lone-lone > lone-bonding > bonding-bonding","All equal","Lone-bonding > lone-lone > bonding-bonding"],c:1},
+]},
+{id:"ch8",title:"Ch 8: Advanced Bonding",icon:"🧲",study:[
+{heading:"Valence Bond Theory",text:"Covalent bonds form when atomic orbitals overlap. Single electrons in overlapping orbitals combine into shared pair. Greater overlap = stronger bond. Each atom maintains its own atomic orbitals."},
+{heading:"Sigma (σ) Bonds",text:"Formed by end-to-end overlap: two s orbitals (e.g. H₂), s and p orbital (e.g. HCl), two p orbitals end-to-end (e.g. Cl₂). The first bond formed between any two atoms is always a σ bond. All single bonds are σ bonds."},
+{heading:"Pi (π) Bonds",text:"Formed by side-by-side overlap of p orbitals. Found in multiple bonds alongside σ bonds. Double bond = 1σ + 1π. Triple bond = 1σ + 2π. π bonds are generally weaker than σ bonds."},
+{heading:"Hybridization",text:"Atomic orbitals mix to form hybrid orbitals for bonding. sp: 2 hybrid orbitals → linear (180°), e.g. BeCl₂, CO₂. sp²: 3 hybrid orbitals → trigonal planar (120°), e.g. BF₃. sp³: 4 hybrid orbitals → tetrahedral (109.5°), e.g. CH₄."},
+{heading:"Key Hybridization Rules",text:"Hybridization only in covalently bonded atoms. Hybrid orbitals from combining atomic orbitals. Number of hybrid orbitals = number of atomic orbitals combined. Identify hybridization from electron-pair geometry: 2 regions = sp, 3 = sp², 4 = sp³, 5 = sp³d, 6 = sp³d²."},
+],quiz:[
+{q:"The first bond formed between two atoms is always a:",a:["Pi bond","Sigma bond","Hydrogen bond","Ionic bond"],c:1},
+{q:"A double bond consists of:",a:["2 sigma bonds","2 pi bonds","1 sigma + 1 pi","1 sigma only"],c:2},
+{q:"sp² hybridization results in what geometry?",a:["Linear","Tetrahedral","Trigonal planar","Octahedral"],c:2},
+{q:"How many hybrid orbitals does sp³ produce?",a:["2","3","4","6"],c:2},
+{q:"Pi bonds are formed by:",a:["End-to-end s orbital overlap","Side-by-side p orbital overlap","d orbital overlap","Electron transfer"],c:1},
+{q:"An atom with 2 regions of electron density has what hybridization?",a:["sp","sp²","sp³","sp³d"],c:0},
+]},
+],
+biology:[
+{id:"bio_mm",title:"Mitosis & Meiosis",icon:"🧬",study:[
+{heading:"Cell Cycle Stages",text:"G1 (resting, no DNA synthesis) → S (DNA synthesis & chromosome duplication) → G2 (double DNA level) → M (mitosis, ~0.5-2 hrs). G1+S+G2 = Interphase. Cells double every 18-24 hrs in culture. Most cells rest in G0 (non-dividing), stops in G1 before S."},
+{heading:"Prophase",text:"Chromosomes condense (shorter & thicker). Paired chromatids held at centromere. Nuclear membrane disappears at end of prophase. First stage of mitosis."},
+{heading:"Metaphase",text:"Mitotic spindle forms from 2 centrosomes. Microtubules attach to kinetochores at centromeres. Chromosomes align at metaphase plate. Spindle checkpoint monitors attachment."},
+{heading:"Anaphase & Telophase",text:"Anaphase: chromatids separate, pulled by kinetochores toward opposite centrosomes. Telophase: nuclear envelope reforms, spindle disappears, chromosomes decondense, cleavage furrow separates cytoplasm (cytokinesis)."},
+{heading:"Cell Cycle Control",text:"Cyclins: proteins controlling cell cycle, made progressively. Checkpoints verify key events. Rb must be phosphorylated to enter S phase. Growth factors bind receptors to signal division. Contact inhibition blocks division when crowded. Loss → benign tumors. Loss of cycle control too → malignant. Loss of anchorage dependence → metastatic."},
+{heading:"Meiosis Overview",text:"Reduces chromosomes by half (diploid → haploid) for gametes. No second S phase. Mitosis: 46→46. Meiosis: 46→23. Recombination combines parental traits — only when all 4 chromosomes (tetrad) are lined up."},
+{heading:"Prophase I Stages",text:"Leptotene: initial condensation, thin threads with chromomeres. Zygotene: synapsis (pairing) of homologous chromosomes → bivalent. Pachytene ⭐: tetrad forms, CROSSING OVER begins. Diplotene: chromosomes separate, chiasmata visible. Diakinesis: homologs repel, max condensation, nuclear membrane breaks."},
+{heading:"Where Meiosis Occurs",text:"Meiocytes: primary spermatocytes and oocytes. Females: only 1 of 4 daughters survives as oocyte (other 3 = polar bodies). Males: all 4 survive as sperm. Plants: haploid daughters → spores → gametophyte → gametes."},
+],quiz:[
+{q:"What are the 4 cell cycle stages?",a:["G1, S, G2, M","Prophase, Metaphase, Anaphase, Telophase","G0, G1, G2, M","Leptotene, Zygotene, Pachytene, Diplotene"],c:0},
+{q:"During which phase does DNA synthesis occur?",a:["G1","S phase","G2","M phase"],c:1},
+{q:"Correct order of mitosis?",a:["Prophase, Metaphase, Anaphase, Telophase","Metaphase, Prophase, Telophase, Anaphase","Anaphase, Metaphase, Prophase, Telophase","Telophase, Prophase, Metaphase, Anaphase"],c:0},
+{q:"The kinetochore is:",a:["A cyclin protein","Structure at centromere binding the spindle","A growth factor","The cleavage furrow"],c:1},
+{q:"What are cyclins?",a:["Chromosomes","Proteins controlling the cell cycle","DNA strands","Lipids"],c:1},
+{q:"Malignant tumors have lost:",a:["Only contact inhibition","Contact inhibition and cell cycle control","Anchorage dependence only","Nothing"],c:1},
+{q:"During which meiosis stage does crossing over occur?",a:["Leptotene","Zygotene","Pachytene","Diakinesis"],c:2},
+{q:"Meiosis produces how many chromosomes in gametes?",a:["46","92","23","12"],c:2},
+{q:"In females, how many daughter cells survive as oocytes?",a:["4","3","2","1"],c:3},
+{q:"What is a chiasma?",a:["A spindle fiber","Cross connection between chromosomes from crossing over","A condensed chromosome","An enzyme"],c:1},
+{q:"What is a bivalent?",a:["4 chromosomes together","A synapsed pair of homologous chromosomes","A haploid cell","A type of bond"],c:1},
+{q:"What must be phosphorylated for cells to enter S phase?",a:["Cyclin D","DNA polymerase","Rb protein","ATP"],c:2},
+]},
+]};
 
-// ============ STATE ============
-let currentTab = "study";
-let expandedSection = null;
-let shuffledQuiz = [];
-let practiceState = { currentQ: 0, selected: null, showAnswer: false, score: 0, answered: 0 };
-let testState = { answers: {}, submitted: false, score: 0 };
+// ========== STATE ==========
+let screen="home"; // home, topics, study
+let selectedClass=null; // "chemistry" or "biology"
+let selectedTopic=null;
+let tab="study"; // study, practice, test
+let expandedSection=null;
+let shuffled=[];
+let pState={cq:0,sel:null,show:false,sc:0,ans:0};
+let tState={answers:{},sub:false,sc:0};
 
-function shuffle(arr) { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
+function resetQuiz(){pState={cq:0,sel:null,show:false,sc:0,ans:0};tState={answers:{},sub:false,sc:0};shuffled=shuffle(selectedTopic.quiz)}
 
-// ============ SPARKLES ============
-(function() {
-  const c = document.getElementById("sparkles");
-  for (let i = 0; i < 12; i++) {
-    const s = document.createElement("div");
-    s.className = "sparkle";
-    s.style.top = (8 + i * 7.5) + "%";
-    s.style.left = (5 + (i * 8) % 90) + "%";
-    s.style.animationDelay = (i * 0.4) + "s";
-    c.appendChild(s);
-  }
-})();
+// ========== RENDER ==========
+function setTitle(t,s){document.getElementById("mainTitle").innerHTML=t;document.getElementById("mainSub").textContent=s}
 
-// ============ RENDER ============
-function switchTab(tab) {
-  currentTab = tab;
-  document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
-  if (tab === "practice" || tab === "test") {
-    shuffledQuiz = shuffle(quizData);
-    practiceState = { currentQ: 0, selected: null, showAnswer: false, score: 0, answered: 0 };
-    testState = { answers: {}, submitted: false, score: 0 };
-  }
-  render();
+function render(){
+  const el=document.getElementById("content");
+  const nav=document.getElementById("nav");
+  if(screen==="home"){renderHome(el,nav)}
+  else if(screen==="topics"){renderTopics(el,nav)}
+  else if(screen==="study"){renderStudy(el,nav)}
 }
 
-function render() {
-  const el = document.getElementById("content");
-  if (currentTab === "study") el.innerHTML = renderStudy();
-  else if (currentTab === "practice") el.innerHTML = renderPractice();
-  else el.innerHTML = renderTest();
+function renderHome(el,nav){
+  setTitle("Anhelina's Study Hub","Pick a class to start studying");
+  nav.innerHTML="";
+  el.innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;padding-top:8px">
+    <div class="class-card" onclick="pickClass('chemistry')">
+      <div style="font-size:52px;margin-bottom:12px">🧪</div>
+      <div style="font-size:22px;font-weight:800;margin-bottom:6px;color:var(--hi)">Chemistry</div>
+      <div style="font-size:14px;color:var(--txd)">Chapters 1-8 · Matter, Stoichiometry, Bonding & more</div>
+      <div style="margin-top:14px;font-size:12px;padding:4px 14px;border-radius:99px;background:rgba(155,89,255,.1);color:var(--glow);display:inline-block">${DATA.chemistry.length} Topics</div>
+    </div>
+    <div class="class-card" onclick="pickClass('biology')">
+      <div style="font-size:52px;margin-bottom:12px">🧬</div>
+      <div style="font-size:22px;font-weight:800;margin-bottom:6px;color:var(--hi)">Biology</div>
+      <div style="font-size:14px;color:var(--txd)">Cell Division · Mitosis & Meiosis</div>
+      <div style="margin-top:14px;font-size:12px;padding:4px 14px;border-radius:99px;background:rgba(155,89,255,.1);color:var(--glow);display:inline-block">${DATA.biology.length} Topic</div>
+    </div>
+  </div>`;
 }
 
-function renderStudy() {
-  return studySections.map((sec, si) => {
-    const exp = expandedSection === si;
-    return `<div class="section-card ${exp ? 'expanded' : ''}" style="animation-delay:${si*0.08}s" onclick="toggleSection(${si})">
-      <div class="section-header">
-        <div class="section-left">
-          <span class="section-icon">${sec.icon}</span>
-          <span class="section-title">${sec.title}</span>
-        </div>
-        <span class="section-arrow">▼</span>
+function pickClass(c){selectedClass=c;screen="topics";render();window.scrollTo({top:0,behavior:"smooth"})}
+
+function renderTopics(el,nav){
+  const cls=selectedClass==="chemistry"?"Chemistry":"Biology";
+  const topics=DATA[selectedClass];
+  setTitle(cls,"Pick a topic to study");
+  nav.innerHTML=`<button class="back-btn" onclick="screen='home';render()">← Back to Classes</button>`;
+  let html="";
+  topics.forEach((t,i)=>{
+    html+=`<div class="topic-card" onclick="pickTopic('${selectedClass}',${i})" style="animation:slideIn .3s ease ${i*.05}s both">
+      <span style="font-size:28px">${t.icon}</span>
+      <div style="flex:1">
+        <div style="font-size:16px;font-weight:700">${t.title}</div>
+        <div style="font-size:12px;color:var(--txd);margin-top:2px">${t.study.length} sections · ${t.quiz.length} questions</div>
       </div>
-      <div class="section-body">
-        ${sec.content.map((item, ii) => `<div class="study-item" style="animation-delay:${ii*0.06}s">
-          <div class="study-heading">${item.heading}</div>
-          <div class="study-text">${item.text}</div>
-        </div>`).join("")}
+      <span style="color:var(--accent);font-size:18px">→</span>
+    </div>`;
+  });
+  el.innerHTML=html;
+}
+
+function pickTopic(cls,idx){selectedTopic=DATA[cls][idx];screen="study";tab="study";expandedSection=null;resetQuiz();render();window.scrollTo({top:0,behavior:"smooth"})}
+
+function renderStudy(el,nav){
+  setTitle(selectedTopic.icon+" "+selectedTopic.title,"");
+  nav.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap">
+    <button class="back-btn" onclick="screen='topics';render()">← Topics</button>
+    <button class="btn pill ${tab==='study'?'pill-active':'pill-inactive'}" onclick="switchTab('study')">📖 Study</button>
+    <button class="btn pill ${tab==='practice'?'pill-active':'pill-inactive'}" onclick="switchTab('practice')">✏️ Practice</button>
+    <button class="btn pill ${tab==='test'?'pill-active':'pill-inactive'}" onclick="switchTab('test')">📝 Test</button>
+  </div>`;
+  if(tab==="study") el.innerHTML=renderStudyTab();
+  else if(tab==="practice") el.innerHTML=renderPractice();
+  else el.innerHTML=renderTest();
+}
+
+function switchTab(t){tab=t;if(t!=="study")resetQuiz();render()}
+
+function renderStudyTab(){
+  return selectedTopic.study.map((sec,i)=>{
+    const exp=expandedSection===i;
+    return`<div class="card ${exp?'exp':''}" onclick="toggleSec(${i})" style="animation:slideIn .35s ease ${i*.06}s both">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:17px;font-weight:700;${exp?'color:var(--hi)':''}">${sec.heading}</span>
+        <span class="arrow">▼</span>
       </div>
+      ${exp?`<div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--bdr)">
+        <div class="study-item"><div class="st">${sec.text}</div></div>
+      </div>`:''}
     </div>`;
   }).join("");
 }
+function toggleSec(i){expandedSection=expandedSection===i?null:i;render()}
 
-function toggleSection(i) { expandedSection = expandedSection === i ? null : i; render(); }
-
-function renderPractice() {
-  const s = practiceState;
-  if (s.currentQ >= shuffledQuiz.length) {
-    const pct = Math.round((s.score / shuffledQuiz.length) * 100);
-    const emoji = pct >= 80 ? "🏆" : pct >= 60 ? "👍" : "📚";
-    const msg = pct >= 90 ? "Amazing work, Anhelina! 🌟" : pct >= 70 ? "Great job! Keep studying the tricky parts." : "Keep reviewing — you'll get there!";
-    return `<div class="results-card">
-      <div class="results-emoji">${emoji}</div>
-      <div class="results-score">${s.score} / ${shuffledQuiz.length}</div>
-      <p class="results-msg">${msg}</p>
-      <button class="retry-btn" onclick="switchTab('practice')">Try Again</button>
-    </div>`;
+function renderPractice(){
+  const s=pState;
+  if(s.cq>=shuffled.length){
+    const p=Math.round(s.sc/shuffled.length*100);
+    const e=p>=80?"🏆":p>=60?"👍":"📚";
+    const m=p>=90?"Amazing work, Anhelina! 🌟":p>=70?"Great job! Keep studying the tricky parts.":"Keep reviewing — you'll get there!";
+    return`<div class="res-card"><div style="font-size:48px;margin-bottom:12px">${e}</div>
+      <div style="font-size:28px;font-weight:800;background:linear-gradient(135deg,var(--hi),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent">${s.sc}/${shuffled.length}</div>
+      <p style="color:var(--txd);font-size:16px;margin:8px 0 24px">${m}</p>
+      <button class="accent-btn" onclick="resetQuiz();render()">Try Again</button></div>`;
   }
-  const q = shuffledQuiz[s.currentQ];
-  const pct = (s.currentQ / shuffledQuiz.length) * 100;
-  return `<div class="quiz-card">
-    <div class="quiz-top">
-      <span class="quiz-counter">Question ${s.currentQ + 1} / ${shuffledQuiz.length}</span>
-      <span class="quiz-section-badge">${q.section}</span>
+  const q=shuffled[s.cq];
+  return`<div class="quiz-card">
+    <div style="display:flex;justify-content:space-between;margin-bottom:20px">
+      <span style="font-size:13px;color:var(--txd);font-weight:600">Question ${s.cq+1}/${shuffled.length}</span>
     </div>
-    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
-    <div class="quiz-question">${q.q}</div>
-    <div class="options">
-      ${q.a.map((opt, oi) => {
-        let cls = "opt-btn";
-        let circle = String.fromCharCode(65 + oi);
-        if (s.showAnswer) {
-          cls += " answered";
-          if (oi === q.correct) { cls += " correct"; circle = "✓"; }
-          else if (oi === s.selected) { cls += " wrong"; circle = "✗"; }
-        }
-        return `<button class="${cls}" onclick="practiceAnswer(${oi})">
-          <span class="opt-circle">${circle}</span>${opt}
-        </button>`;
-      }).join("")}
-    </div>
-    ${s.showAnswer ? `<div class="quiz-feedback">
-      <span class="feedback-text ${s.selected === q.correct ? 'right' : 'wrong'}">
-        ${s.selected === q.correct ? "Correct! 🎉" : "Not quite — review the highlighted answer above."}
-      </span>
-      <button class="next-btn" onclick="practiceNext()">${s.currentQ + 1 < shuffledQuiz.length ? "Next →" : "See Results"}</button>
-    </div>` : ""}
+    <div class="pbar"><div class="pfill" style="width:${s.cq/shuffled.length*100}%"></div></div>
+    <div style="font-size:18px;font-weight:700;margin-bottom:22px;line-height:1.45">${q.q}</div>
+    ${q.a.map((o,i)=>{
+      let cls="opt",circ=String.fromCharCode(65+i);
+      if(s.show){cls+=" ans";if(i===q.c){cls+=" ok";circ="✓"}else if(i===s.sel){cls+=" no";circ="✗"}}
+      return`<button class="${cls}" onclick="pAnswer(${i})"><span class="circ">${circ}</span>${o}</button>`;
+    }).join("")}
+    ${s.show?`<div style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+      <span style="font-size:14px;font-weight:600;color:${s.sel===q.c?'var(--ok)':'var(--err)'}">${s.sel===q.c?"Correct! 🎉":"Not quite — check the highlighted answer."}</span>
+      <button class="accent-btn" onclick="pNext()" style="padding:10px 22px;font-size:14px">${s.cq+1<shuffled.length?"Next →":"See Results"}</button>
+    </div>`:''}
   </div>
-  <div class="score-tracker">
-    <span>✅ ${s.score} correct</span>
-    <span>❌ ${s.answered - s.score} wrong</span>
+  <div style="margin-top:16px;display:flex;justify-content:center;gap:24px;font-size:14px;color:var(--txd)">
+    <span>✅ ${s.sc} correct</span><span>❌ ${s.ans-s.sc} wrong</span>
   </div>`;
 }
+function pAnswer(i){if(pState.show)return;pState.sel=i;pState.show=true;pState.ans++;if(i===shuffled[pState.cq].c)pState.sc++;render()}
+function pNext(){pState.cq++;pState.sel=null;pState.show=false;render();document.querySelector('.quiz-card')?.scrollIntoView({behavior:'smooth',block:'start'})}
 
-function practiceAnswer(idx) {
-  if (practiceState.showAnswer) return;
-  practiceState.selected = idx;
-  practiceState.showAnswer = true;
-  practiceState.answered++;
-  if (idx === shuffledQuiz[practiceState.currentQ].correct) practiceState.score++;
-  render();
-}
-function practiceNext() {
-  practiceState.currentQ++;
-  practiceState.selected = null;
-  practiceState.showAnswer = false;
-  render();
-}
-
-function renderTest() {
-  const t = testState;
-  if (t.submitted) {
-    const pct = Math.round((t.score / shuffledQuiz.length) * 100);
-    const emoji = pct >= 90 ? "🏆" : pct >= 70 ? "🌟" : pct >= 50 ? "👍" : "📚";
-    const msg = pct >= 90 ? "You crushed it, Anhelina! 💜" : pct >= 70 ? "Solid work! Review the ones you missed." : "Keep studying — check the review below!";
-    let wrongHtml = "";
-    shuffledQuiz.forEach((q, qi) => {
-      if (t.answers[qi] !== q.correct) {
-        wrongHtml += `<div class="review-wrong">
-          <div class="review-q">${q.q}</div>
-          <div class="review-yours">Your answer: ${q.a[t.answers[qi]] || "No answer"}</div>
-          <div class="review-correct">Correct answer: ${q.a[q.correct]}</div>
-        </div>`;
-      }
-    });
-    return `<div class="results-card" style="margin-bottom:28px">
-      <div style="font-size:52px;margin-bottom:8px">${emoji}</div>
-      <div class="results-score results-pct">${pct}%</div>
-      <p style="font-size:18px;color:var(--text-dim);margin:4px 0">${t.score} / ${shuffledQuiz.length} correct</p>
-      <p class="results-msg">${msg}</p>
-      <button class="retry-btn" onclick="switchTab('test')">Retake Test</button>
-    </div>${wrongHtml}`;
+function renderTest(){
+  const t=tState;
+  if(t.sub){
+    const p=Math.round(t.sc/shuffled.length*100);
+    const e=p>=90?"🏆":p>=70?"🌟":p>=50?"👍":"📚";
+    const m=p>=90?"You crushed it, Anhelina! 💜":p>=70?"Solid work! Review missed ones below.":"Keep studying — review below!";
+    let wr="";
+    shuffled.forEach((q,i)=>{if(t.answers[i]!==q.c)wr+=`<div class="review-wrong"><div style="font-size:14px;font-weight:600;margin-bottom:10px">${q.q}</div><div style="font-size:13px;color:var(--err);margin-bottom:4px">Your answer: ${q.a[t.answers[i]]||"None"}</div><div style="font-size:13px;color:var(--ok)">Correct: ${q.a[q.c]}</div></div>`});
+    return`<div class="res-card" style="margin-bottom:28px"><div style="font-size:52px;margin-bottom:8px">${e}</div>
+      <div style="font-size:36px;font-weight:800;background:linear-gradient(135deg,var(--hi),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent">${p}%</div>
+      <p style="font-size:18px;color:var(--txd);margin:4px 0">${t.sc}/${shuffled.length} correct</p>
+      <p style="color:var(--txd);font-size:14px;margin:8px 0 20px">${m}</p>
+      <button class="accent-btn" onclick="resetQuiz();render()">Retake</button></div>${wr}`;
   }
-
-  const answeredCount = Object.keys(t.answers).length;
-  let html = `<div class="test-info">
-    Answer all ${shuffledQuiz.length} questions, then submit to see your grade.<br>
-    <small>Answered: ${answeredCount} / ${shuffledQuiz.length}</small>
-  </div>`;
-  shuffledQuiz.forEach((q, qi) => {
-    html += `<div class="test-q ${t.answers[qi] !== undefined ? 'answered-q' : ''}" style="animation-delay:${Math.min(qi*0.04,0.6)}s">
-      <div class="test-q-top">
-        <span class="test-q-num">#${qi+1}</span>
-        <span class="test-q-section">${q.section}</span>
-      </div>
-      <div class="test-q-text">${q.q}</div>
-      ${q.a.map((opt, oi) => `<button class="test-opt ${t.answers[qi] === oi ? 'selected' : ''}" onclick="testAnswer(${qi},${oi})">
-        <span class="test-opt-circle">${String.fromCharCode(65+oi)}</span>${opt}
-      </button>`).join("")}
+  const ac=Object.keys(t.answers).length;
+  let h=`<div class="test-info">Answer all ${shuffled.length} questions, then submit.<br><small style="color:var(--txd)">Answered: ${ac}/${shuffled.length}</small></div>`;
+  shuffled.forEach((q,qi)=>{
+    h+=`<div style="background:var(--card);border:1px solid ${t.answers[qi]!==undefined?'rgba(155,89,255,.27)':'var(--bdr)'};border-radius:16px;padding:22px 24px;margin-bottom:14px;animation:slideIn .3s ease ${Math.min(qi*.04,.6)}s both">
+      <div style="display:flex;justify-content:space-between;margin-bottom:12px"><span style="font-size:13px;font-weight:700;color:var(--txd)">#${qi+1}</span></div>
+      <div style="font-size:15px;font-weight:600;margin-bottom:14px;line-height:1.45">${q.q}</div>
+      ${q.a.map((o,oi)=>`<button class="opt ${t.answers[qi]===oi?'ok':''}" style="font-size:14px;padding:11px 16px;border-radius:10px" onclick="tAnswer(${qi},${oi})"><span class="circ" style="width:24px;height:24px;font-size:12px;${t.answers[qi]===oi?'background:var(--accent);color:#fff':''}">${String.fromCharCode(65+oi)}</span>${o}</button>`).join("")}
     </div>`;
   });
-  html += `<div class="test-submit-wrap">
-    <button class="submit-btn" ${answeredCount < shuffledQuiz.length ? 'disabled' : ''} onclick="submitTest()">Submit Test</button>
-  </div>`;
-  return html;
+  h+=`<div style="text-align:center;padding:20px 0"><button class="accent-btn" style="padding:14px 48px;font-size:16px;border-radius:14px" ${ac<shuffled.length?'disabled':''} onclick="submitTest()">Submit Test</button></div>`;
+  return h;
 }
+function tAnswer(qi,oi){if(tState.sub)return;tState.answers[qi]=oi;render()}
+function submitTest(){let s=0;shuffled.forEach((q,i)=>{if(tState.answers[i]===q.c)s++});tState.sc=s;tState.sub=true;render();window.scrollTo({top:0,behavior:"smooth"})}
 
-function testAnswer(qi, oi) {
-  if (testState.submitted) return;
-  testState.answers[qi] = oi;
-  render();
-}
-function submitTest() {
-  let s = 0;
-  shuffledQuiz.forEach((q, i) => { if (testState.answers[i] === q.correct) s++; });
-  testState.score = s;
-  testState.submitted = true;
-  render();
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-// Initial render
+// Init
 render();
 </script>
 </body>
