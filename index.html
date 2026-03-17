@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Anhelina's Study Hub</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💜</text></svg>">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#0D0A1A;--card:#1A1230;--card2:#241A42;--accent:#9B59FF;--glow:#B07AFF;--dim:#6B3FA0;--hi:#E0C6FF;--tx:#E8DFF5;--txd:#9B8FBB;--ok:#7CFF8E;--err:#FF6B8A;--bdr:#2E2250;--gs:#1A0A3E}
@@ -95,7 +96,7 @@ h1{font-size:clamp(28px,5vw,44px);font-weight:800;background:linear-gradient(135
 .bgq{position:absolute;color:var(--accent);font-weight:800;white-space:nowrap;opacity:0;animation:driftQuote linear infinite}
 @keyframes driftQuote{0%{transform:translateX(-100%);opacity:0}5%{opacity:var(--qo,.04)}50%{opacity:var(--qo,.04)}95%{opacity:var(--qo,.04)}100%{transform:translateX(calc(100vw + 100%));opacity:0}}
 /* Music Player */
-.mp{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:10px 20px 18px}
+.mp{position:relative;z-index:1;padding:10px 0 18px}
 .mp-bar{background:var(--card);border:1.5px solid var(--bdr);border-radius:18px;padding:14px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .mp-controls{display:flex;align-items:center;gap:8px;flex-shrink:0}
 .mp-btn{width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;font-family:inherit;transition:all .2s}
@@ -344,15 +345,17 @@ window.onpopstate=function(){parseURL();render()};
 function render(){
 var app=document.getElementById("app"),nav=document.getElementById("nav"),bread=document.getElementById("bread");
 var mt=document.getElementById("mt"),ms=document.getElementById("ms");
+var mpEl=document.querySelector(".mp"),wrap=document.querySelector(".wrap");
 
 if(view==="home"){
   mt.innerHTML="Anhelina's Study Hub";ms.textContent="Pick a class to start studying";bread.innerHTML="";nav.innerHTML="";
   var h="<div class='class-grid'>";
   for(var k in D){var c=D[k];h+="<div class='cc' onclick=\"go('class','"+k+"')\"><div class='icon'>"+c.icon+"</div><h3>"+c.name+"</h3><p>"+c.sub+"</p><div class='cnt'>"+c.lessons.length+" Lesson"+(c.lessons.length!==1?"s":"")+"</div></div>"}
-  h+="</div>";app.innerHTML=h;return;
+  h+="</div>";app.innerHTML=h;if(mpEl)wrap.appendChild(mpEl);return;
 }
 
 if(view==="class"){
+  if(mpEl)nav.parentNode.insertBefore(mpEl,nav);
   var c=D[curC];mt.innerHTML=c.name;ms.textContent=c.sub;
   bread.innerHTML="<button class='bbtn' onclick=\"go('home')\">\u2190 Home</button>";nav.innerHTML="";
   if(!c.lessons.length){app.innerHTML="<p style='color:var(--txd);padding:40px 0;text-align:center'>No lessons yet \u2014 Landon is building them for you! \uD83D\uDC9C</p>";return}
@@ -362,6 +365,7 @@ if(view==="class"){
 }
 
 // LESSON
+if(mpEl)nav.parentNode.insertBefore(mpEl,nav);
 var c=D[curC],l=curL;mt.innerHTML=l.title;ms.textContent=l.ln;
 bread.innerHTML="<button class='bbtn' onclick=\"go('class','"+curC+"')\">\u2190 "+c.name+"</button>";
 nav.innerHTML="<div class='tabs'><button class='pill "+(tab==="notes"?"pill-a":"pill-i")+"' onclick=\"tab='notes';render()\">\uD83D\uDCD6 Notes</button><button class='pill "+(tab==="quiz"?"pill-a":"pill-i")+"' onclick=\"tab='quiz';rq();render()\">\u270F\uFE0F Practice</button><button class='pill "+(tab==="test"?"pill-a":"pill-i")+"' onclick=\"tab='test';rq();render()\">\uD83D\uDCDD Test</button></div>";
