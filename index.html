@@ -290,7 +290,7 @@ for(var k in D){classKeys[classSlug(k)]=k;
 var view="home",curC=null,curL=null,tab="notes";
 var shuf=[],pS={i:0,sel:null,sh:false,sc:0,an:0},tS={a:{},ta:{},done:false,sc:0};
 function sf(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=b[i];b[i]=b[j];b[j]=t}return b}
-function rq(){if(!curL)return;var q=curL.quiz,s=50;if(tab==="q1")shuf=sf(q.slice(0,s));else if(tab==="q2")shuf=sf(q.slice(s,s*2));else if(tab==="q3")shuf=sf(q.slice(s*2,s*3));else if(tab==="final"){var all=[];var c=D[curC];for(var i=0;i<c.lessons.length;i++)all=all.concat(c.lessons[i].quiz);shuf=sf(all)}else shuf=sf(q);pS={i:0,sel:null,sh:false,sc:0,an:0,fibAns:""};tS={a:{},ta:{},done:false,sc:0}}
+function rq(){if(!curL)return;var q=curL.quiz,s=50;if(tab==="q1")shuf=sf(q.slice(0,s));else if(tab==="q2")shuf=sf(q.slice(s,s*2));else if(tab==="q3")shuf=sf(q.slice(s*2,s*3));else if(tab==="final"){var all=[];var c=D[curC];for(var i=0;i<c.lessons.length;i++){var lq=sf(c.lessons[i].quiz.slice());all=all.concat(lq.slice(0,20))}shuf=sf(all)}else shuf=sf(q);pS={i:0,sel:null,sh:false,sc:0,an:0,fibAns:""};tS={a:{},ta:{},done:false,sc:0}}
 function startFinal(cls){curC=cls;curL=D[cls].lessons[0];view="lesson";tab="final";rq();pushURL();render();scrollTo({top:0,behavior:"smooth"})}
 
 // URL helpers
