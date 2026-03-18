@@ -434,15 +434,15 @@ parseURL();render();
 @media(max-width:500px){#aiChat{bottom:0;right:0;width:100vw;height:calc(100vh - 60px);border-radius:20px 20px 0 0}#aiBubble{bottom:16px;right:16px}}
 </style>
 
-<button id="aiBubble" onclick="toggleChat()" title="Ask AI Greg">💬<span class="dot"></span></button>
+<button id="aiBubble" onclick="toggleChat()" title="Ask Greg">💬<span class="dot"></span></button>
 <div id="aiChat">
   <div class="ch-hdr">
     <div class="av">🤖</div>
-    <div class="ti"><h4>Study Helper</h4><small id="aiCtx">Ask me anything about your lessons</small></div>
+    <div class="ti"><h4>Greg</h4><small id="aiCtx">Ask me anything about your lessons</small></div>
     <button class="ch-close" onclick="toggleChat()">✕</button>
   </div>
   <div class="ch-msgs" id="aiMsgs">
-    <div class="ch-msg bot">Hi Anhelina! 💜 I'm your AI study helper Greg. Ask me anything about your lessons — I can explain concepts, quiz you, or break down tough topics. What do you need help with?</div>
+    <div class="ch-msg bot">Hey Anhelina! 💜 I'm Greg, your study buddy. Ask me anything about your lessons — I can explain concepts, quiz you, or break down tough topics. What do you need help with?</div>
   </div>
   <div class="ch-input">
     <input id="aiIn" type="text" placeholder="Ask a question..." onkeydown="if(event.key==='Enter'&&!aiLoading)aiSend()">
@@ -476,7 +476,7 @@ function updateAiCtx(){
 }
 
 function getContext(){
-  var ctx="You are a friendly, encouraging study helper for a college student named Anhelina. Keep answers concise (2-4 sentences unless they ask for more detail). Use simple language. Add emoji occasionally. If relevant, reference specific facts from the lesson notes provided.\n\n";
+  var ctx="You are Greg, a friendly and encouraging study buddy for a college student named Anhelina. Keep answers concise (2-4 sentences unless they ask for more detail). Use simple language. Add emoji occasionally. If relevant, reference specific facts from the lesson notes provided.\n\n";
   if(curL&&curC){
     ctx+="She is currently studying: "+D[curC].name+" — "+curL.title+".\n";
     ctx+="Here are the lesson notes for context:\n";
