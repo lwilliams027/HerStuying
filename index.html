@@ -1125,7 +1125,7 @@ function gk(){return localStorage.getItem("np_gk")||KEY}
 function toggle(){
   isOpen=!isOpen;
   document.getElementById("notesPanel").classList.toggle("open",isOpen);
-  if(isOpen){load();renderList();if(!cvReady)setTimeout(initCv,150)}
+  if(isOpen){load();renderList();if(!cvReady)setTimeout(initCv,150);if(!curNote){if(notes.length)openNote(notes[0].id);else newNote()}}
 }
 
 function toggleSB(){sbOpen=!sbOpen;document.getElementById("npSB").classList.toggle("open",sbOpen);document.getElementById("npDim").classList.toggle("show",sbOpen)}
