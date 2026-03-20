@@ -2210,71 +2210,19 @@ function createImg(x,y,w,src,id){
 async function convertHW(){
   if(!strokes.length){toast("Draw something first!");return}
   var key=localStorage.getItem("np_gk");
-  if(!key){showKey();return}
-
-  // Ensure canvas is initialized and rendered
+  if(!key){toast("Set API key first");return}
   if(!cvReady){initCv();await new Promise(function(r){setTimeout(r,200)})}
   renderStrokes();
-
   showOv("Converting handwriting...");
   try{
     var c=document.getElementById("npDrawC");
     if(!c||c.width===0){toast("Canvas not ready");hideOv();return}
     var b64=c.toDataURL("image/png").split(",")[1];
     if(!b64||b64.length<100){toast("Nothing to convert");hideOv();return}
-
-    var models=["gemini-2.0-flash","gemini-2.0-flash-lite","gemini-1.5-flash-latest"];
-    var text="";
-
-    for(var mi=0;mi<models.length&&!text;mi++){
-      try{
-        var r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+models[mi]+":generateContent?key="+encodeURIComponent(key),{
-          method:"POST",
-          headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({
-            contents:[{parts:[
-              {inline_data:{mime_type:"image/png",data:b64}},
-              {text:"Transcribe ALL handwritten text from this image exactly as written. Preserve line breaks. For math write equations (e.g. 2x+3=7). For chemistry write formulas (H2O, NaCl). If unclear write [unclear]. Output ONLY the transcribed text, nothing else."}
-            ]}],
-            generationConfig:{temperature:0.1,maxOutputTokens:2000}
-          })
-        });
-        if(r.ok){
-          var d=await r.json();
-          if(d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts){
-            text=d.candidates[0].content.parts.map(function(p){return p.text||""}).join("");
-          }
-        }
-      }catch(e){console.warn("Convert: "+models[mi]+" failed:",e.message)}
-    }
-
-    if(text&&text.trim()){
-      var wrap=document.getElementById("npWrap");
-      var y=wrap.scrollTop+40;
-      createTBox(20,y,300,text.trim().replace(/\n\n/g,"</p><p>").replace(/\n/g,"<br>"),null);
-      // Clear strokes after conversion
-      strokes=[];
-      renderStrokes();
-      setMode("text");
-      toast("✨ Converted to text!");
-    } else {
-      toast("Couldn't read — try writing bigger & clearer");
-    }
-  }catch(err){
-    console.error("Convert error:",err);
-    toast("Conversion failed — try again");
-  }finally{
-    hideOv();
-  }
+    var bounds=getStrokeBounds(strokes[strokes.length-1]);
+    doConvertArea(Math.max(0,bounds.x-10),Math.max(0,bounds.y-10),bounds.w+20,bounds.h+20);
+  }catch(err){toast("Error");hideOv()}
 }
-async function gemVision(b64,key){
-  var models=["gemini-2.0-flash","gemini-2.0-flash-lite","gemini-1.5-flash-latest"];
-  for(var i=0;i<models.length;i++){
-    try{var r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+models[i]+":generateContent?key="+encodeURIComponent(key),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({contents:[{parts:[{inline_data:{mime_type:"image/png",data:b64}},{text:"Transcribe ALL handwritten text exactly. Preserve line breaks. Math: write equations. Chemistry: proper formulas. If unclear: [unclear]. ONLY text."}]}],generationConfig:{temperature:0.1,maxOutputTokens:2000}})});
-    if(r.ok){var d=await r.json();if(d.candidates&&d.candidates[0]&&d.candidates[0].content)return d.candidates[0].content.parts.map(function(p){return p.text||""}).join("")}
-    else if(r.status===400||r.status===403)throw new Error("API_KEY_INVALID")}catch(e){if(e.message==="API_KEY_INVALID")throw e}}return ""
-}
-async function gemText(prompt){var key=gk();if(!key)return "";try{var r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key="+encodeURIComponent(key),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.3,maxOutputTokens:2000}})});if(r.ok){var d=await r.json();if(d.candidates&&d.candidates[0])return d.candidates[0].content.parts[0].text||""}}catch(e){}return ""}
 
 /* ═══ AI ═══ */
 function aiMenu(){if(!curNote){toast("Open note first");return}var c=prompt("AI:\n1=Summarize\n2=Cleanup\n3=Auto title\n4=OCR image\n\nNumber:");if(c==="1")aiSum();else if(c==="2")aiClean();else if(c==="3")aiTitle();else if(c==="4")aiOCR()}
@@ -2526,9 +2474,8 @@ function startConvertBox(){
 async function doConvertArea(bx,by,bw,bh){
   if(!cvReady){initCv();await new Promise(function(r){setTimeout(r,200)});renderStrokes()}
   var key=localStorage.getItem("np_gk");
-  if(!key){showKey();return}
-  
-  // Create a temp canvas with just the selected area
+  if(!key){toast("Set API key first (\ud83d\udd11 in Theodore chat)");return}
+
   var c=document.getElementById("npDrawC");
   var dpr=window.devicePixelRatio||1;
   var tempC=document.createElement("canvas");
@@ -2536,39 +2483,79 @@ async function doConvertArea(bx,by,bw,bh){
   var tCtx=tempC.getContext("2d");
   tCtx.fillStyle="#0d0b1a";
   tCtx.fillRect(0,0,bw*dpr,bh*dpr);
-  // Draw only the selected portion
   tCtx.drawImage(c,bx*dpr,by*dpr,bw*dpr,bh*dpr,0,0,bw*dpr,bh*dpr);
-  
-  showOv("Converting selected area...");
+
+  showOv("Converting handwriting...");
+  var b64=tempC.toDataURL("image/png").split(",")[1];
+  var prompt="Transcribe ALL handwritten text from this image exactly as written. Preserve line breaks. For math write equations. For chemistry write formulas. If unclear write [unclear]. Output ONLY the transcribed text.";
+  var text="";
+
   try{
-    var b64=tempC.toDataURL("image/png").split(",")[1];
-    var models=["gemini-2.0-flash","gemini-2.0-flash-lite","gemini-1.5-flash-latest"];
-    var text="";
-    for(var mi=0;mi<models.length&&!text;mi++){
-      try{
-        var r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+models[mi]+":generateContent?key="+encodeURIComponent(key),{
-          method:"POST",headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({contents:[{parts:[
-            {inline_data:{mime_type:"image/png",data:b64}},
-            {text:"Transcribe ALL handwritten text from this image exactly. Preserve line breaks. Math: equations. Chemistry: formulas. If unclear: [unclear]. ONLY text."}
-          ]}],generationConfig:{temperature:0.1,maxOutputTokens:2000}})
-        });
-        if(r.ok){var d=await r.json();if(d.candidates&&d.candidates[0]&&d.candidates[0].content)text=d.candidates[0].content.parts.map(function(p){return p.text||""}).join("")}
-      }catch(e){console.warn("Convert "+models[mi]+":",e.message)}
+    var isGemini=key.startsWith("AIza");
+
+    if(!isGemini){
+      // Groq vision (OpenAI-compatible)
+      var vModels=["llama-3.2-90b-vision-preview","llama-3.2-11b-vision-preview"];
+      for(var mi=0;mi<vModels.length&&!text;mi++){
+        try{
+          console.log("Convert: trying Groq/"+vModels[mi]);
+          var resp=await fetch("https://api.groq.com/openai/v1/chat/completions",{
+            method:"POST",
+            headers:{"Content-Type":"application/json","Authorization":"Bearer "+key},
+            body:JSON.stringify({
+              model:vModels[mi],
+              messages:[{role:"user",content:[
+                {type:"image_url",image_url:{url:"data:image/png;base64,"+b64}},
+                {type:"text",text:prompt}
+              ]}],
+              max_tokens:1024,temperature:0.1
+            })
+          });
+          if(resp.ok){
+            var data=await resp.json();
+            if(data.choices&&data.choices[0]) text=data.choices[0].message.content;
+            if(text) console.log("Converted via Groq/"+vModels[mi]);
+          } else {
+            var err=await resp.text().catch(function(){return ""});
+            console.warn("Groq vision "+vModels[mi]+" "+resp.status+":",err.substring(0,200));
+          }
+        }catch(e){console.warn("Groq vision "+vModels[mi]+":",e.message)}
+      }
+    } else {
+      // Gemini vision
+      var gModels=["gemini-2.0-flash","gemini-2.0-flash-lite","gemini-1.5-flash-latest"];
+      for(var mi=0;mi<gModels.length&&!text;mi++){
+        try{
+          console.log("Convert: trying Gemini/"+gModels[mi]);
+          var resp=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+gModels[mi]+":generateContent?key="+encodeURIComponent(key),{
+            method:"POST",headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({contents:[{parts:[
+              {inline_data:{mime_type:"image/png",data:b64}},
+              {text:prompt}
+            ]}],generationConfig:{temperature:0.1,maxOutputTokens:1024}})
+          });
+          if(resp.ok){
+            var data=await resp.json();
+            if(data.candidates&&data.candidates[0]&&data.candidates[0].content)
+              text=data.candidates[0].content.parts.map(function(p){return p.text||""}).join("");
+            if(text) console.log("Converted via Gemini/"+gModels[mi]);
+          } else {
+            var err=await resp.text().catch(function(){return ""});
+            console.warn("Gemini vision "+gModels[mi]+" "+resp.status+":",err.substring(0,200));
+          }
+        }catch(e){console.warn("Gemini vision "+gModels[mi]+":",e.message)}
+      }
     }
+
     if(text&&text.trim()){
       createTBox(bx,by+bh+10,bw,text.trim().replace(/\n/g,"<br>"),null);
-      // Remove strokes within the converted area
       strokes=strokes.filter(function(s){
         var sb=getStrokeBounds(s);
-        var overlap=!(sb.x+sb.w<bx||sb.x>bx+bw||sb.y+sb.h<by||sb.y>by+bh);
-        return !overlap;
+        return(sb.x+sb.w<bx||sb.x>bx+bw||sb.y+sb.h<by||sb.y>by+bh);
       });
-      renderStrokes();
-      setMode("text");
-      toast("✨ Converted!");
-    } else {toast("Couldn't read — try bigger text")}
-  }catch(err){toast("Error — try again")}
+      renderStrokes();setMode("text");toast("\u2728 Converted!");
+    } else {toast("Couldn\u2019t read \u2014 try writing bigger")}
+  }catch(err){console.error("Convert error:",err);toast("Error \u2014 try again")}
   finally{hideOv()}
 }
 
