@@ -734,6 +734,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 .np-sticky.minimized{min-height:auto}
 .np-sticky .sel-handle{display:none}
 .np-sticky.selected .sel-handle{display:block}
+.np-sticky.selected .sel-del{display:flex}
 
 /* ── Tape / Cover ── */
 .np-tape{position:absolute;z-index:6;border-radius:4px;cursor:pointer;min-width:30px;min-height:16px;pointer-events:auto;transition:all .4s cubic-bezier(.4,0,.2,1);overflow:hidden}
@@ -750,6 +751,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 .np-tape.revealed .np-tape-pattern{opacity:0}
 .np-tape.revealed .np-tape-label{opacity:0}
 .np-tape.revealed{box-shadow:none}
+.np-tape.selected{outline:2px solid #a855f7;outline-offset:2px;box-shadow:0 0 16px rgba(168,85,247,.2)}
 /* Delete X on right-click/long-press */
 .np-tape-del{position:absolute;top:-10px;right:-10px;width:24px;height:24px;background:#ef4444;border:2px solid #fff;border-radius:50%;display:none;align-items:center;justify-content:center;font-size:12px;color:#fff;cursor:pointer;z-index:8;box-shadow:0 3px 10px rgba(239,68,68,.4);font-weight:700;transition:all .15s}
 .np-tape:hover .np-tape-del{display:flex}
@@ -931,7 +933,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
       <div class="np-bar2" id="npBar2">
         <button onclick="NP.togglePalette()" title="Colors">🎨</button>
         <button onclick="NP.addImg()" title="Image">🖼️</button><input type="file" id="npImgF" accept="image/*" style="display:none" onchange="NP.handleImg(this)">
-        <button onclick="NP.addBullet()" title="Toggle bullet list">•</button>
+        <button onmousedown="event.preventDefault()" onclick="NP.addBullet()" title="Toggle bullet list">•</button>
         <div class="sep"></div>
         <select id="npFontSel" onchange="NP.setFont(this.value);this.selectedIndex=0"><option value="">Font</option><option value="Segoe UI,sans-serif">Segoe</option><option value="Georgia,serif">Georgia</option><option value="Courier New,monospace">Courier</option><option value="Comic Sans MS,cursive">Comic</option><option value="Arial,sans-serif">Arial</option><option value="Times New Roman,serif">Times</option><option value="Verdana,sans-serif">Verdana</option>
 <option value="'Rosemary',cursive">Rosemary</option>
@@ -1350,23 +1352,16 @@ function showStrokeBox(idx){
   box.style.cssText="left:"+(b.x-pad)+"px;top:"+(b.y-pad)+"px;width:"+(b.w+pad*2)+"px;height:"+(b.h+pad*2)+"px";
   // Resize handles
   ["tl","tr","bl","br"].forEach(function(pos){
-    var h=document.createElement("div");h.className="sel-handle "+pos;
-    h.addEventListener("pointerdown",function(e){e.stopPropagation();startStrokeResize(idx,pos,e,b)});
-    box.appendChild(h);
+    var hd=document.createElement("div");hd.className="sel-handle "+pos;
+    hd.addEventListener("pointerdown",function(e){e.stopPropagation();e.preventDefault();startStrokeResize(idx,pos,e,b)});
+    box.appendChild(hd);
   });
   // Delete button
   var del=document.createElement("button");del.className="sel-del";del.innerHTML="✕";
-  del.addEventListener("click",function(e){e.stopPropagation();strokes.splice(idx,1);selStroke=null;selStrokeIdx=-1;hideStrokeBox();renderStrokes();toast("Deleted")});
+  del.addEventListener("pointerdown",function(e){e.stopPropagation();e.preventDefault()});
+  del.addEventListener("click",function(e){e.stopPropagation();e.preventDefault();strokes.splice(idx,1);selStroke=null;selStrokeIdx=-1;hideStrokeBox();renderStrokes();toast("Deleted")});
   box.appendChild(del);
-  // Convert to text button
-  var conv=document.createElement("button");conv.className="sel-conv";conv.innerHTML="✨ Convert to Text";
-  conv.addEventListener("click",function(e){
-    e.stopPropagation();
-    var sb=getStrokeBounds(strokes[idx]);
-    hideStrokeBox();
-    doConvertArea(sb.x-4,sb.y-4,sb.w+8,sb.h+8);
-  });
-  box.appendChild(conv);
+  box.addEventListener("pointerdown",function(e){e.stopPropagation()});
   document.getElementById("npCanvas").appendChild(box);
 }
 
@@ -1429,31 +1424,34 @@ function getStrokeBounds(s){
 function hitTestStroke(x,y,threshold){
   for(var i=strokes.length-1;i>=0;i--){
     var s=strokes[i],ox=s.offX||0,oy=s.offY||0;
-    // Check distance to points
+    var hitTh=threshold;
+    // Highlighters get a much bigger hit zone (they're thick translucent strokes)
+    if(s.tool==="hl") hitTh=Math.max(threshold,(s.size||18)+8);
+
+    // Method 1: Bounding box check first (fast reject)
+    var bounds=getStrokeBounds(s);
+    var pad=hitTh;
+    if(x<bounds.x-pad||x>bounds.x+bounds.w+pad||y<bounds.y-pad||y>bounds.y+bounds.h+pad) continue;
+
+    // Method 2: Check distance to each point
     for(var j=0;j<s.pts.length;j++){
       var dx=(s.pts[j].x+ox)-x,dy=(s.pts[j].y+oy)-y;
-      if(dx*dx+dy*dy<threshold*threshold) return i;
+      if(dx*dx+dy*dy<hitTh*hitTh) return i;
     }
-    // Check distance to line segments between points (important for straight highlighter lines)
+
+    // Method 3: Check distance to line segments
     for(var j=0;j<s.pts.length-1;j++){
       var ax=s.pts[j].x+ox,ay=s.pts[j].y+oy;
       var bx=s.pts[j+1].x+ox,by=s.pts[j+1].y+oy;
-      var dist=ptSegDist(x,y,ax,ay,bx,by);
-      var th=Math.max(threshold,s.size||4);
-      if(dist<th) return i;
+      var segDx=bx-ax,segDy=by-ay;
+      var len2=segDx*segDx+segDy*segDy;
+      var dist;
+      if(len2===0){dist=Math.sqrt((x-ax)*(x-ax)+(y-ay)*(y-ay))}
+      else{var t=Math.max(0,Math.min(1,((x-ax)*segDx+(y-ay)*segDy)/len2));dist=Math.sqrt((x-ax-t*segDx)*(x-ax-t*segDx)+(y-ay-t*segDy)*(y-ay-t*segDy))}
+      if(dist<hitTh) return i;
     }
   }
   return -1;
-}
-
-// Point-to-line-segment distance
-function ptSegDist(px,py,ax,ay,bx,by){
-  var dx=bx-ax,dy=by-ay;
-  var len2=dx*dx+dy*dy;
-  if(len2===0) return Math.sqrt((px-ax)*(px-ax)+(py-ay)*(py-ay));
-  var t=Math.max(0,Math.min(1,((px-ax)*dx+(py-ay)*dy)/len2));
-  var projX=ax+t*dx,projY=ay+t*dy;
-  return Math.sqrt((px-projX)*(px-projX)+(py-projY)*(py-projY));
 }
 
 /* ─── Mode ─── */
@@ -1484,6 +1482,7 @@ function setMode(m){
   } else if(m==="select"){
     dc.classList.add("select-on");
     svg.classList.add("sel-on");
+    if(!cvReady)setTimeout(initCv,50);
   }
   document.getElementById("npPalette").classList.remove("show");
   var tcp=document.getElementById("npTapeColors");if(tcp)tcp.classList.remove("show");
@@ -1546,6 +1545,47 @@ function initCv(){
   svg.addEventListener("pointermove",arrMove);
   svg.addEventListener("pointerup",arrEnd);
   cv.addEventListener("pointerdown",canvasClick);
+  // Select mode fallback — works even if npDrawC isn't ready
+  cv.addEventListener("pointerdown",function(e){
+    if(mode!=="select")return;
+    var r=cv.getBoundingClientRect();
+    var px=e.clientX-r.left+(document.getElementById("npWrap")?document.getElementById("npWrap").scrollLeft:0);
+    var py=e.clientY-r.top+(document.getElementById("npWrap")?document.getElementById("npWrap").scrollTop:0);
+    // Hit test strokes
+    var idx=hitTestStroke(px,py,18);
+    if(idx>=0){
+      e.preventDefault();e.stopPropagation();
+      deselectAll();
+      selStrokeIdx=idx;selStroke=strokes[idx];
+      renderStrokes();showStrokeBox(idx);
+      // Enable dragging
+      isDraw=true;lx=px;ly=py;
+      function smove(ev){
+        if(!selStroke)return;
+        var mx=ev.clientX-r.left+(document.getElementById("npWrap")?document.getElementById("npWrap").scrollLeft:0);
+        var my=ev.clientY-r.top+(document.getElementById("npWrap")?document.getElementById("npWrap").scrollTop:0);
+        var dx2=mx-lx,dy2=my-ly;
+        var newOx=(selStroke.offX||0)+dx2,newOy=(selStroke.offY||0)+dy2;
+        selStroke.offX=newOx;selStroke.offY=newOy;
+        lx=mx;ly=my;
+        renderStrokes();
+      }
+      function sup(){
+        document.removeEventListener("pointermove",smove);
+        document.removeEventListener("pointerup",sup);
+        isDraw=false;
+        if(selStrokeIdx>=0) showStrokeBox(selStrokeIdx);
+      }
+      document.addEventListener("pointermove",smove);
+      document.addEventListener("pointerup",sup);
+      return;
+    }
+    // Nothing hit on canvas — deselect strokes (but don't interfere with DOM element selection)
+    if(e.target===cv||e.target.classList.contains("np-canvas")){
+      selStrokeIdx=-1;selStroke=null;hideStrokeBox();renderStrokes();
+    }
+  });
+
   // Convert mode fallback on canvas (same as tape)
   cv.addEventListener("pointerdown",function(e){
     if(mode!=="convert"||convStart)return;
@@ -1867,7 +1907,7 @@ function eraseElementAt(e){
   }
 }
 function deselectAll(){
-  document.querySelectorAll(".np-tbox.selected,.np-img.selected").forEach(function(e){e.classList.remove("selected")});
+  document.querySelectorAll(".np-tbox.selected,.np-img.selected,.np-sticky.selected,.np-tape.selected").forEach(function(e){e.classList.remove("selected")});
   selectedEl=null;selStroke=null;selStrokeIdx=-1;
   hideStrokeBox();
 }
@@ -2326,28 +2366,42 @@ function restoreCustomFonts(){
 /* ─── Bullet list ─── */
 function addBullet(){
   if(mode!=="text") setMode("text");
-  // If we're focused in a text box, insert bullet at cursor
+
+  // Try to find active editable element
   var active=document.activeElement;
-  if(active&&active.classList&&active.classList.contains("np-tbox")){
+  if(active&&(active.classList.contains("np-tbox")||active.classList.contains("np-sticky-body")||active.isContentEditable)){
+    // Toggle bullet list at cursor
     document.execCommand("insertUnorderedList",false,null);
     return;
   }
-  if(active&&active.classList&&active.classList.contains("np-sticky-body")){
-    document.execCommand("insertUnorderedList",false,null);
-    return;
-  }
-  // Otherwise create a new text box with a single bullet
-  var wrap=document.getElementById("npWrap");
-  var y=wrap.scrollTop+60;
-  var box=createTBox(20,y,250,"",null);
-  // Focus and insert bullet list
-  setTimeout(function(){
-    var el=document.getElementById("npCanvas").lastElementChild;
-    if(el&&el.classList.contains("np-tbox")){
-      el.focus();
+
+  // Check for any focused editable within canvas
+  var eds=document.querySelectorAll(".np-tbox,.np-sticky-body");
+  for(var i=0;i<eds.length;i++){
+    if(eds[i].contains(document.activeElement)||document.activeElement===eds[i]){
+      eds[i].focus();
       document.execCommand("insertUnorderedList",false,null);
+      return;
     }
-  },50);
+  }
+
+  // Nothing focused — create new text box with bullet
+  var wrap=document.getElementById("npWrap");
+  var y=(wrap?wrap.scrollTop:0)+60;
+  createTBox(20,y,250,"",null);
+  // Use mousedown trick: the bullet button steals focus from the text box
+  // So we need a delay to let the new box get created, then focus it
+  setTimeout(function(){
+    var boxes=document.getElementById("npCanvas").querySelectorAll(".np-tbox");
+    var last=boxes[boxes.length-1];
+    if(last){
+      last.contentEditable="true";
+      last.focus();
+      setTimeout(function(){
+        document.execCommand("insertUnorderedList",false,null);
+      },20);
+    }
+  },100);
 }
 
 /* ─── Convert Box (drag to select area) ─── */
@@ -2594,10 +2648,11 @@ function createSticky(x,y,w,colors,htm,id){
     toast("Color changed!");
   });
 
-  // Drag via header (but not on buttons or name editing)
+  // Select + drag via header
   hdr.addEventListener("pointerdown",function(e){
     if(e.target!==hdr)return;
     e.preventDefault();
+    if(mode==="select"||mode==="tape") selectEl(el);
     dragEl=el;dragOff.x=e.clientX-el.offsetLeft;dragOff.y=e.clientY-el.offsetTop;
     document.addEventListener("pointermove",dragMove);
     document.addEventListener("pointerup",dragEnd);
@@ -2612,12 +2667,16 @@ function createSticky(x,y,w,colors,htm,id){
   body.setAttribute("data-placeholder","Type here...");
   body.addEventListener("pointerdown",function(ev){ev.stopPropagation()});
 
-  // Resize handles
+  // Resize handles + delete
   ["tl","tr","bl","br"].forEach(function(pos){
     var handle=document.createElement("div");handle.className="sel-handle "+pos;
     handle.addEventListener("pointerdown",function(e){e.stopPropagation();startResize(el,pos,e)});
     el.appendChild(handle);
   });
+  var selDel=document.createElement("button");selDel.className="sel-del";selDel.innerHTML="✕";
+  selDel.addEventListener("pointerdown",function(e){e.stopPropagation()});
+  selDel.addEventListener("click",function(e){e.stopPropagation();el.remove();if(selectedEl===el)selectedEl=null});
+  el.appendChild(selDel);
 
   el.appendChild(hdr);el.appendChild(body);
   document.getElementById("npCanvas").appendChild(el);
@@ -2643,10 +2702,20 @@ function createTape(x,y,w,h2,id){
   var tc3=useInk?inkColor+"66":tapeColors.c3;
   tape.innerHTML='<div class="np-tape-bg" style="background:linear-gradient(135deg,'+tc1+' 0%,'+tc2+' 40%,'+tc3+' 100%)"></div><div class="np-tape-pattern"></div><div class="np-tape-shine"></div><span class="np-tape-label">TAP TO REVEAL</span><span class="np-tape-icon">👁</span><button class="np-tape-del">✕</button>';
   tape.querySelector(".np-tape-del").addEventListener("click",function(ev){ev.stopPropagation();tape.remove()});
-  // Click to toggle reveal
+  // Click behavior: select mode = select, else = reveal
+  tape.addEventListener("dblclick",function(e){
+    e.stopPropagation();
+    tape.classList.toggle("revealed");
+    var label=tape.querySelector(".np-tape-label");
+    if(label) label.textContent=tape.classList.contains("revealed")?"TAP TO COVER":"TAP TO REVEAL";
+  });
   tape.addEventListener("click",function(e){
     if(e.target.classList.contains("np-tape-del"))return;
     e.stopPropagation();
+    if(mode==="select"||mode==="tape"){
+      selectEl(tape);
+      return;
+    }
     tape.classList.toggle("revealed");
     var label=tape.querySelector(".np-tape-label");
     if(label) label.textContent=tape.classList.contains("revealed")?"TAP TO COVER":"TAP TO REVEAL";
