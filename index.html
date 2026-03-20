@@ -673,10 +673,9 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 #npArrowSvg{position:absolute;top:0;left:0;width:100%;height:100%;z-index:3;pointer-events:none}
 #npArrowSvg.on{pointer-events:auto;cursor:crosshair;z-index:10}
 #npArrowSvg.sel-on{pointer-events:auto;z-index:1}
-#npArrowSvg line,#npArrowSvg path{stroke:#a855f7;stroke-width:3;fill:none;filter:drop-shadow(0 0 3px rgba(168,85,247,.3))}
-#npArrowSvg marker path{fill:#a855f7}
+#npArrowSvg .np-arr{stroke:#a855f7;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
 #npArrowSvg .np-arr{cursor:pointer;transition:stroke-width .15s}
-#npArrowSvg .np-arr:hover{stroke-width:4.5;filter:drop-shadow(0 0 6px rgba(168,85,247,.5))}
+#npArrowSvg .np-arr:hover{stroke-width:3.5;filter:drop-shadow(0 0 4px rgba(168,85,247,.4))}
 
 /* ── Text Boxes ── */
 .np-tbox{position:absolute;z-index:4;min-width:30px;min-height:20px;padding:4px 8px;color:#e2d5f5;font-size:14px;line-height:1.6;outline:none;border:1.5px solid transparent;border-radius:6px;cursor:default;font-family:'Rosemary','Segoe UI',sans-serif;background:transparent;transition:all .18s;pointer-events:none;white-space:pre-wrap;word-break:break-word}
@@ -898,7 +897,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
         <div class="np-canvas bg-grid" id="npCanvas" style="min-height:2000px">
           <canvas id="npDrawC"></canvas>
           <svg id="npArrowSvg" xmlns="http://www.w3.org/2000/svg">
-            <defs><marker id="ah" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto"><path d="M0,0 L12,4 L0,8 L3,4 Z" fill="#a855f7"/></marker></defs>
+            <defs><marker id="ah" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L10,3.5 L0,7 L2.5,3.5 Z" fill="context-stroke"/></marker></defs>
           </svg>
         </div>
       </div>
@@ -1059,11 +1058,10 @@ async function aiSend(){
   typing.classList.add("typing");
 
   aiHistory.push({role:"user",content:txt});
-  if(aiHistory.length>16)aiHistory=aiHistory.slice(-12);
+  if(aiHistory.length>20)aiHistory=aiHistory.slice(-14);
 
   var sysPrompt=getContext();
-  // Truncate system prompt if too long (Gemini limit)
-  if(sysPrompt.length>3000) sysPrompt=sysPrompt.substring(0,3000)+"...";
+  if(sysPrompt.length>3000) sysPrompt=sysPrompt.substring(0,3000);
 
   var GEMKEY=localStorage.getItem("np_gk")||"AIzaSyDSfXQePREr1UZgTJOdUJL-f9eEAP31Wj4";
   var models=["gemini-2.0-flash","gemini-1.5-flash"];
@@ -1071,46 +1069,66 @@ async function aiSend(){
 
   for(var mi=0;mi<models.length&&!answer;mi++){
     try{
-      // Build Gemini contents — must alternate user/model
-      var gemContents=[];
-      gemContents.push({role:"user",parts:[{text:sysPrompt+"\n\nPlease respond to the student."}]});
-      gemContents.push({role:"model",parts:[{text:"I'm Theodore, ready to help! 💜"}]});
-
+      // Build clean conversation — only user/model, strictly alternating
+      var contents=[];
       for(var hi=0;hi<aiHistory.length;hi++){
-        var r2=aiHistory[hi].role==="user"?"user":"model";
-        if(gemContents.length>0&&gemContents[gemContents.length-1].role===r2){
-          gemContents[gemContents.length-1].parts[0].text+=" "+aiHistory[hi].content;
+        var role=aiHistory[hi].role==="user"?"user":"model";
+        var text=aiHistory[hi].content||"";
+        if(contents.length>0&&contents[contents.length-1].role===role){
+          contents[contents.length-1].parts[0].text+="\n"+text;
         } else {
-          gemContents.push({role:r2,parts:[{text:aiHistory[hi].content}]});
+          contents.push({role:role,parts:[{text:text}]});
         }
       }
-
-      // Ensure last message is user (Gemini requirement)
-      if(gemContents[gemContents.length-1].role!=="user"){
-        gemContents.push({role:"user",parts:[{text:"Please continue."}]});
+      // Gemini requires first message to be user
+      if(contents.length>0&&contents[0].role!=="user"){
+        contents.unshift({role:"user",parts:[{text:"Hello"}]});
       }
+      // Gemini requires last message to be user
+      if(contents.length>0&&contents[contents.length-1].role!=="user"){
+        contents.push({role:"user",parts:[{text:"Please respond."}]});
+      }
+
+      var body={
+        contents:contents,
+        systemInstruction:{parts:[{text:sysPrompt}]},
+        generationConfig:{temperature:0.7,maxOutputTokens:1024}
+      };
+
+      console.log("Theodore calling "+models[mi]+"...");
 
       var resp=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+models[mi]+":generateContent?key="+encodeURIComponent(GEMKEY),{
         method:"POST",
         headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({
-          contents:gemContents,
-          generationConfig:{temperature:0.7,maxOutputTokens:1000}
-        })
+        body:JSON.stringify(body)
       });
 
       if(!resp.ok){
-        var errBody=await resp.text().catch(function(){return ""});
-        console.warn("Theodore: "+models[mi]+" HTTP "+resp.status+":",errBody.substring(0,200));
-        continue;
+        var errTxt=await resp.text().catch(function(){return ""});
+        console.warn("Theodore "+models[mi]+" HTTP "+resp.status+":",errTxt.substring(0,300));
+        // If systemInstruction not supported, retry without it
+        if(resp.status===400&&errTxt.indexOf("systemInstruction")>-1){
+          console.log("Retrying without systemInstruction...");
+          contents.unshift({role:"user",parts:[{text:sysPrompt+"\n\nRespond as Theodore."}]});
+          contents.splice(1,0,{role:"model",parts:[{text:"Got it! I'm Theodore. 💜"}]});
+          delete body.systemInstruction;
+          body.contents=contents;
+          resp=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+models[mi]+":generateContent?key="+encodeURIComponent(GEMKEY),{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify(body)
+          });
+          if(!resp.ok) continue;
+        } else continue;
       }
 
       var data=await resp.json();
       if(data.candidates&&data.candidates[0]&&data.candidates[0].content&&data.candidates[0].content.parts){
         answer=data.candidates[0].content.parts.map(function(pp){return pp.text||""}).join("");
       }
+      if(answer) console.log("Theodore answered via "+models[mi]);
     }catch(err){
-      console.warn("Theodore: "+models[mi]+" failed:",err.message);
+      console.warn("Theodore "+models[mi]+" error:",err);
     }
   }
 
@@ -1921,7 +1939,7 @@ function arrStart(e){
   var svg=document.getElementById("npArrowSvg"),r=svg.getBoundingClientRect();
   arrowPts={x1:e.clientX-r.left,y1:e.clientY-r.top,x2:e.clientX-r.left,y2:e.clientY-r.top};
   tempPath=document.createElementNS("http://www.w3.org/2000/svg","path");
-  tempPath.setAttribute("stroke",inkColor);tempPath.setAttribute("stroke-width",2.5);
+  tempPath.setAttribute("stroke",inkColor);tempPath.setAttribute("stroke-width","2.5");tempPath.setAttribute("stroke-linecap","round");tempPath.setAttribute("stroke-linejoin","round");
   tempPath.setAttribute("fill","none");tempPath.setAttribute("marker-end","url(#ah)");
   svg.appendChild(tempPath);
 }
@@ -2029,7 +2047,7 @@ function restoreArrows(arr){
   clearArrowSvg();var svg=document.getElementById("npArrowSvg");
   arr.forEach(function(a){
     var p=document.createElementNS("http://www.w3.org/2000/svg","path");
-    p.setAttribute("stroke",a.c);p.setAttribute("stroke-width",2.5);p.setAttribute("fill","none");p.setAttribute("marker-end","url(#ah)");
+    p.setAttribute("stroke",a.c||"#a855f7");p.setAttribute("stroke-width","2.5");p.setAttribute("fill","none");p.setAttribute("marker-end","url(#ah)");p.setAttribute("stroke-linecap","round");p.setAttribute("stroke-linejoin","round");
     p.setAttribute("data-x1",a.x1);p.setAttribute("data-y1",a.y1);p.setAttribute("data-x2",a.x2);p.setAttribute("data-y2",a.y2);
     var mx=a.cx||(a.x1+a.x2)/2,my=a.cy||(a.y1+a.y2)/2;
     p.setAttribute("data-cx",mx);p.setAttribute("data-cy",my);p.setAttribute("data-curved",a.curved?"1":"0");
@@ -2046,12 +2064,15 @@ function clearArrowSvg(){hideArrCtrls();document.querySelectorAll("#npArrowSvg .
 function canvasClick(e){
   if(mode==="text"){
     if(e.target.id!=="npCanvas"&&!e.target.classList.contains("np-canvas"))return;
-    var cv=document.getElementById("npCanvas"),r=cv.getBoundingClientRect();
-    var x=e.clientX-r.left+document.getElementById("npWrap").scrollLeft;
-    var y=e.clientY-r.top+document.getElementById("npWrap").scrollTop;
     var cv=document.getElementById("npCanvas");
-    x=Math.max(4,Math.min(cv.offsetWidth-40,x));
-    y=Math.max(4,Math.min(cv.offsetHeight-20,y));
+    var wrap=document.getElementById("npWrap");
+    var r=cv.getBoundingClientRect();
+    var wrapR=wrap.getBoundingClientRect();
+    // clientY relative to wrap's visible area + scroll offset = absolute position in canvas
+    var x=e.clientX-wrapR.left+wrap.scrollLeft;
+    var y=e.clientY-wrapR.top+wrap.scrollTop;
+    x=Math.max(4,Math.min(cv.scrollWidth-40,x));
+    y=Math.max(4,Math.min(cv.scrollHeight-20,y));
     createTBox(x,y,0,"",null);
   }
   if(mode==="select"&&(e.target.id==="npCanvas"||e.target.classList.contains("np-canvas"))){
@@ -2932,7 +2953,6 @@ function detectShape(pts){
   var cx=minX+bw/2,cy=minY+bh/2;
   var diag=Math.sqrt(bw*bw+bh*bh);
 
-  // Path length
   var pathLen=0;
   for(var i=1;i<pts.length;i++){
     var px=pts[i].x-pts[i-1].x,py=pts[i].y-pts[i-1].y;
@@ -2940,113 +2960,57 @@ function detectShape(pts){
   }
 
   // ─── STRAIGHT LINE ───
-  // If path stays very close to the line from first to last
-  if(pathLen>20){
+  var lineLen=Math.sqrt((last.x-first.x)*(last.x-first.x)+(last.y-first.y)*(last.y-first.y));
+  if(lineLen>25&&pathLen>20){
     var maxDev=0;
-    var lineLen=Math.sqrt((last.x-first.x)*(last.x-first.x)+(last.y-first.y)*(last.y-first.y));
-    if(lineLen>15){
-      for(var i=0;i<pts.length;i++){
-        var ldx=last.x-first.x,ldy=last.y-first.y;
-        var t2=ldx*ldx+ldy*ldy;
-        var proj=t2>0?Math.max(0,Math.min(1,((pts[i].x-first.x)*ldx+(pts[i].y-first.y)*ldy)/t2)):0;
-        var px2=first.x+proj*ldx,py2=first.y+proj*ldy;
-        var dev=Math.sqrt((pts[i].x-px2)*(pts[i].x-px2)+(pts[i].y-py2)*(pts[i].y-py2));
-        if(dev>maxDev)maxDev=dev;
-      }
-      if(maxDev<lineLen*0.15&&lineLen>25){
-        return{type:"Line",icon:"📏",pts:[{x:first.x,y:first.y},{x:last.x,y:last.y}]};
-      }
+    for(var i=0;i<pts.length;i++){
+      var ldx=last.x-first.x,ldy=last.y-first.y;
+      var t2=ldx*ldx+ldy*ldy;
+      var proj=t2>0?Math.max(0,Math.min(1,((pts[i].x-first.x)*ldx+(pts[i].y-first.y)*ldy)/t2)):0;
+      var px2=first.x+proj*ldx,py2=first.y+proj*ldy;
+      var dev=Math.sqrt((pts[i].x-px2)*(pts[i].x-px2)+(pts[i].y-py2)*(pts[i].y-py2));
+      if(dev>maxDev)maxDev=dev;
+    }
+    if(maxDev<lineLen*0.12){
+      return{type:"Line",icon:"📏",pts:[{x:first.x,y:first.y},{x:last.x,y:last.y}]};
     }
   }
+
+  // Only closed shapes
+  var isClosed=endDist<diag*0.4;
+  if(!isClosed||pathLen<50) return null;
 
   // ─── CIRCLE / ELLIPSE ───
-  // Closed shape + points roughly equidistant from center
-  if(endDist<diag*0.35&&pathLen>60){
-    var avgR=0;
-    for(var i=0;i<pts.length;i++){
-      var rdx=pts[i].x-cx,rdy=pts[i].y-cy;
-      avgR+=Math.sqrt(rdx*rdx+rdy*rdy);
-    }
-    avgR/=pts.length;
-    var variance=0;
-    for(var i=0;i<pts.length;i++){
-      var rdx=pts[i].x-cx,rdy=pts[i].y-cy;
-      var r=Math.sqrt(rdx*rdx+rdy*rdy);
-      variance+=(r-avgR)*(r-avgR);
-    }
-    variance/=pts.length;
-    var stdDev=Math.sqrt(variance);
-
-    if(stdDev<avgR*0.35){
-      // Generate circle/ellipse points
-      var rx=bw/2,ry=bh/2;
-      var cirPts=[];
-      var steps=48;
-      for(var i=0;i<=steps;i++){
-        var a=(i/steps)*Math.PI*2;
-        cirPts.push({x:cx+Math.cos(a)*rx,y:cy+Math.sin(a)*ry});
-      }
-      var aspect=Math.min(rx,ry)/Math.max(rx,ry);
-      return{type:aspect>0.8?"Circle":"Ellipse",icon:aspect>0.8?"⭕":"🔵",pts:cirPts};
-    }
+  var avgR=0;
+  for(var i=0;i<pts.length;i++){
+    var rdx=pts[i].x-cx,rdy=pts[i].y-cy;
+    avgR+=Math.sqrt(rdx*rdx+rdy*rdy);
   }
-
-  // ─── RECTANGLE ───
-  // Closed shape with ~4 corners (high curvature points)
-  if(endDist<diag*0.35&&pathLen>60){
-    var corners=findCorners(pts);
-    if(corners.length>=3&&corners.length<=5){
-      // Snap to rectangle using bounding box
-      var pad=2;
-      var rectPts=[
-        {x:minX+pad,y:minY+pad},{x:maxX-pad,y:minY+pad},
-        {x:maxX-pad,y:maxY-pad},{x:minX+pad,y:maxY-pad},
-        {x:minX+pad,y:minY+pad}
-      ];
-      return{type:"Rectangle",icon:"⬜",pts:rectPts};
-    }
+  avgR/=pts.length;
+  var variance=0;
+  for(var i=0;i<pts.length;i++){
+    var rdx=pts[i].x-cx,rdy=pts[i].y-cy;
+    var r=Math.sqrt(rdx*rdx+rdy*rdy);
+    variance+=(r-avgR)*(r-avgR);
   }
+  var circularity=Math.sqrt(variance)/avgR;
+  console.log("Shape: circularity="+circularity.toFixed(3));
 
-  // ─── TRIANGLE ───
-  if(endDist<diag*0.35&&pathLen>60){
-    var corners=findCorners(pts);
-    if(corners.length===3){
-      var triPts=[pts[corners[0]],pts[corners[1]],pts[corners[2]],pts[corners[0]]];
-      return{type:"Triangle",icon:"🔺",pts:triPts};
+  if(circularity<0.25){
+    var rx=bw/2,ry=bh/2;
+    var cirPts=[];
+    for(var i=0;i<=48;i++){
+      var a=(i/48)*Math.PI*2;
+      cirPts.push({x:cx+Math.cos(a)*rx,y:cy+Math.sin(a)*ry});
     }
+    var aspect=Math.min(rx,ry)/Math.max(rx,ry);
+    return{type:aspect>0.75?"Circle":"Ellipse",icon:aspect>0.75?"⭕":"🔵",pts:cirPts};
   }
 
   return null;
 }
 
-function findCorners(pts){
-  // Find points with high curvature (direction change)
-  var corners=[];
-  var windowSize=Math.max(3,Math.floor(pts.length/15));
 
-  for(var i=windowSize;i<pts.length-windowSize;i++){
-    var prevDx=pts[i].x-pts[i-windowSize].x;
-    var prevDy=pts[i].y-pts[i-windowSize].y;
-    var nextDx=pts[i+windowSize].x-pts[i].x;
-    var nextDy=pts[i+windowSize].y-pts[i].y;
-
-    var prevLen=Math.sqrt(prevDx*prevDx+prevDy*prevDy);
-    var nextLen=Math.sqrt(nextDx*nextDx+nextDy*nextDy);
-    if(prevLen<1||nextLen<1)continue;
-
-    var dot=(prevDx*nextDx+prevDy*nextDy)/(prevLen*nextLen);
-    // Sharp angle = low dot product
-    if(dot<0.6){
-      // Check it's not too close to another corner
-      var tooClose=false;
-      for(var j=0;j<corners.length;j++){
-        if(Math.abs(i-corners[j])<pts.length/6){tooClose=true;break}
-      }
-      if(!tooClose) corners.push(i);
-    }
-  }
-  return corners;
-}
 
 return{toggle:toggle,toggleSB:toggleSB,closeSB:closeSB,togglePalette:togglePalette,toggleBar2:toggleBar2,renameNote:renameNote,setHlMode:setHlMode,toggleHlOpts:toggleHlOpts,setTapeColor:setTapeColor,toggleTapeColors:toggleTapeColors,
   setBg:setBg,setBgImage:setBgImage,setMode:setMode,pickC:pickC,setColor:setColor,
