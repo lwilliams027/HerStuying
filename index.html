@@ -984,7 +984,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
     <button onclick="showApiKeyModal()" title="Set API Key" style="background:none;border:none;color:var(--txd);font-size:14px;cursor:pointer;padding:4px;transition:color .15s">🔑</button><button class="ch-close" onclick="toggleChat()">✕</button>
   </div>
   <div class="ch-msgs" id="aiMsgs">
-    <div class="ch-msg bot">Hey Anhelina! 💜 I'm Theodore, your AI study buddy powered by Gemini. Ask me anything about your lessons — I can explain concepts, quiz you, or break down tough topics!</div>
+    <div class="ch-msg bot">Hey Anhelina! 💜 I'm Theodore, your AI study buddy. Tap \ud83d\udd11 above to add a free API key and get started! Ask me anything about your lessons — I can explain concepts, quiz you, or break down tough topics!</div>
   </div>
   <div class="ch-input">
     <input id="aiIn" type="text" placeholder="Ask a question..." onkeydown="if(event.key==='Enter'&&!aiLoading)aiSend()">
@@ -1063,81 +1063,81 @@ async function aiSend(){
   var sysPrompt=getContext();
   if(sysPrompt.length>3000) sysPrompt=sysPrompt.substring(0,3000);
 
-  var GEMKEY=localStorage.getItem("np_gk");
-  if(!GEMKEY){typing.classList.remove("typing");typing.innerHTML="I need an API key to work! Tap the \ud83d\udd11 button above to add one (it is free). \ud83d\udc9c";aiLoading=false;document.getElementById("aiBtn").disabled=false;return}
-  var models=["gemini-2.0-flash","gemini-2.0-flash-lite","gemini-1.5-flash-latest"];
+  var APIKEY=localStorage.getItem("np_gk");
+  if(!APIKEY){typing.classList.remove("typing");typing.innerHTML="I need an API key to work! Tap the \ud83d\udd11 button above to add one (free). \ud83d\udc9c";aiLoading=false;document.getElementById("aiBtn").disabled=false;return}
+
   var answer="";
+  var providers=[
+    {name:"Groq",url:"https://api.groq.com/openai/v1/chat/completions",models:["llama-3.3-70b-versatile","llama-3.1-8b-instant","gemma2-9b-it"]},
+    {name:"Gemini",url:"GEMINI",models:["gemini-2.0-flash","gemini-2.0-flash-lite","gemini-1.5-flash-latest"]}
+  ];
 
-  var endpoints=["v1beta","v1"];
-  for(var ei=0;ei<endpoints.length&&!answer;ei++){
-  for(var mi=0;mi<models.length&&!answer;mi++){
-    try{
-      // Build clean conversation — only user/model, strictly alternating
-      var contents=[];
-      for(var hi=0;hi<aiHistory.length;hi++){
-        var role=aiHistory[hi].role==="user"?"user":"model";
-        var text=aiHistory[hi].content||"";
-        if(contents.length>0&&contents[contents.length-1].role===role){
-          contents[contents.length-1].parts[0].text+="\n"+text;
+  // Detect key type
+  var isGemini=APIKEY.startsWith("AIza");
+  var providerIdx=isGemini?1:0;
+  var prov=providers[providerIdx];
+
+  if(prov.name==="Groq"){
+    // OpenAI-compatible format
+    var messages=[{role:"system",content:sysPrompt}];
+    for(var hi=0;hi<aiHistory.length;hi++){
+      messages.push({role:aiHistory[hi].role==="user"?"user":"assistant",content:aiHistory[hi].content});
+    }
+    for(var mi=0;mi<prov.models.length&&!answer;mi++){
+      try{
+        console.log("Theodore calling Groq/"+prov.models[mi]+"...");
+        var resp=await fetch(prov.url,{
+          method:"POST",
+          headers:{"Content-Type":"application/json","Authorization":"Bearer "+APIKEY},
+          body:JSON.stringify({model:prov.models[mi],messages:messages,max_tokens:1024,temperature:0.7})
+        });
+        if(resp.ok){
+          var data=await resp.json();
+          if(data.choices&&data.choices[0])answer=data.choices[0].message.content;
+          if(answer)console.log("Theodore answered via Groq/"+prov.models[mi]);
         } else {
-          contents.push({role:role,parts:[{text:text}]});
+          var errTxt=await resp.text().catch(function(){return ""});
+          console.warn("Groq "+prov.models[mi]+" HTTP "+resp.status+":",errTxt.substring(0,200));
+          if(resp.status===429) continue;
         }
+      }catch(err){console.warn("Groq "+prov.models[mi]+":",err.message)}
+    }
+  } else {
+    // Gemini format
+    var contents=[];
+    for(var hi=0;hi<aiHistory.length;hi++){
+      var role=aiHistory[hi].role==="user"?"user":"model";
+      if(contents.length>0&&contents[contents.length-1].role===role){
+        contents[contents.length-1].parts[0].text+="\n"+aiHistory[hi].content;
+      } else {
+        contents.push({role:role,parts:[{text:aiHistory[hi].content}]});
       }
-      // Gemini requires first message to be user
-      if(contents.length>0&&contents[0].role!=="user"){
-        contents.unshift({role:"user",parts:[{text:"Hello"}]});
-      }
-      // Gemini requires last message to be user
-      if(contents.length>0&&contents[contents.length-1].role!=="user"){
-        contents.push({role:"user",parts:[{text:"Please respond."}]});
-      }
+    }
+    if(contents.length>0&&contents[0].role!=="user") contents.unshift({role:"user",parts:[{text:"Hello"}]});
+    if(contents.length>0&&contents[contents.length-1].role!=="user") contents.push({role:"user",parts:[{text:"Please respond."}]});
 
-      var body={
-        contents:contents,
-        systemInstruction:{parts:[{text:sysPrompt}]},
-        generationConfig:{temperature:0.7,maxOutputTokens:1024}
-      };
-
-      console.log("Theodore calling "+models[mi]+"...");
-
-      var resp=await fetch("https://generativelanguage.googleapis.com/"+endpoints[ei]+"/models/"+models[mi]+":generateContent?key="+encodeURIComponent(GEMKEY),{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify(body)
-      });
-
-      if(!resp.ok){
-        var errTxt=await resp.text().catch(function(){return ""});
-        console.warn("Theodore "+models[mi]+" HTTP "+resp.status+":",errTxt.substring(0,300));
-        if(resp.status===429){answer="I hit the rate limit! Wait a minute and try again, or get a new API key. The free tier allows 15 requests/minute. 💜";break}
-        // If systemInstruction not supported, retry without it
-        if(resp.status===400&&errTxt.indexOf("systemInstruction")>-1){
-          console.log("Retrying without systemInstruction...");
-          contents.unshift({role:"user",parts:[{text:sysPrompt+"\n\nRespond as Theodore."}]});
-          contents.splice(1,0,{role:"model",parts:[{text:"Got it! I'm Theodore. 💜"}]});
-          delete body.systemInstruction;
-          body.contents=contents;
-          resp=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+models[mi]+":generateContent?key="+encodeURIComponent(GEMKEY),{
-            method:"POST",
-            headers:{"Content-Type":"application/json"},
-            body:JSON.stringify(body)
-          });
-          if(!resp.ok) continue;
-        } else continue;
-      }
-
-      var data=await resp.json();
-      if(data.candidates&&data.candidates[0]&&data.candidates[0].content&&data.candidates[0].content.parts){
-        answer=data.candidates[0].content.parts.map(function(pp){return pp.text||""}).join("");
-      }
-      if(answer) console.log("Theodore answered via "+models[mi]);
-    }catch(err){
-      console.warn("Theodore "+models[mi]+" error:",err);
+    for(var mi=0;mi<prov.models.length&&!answer;mi++){
+      try{
+        console.log("Theodore calling Gemini/"+prov.models[mi]+"...");
+        var body={contents:contents,systemInstruction:{parts:[{text:sysPrompt}]},generationConfig:{temperature:0.7,maxOutputTokens:1024}};
+        var resp=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+prov.models[mi]+":generateContent?key="+encodeURIComponent(APIKEY),{
+          method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)
+        });
+        if(resp.ok){
+          var data=await resp.json();
+          if(data.candidates&&data.candidates[0]&&data.candidates[0].content)
+            answer=data.candidates[0].content.parts.map(function(pp){return pp.text||""}).join("");
+          if(answer)console.log("Theodore answered via Gemini/"+prov.models[mi]);
+        } else {
+          var errTxt=await resp.text().catch(function(){return ""});
+          console.warn("Gemini "+prov.models[mi]+" HTTP "+resp.status+":",errTxt.substring(0,200));
+          if(resp.status===429) continue;
+        }
+      }catch(err){console.warn("Gemini "+prov.models[mi]+":",err.message)}
     }
   }
-  }
 
-  if(!answer) answer="Sorry, I couldn't connect right now. Try again in a moment! 💜";
+  if(!answer) answer="Could not get a response. Check your API key or try again shortly. \ud83d\udc9c";
 
   answer=answer.replace(/\*\*(.+?)\*\*/g,"<b>$1</b>");
   answer=answer.replace(/\*(.+?)\*/g,"<i>$1</i>");
@@ -3079,7 +3079,7 @@ function showApiKeyModal(){
   m.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100000;display:flex;align-items:center;justify-content:center";
   var inner=document.createElement("div");
   inner.style.cssText="background:#1a1230;border:1px solid rgba(168,85,247,.2);border-radius:20px;padding:32px;max-width:380px;width:calc(100% - 40px);text-align:center";
-  inner.innerHTML='<div style="font-size:32px;margin-bottom:8px">\ud83d\udd11</div><h3 style="color:#e0c6ff;font-size:16px;margin-bottom:4px">Gemini API Key</h3><p style="color:#9b8fbb;font-size:12px;margin-bottom:16px">Theodore needs a free Gemini API key to work.</p><div style="background:rgba(217,70,239,.06);border:1px solid rgba(217,70,239,.12);border-radius:10px;padding:12px;text-align:left;margin-bottom:14px"><p style="color:#e0c6ff;font-size:11px;line-height:1.7;margin:0"><b>Get a free key:</b><br>1. Go to <a href=\"https://aistudio.google.com/apikey\" target=\"_blank\" style=\"color:#d946ef\">aistudio.google.com/apikey</a><br>2. Click Create API Key<br>3. Paste below</p></div>';
+  inner.innerHTML='<div style="font-size:32px;margin-bottom:8px">\ud83d\udd11</div><h3 style="color:#e0c6ff;font-size:16px;margin-bottom:4px">Gemini API Key</h3><p style="color:#9b8fbb;font-size:12px;margin-bottom:16px">Theodore needs a free API key to work. Groq (recommended) or Gemini.</p><div style="background:rgba(217,70,239,.06);border:1px solid rgba(217,70,239,.12);border-radius:10px;padding:12px;text-align:left;margin-bottom:14px"><p style="color:#e0c6ff;font-size:11px;line-height:1.7;margin:0"><b>Get a free key (pick one):</b><br><b style=\"color:#34d399\">Groq (recommended, fast):</b><br>1. Go to <a href=\"https://console.groq.com/keys\" target=\"_blank\" style=\"color:#d946ef\">console.groq.com/keys</a><br>2. Sign up free, create key<br><br><b style=\"color:#fbbf24\">Gemini (alternative):</b><br>1. Go to <a href=\"https://aistudio.google.com/apikey\" target=\"_blank\" style=\"color:#d946ef\">aistudio.google.com/apikey</a><br>2. Create API Key</p></div>';
   var inp=document.createElement("input");
   inp.id="apiKeyInput";inp.type="password";inp.value=currentKey;
   inp.placeholder="Paste your API key here...";
