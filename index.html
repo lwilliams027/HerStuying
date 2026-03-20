@@ -817,6 +817,15 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 .tape-color-pick .tc.on{border-color:#fff;transform:scale(1.15)}
 .tape-color-pick-label{font-size:9px;color:rgba(155,143,187,.4);font-weight:600;letter-spacing:1px;text-transform:uppercase;width:100%;margin-bottom:2px}
 
+
+/* Highlighter options */
+.hl-opts{position:absolute;bottom:54px;left:50%;transform:translateX(-50%);background:#161230;border:1px solid rgba(168,85,247,.15);border-radius:12px;padding:8px;display:none;z-index:25;box-shadow:0 -8px 24px rgba(0,0,0,.4);gap:4px;flex-direction:column;min-width:130px}
+.hl-opts.show{display:flex}
+.hl-opt{padding:8px 12px;border-radius:8px;cursor:pointer;font-size:11px;font-weight:600;color:#c4b5fd;display:flex;align-items:center;gap:8px;transition:all .15s;border:1px solid transparent}
+.hl-opt:hover{background:rgba(168,85,247,.08)}
+.hl-opt.on{background:rgba(168,85,247,.12);border-color:rgba(168,85,247,.2);color:#e2d5f5}
+.hl-opt span{font-size:14px}
+
 /* ── Responsive ── */
 @media(max-width:600px){
   #notesPanel{bottom:0;left:0;width:100vw!important;height:calc(100vh - 60px)!important;border-radius:20px 20px 0 0;resize:none}
@@ -915,6 +924,10 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
         <div class="tc" style="background:linear-gradient(135deg,#e2e8f0,#94a3b8)" data-tc="e2e8f0,cbd5e1,94a3b8" onclick="NP.setTapeColor(this)"></div>
         <div class="tc" style="background:linear-gradient(135deg,#fef08a,#84cc16)" data-tc="fef08a,bef264,84cc16" onclick="NP.setTapeColor(this)"></div>
       </div>
+      <div class="hl-opts" id="npHlOpts">
+        <div class="hl-opt on" onclick="NP.setHlMode('straight')"><span>📏</span> Straight line</div>
+        <div class="hl-opt" onclick="NP.setHlMode('free')"><span>〰️</span> Freeform</div>
+      </div>
       <div class="np-bar2" id="npBar2">
         <button onclick="NP.togglePalette()" title="Colors">🎨</button>
         <button onclick="NP.addImg()" title="Image">🖼️</button><input type="file" id="npImgF" accept="image/*" style="display:none" onchange="NP.handleImg(this)">
@@ -943,7 +956,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
         <button id="npTPencil" onclick="NP.setMode('pencil')" title="Pencil">✎</button>
         <button id="npTBrush" onclick="NP.setMode('brush')" title="Brush">🖌️</button>
         <button id="npTCalli" onclick="NP.setMode('calli')" title="Calli"><i style="font-family:serif;font-size:14px">C</i></button>
-        <button id="npTHl" onclick="NP.setMode('hl')" title="Highlight">🖍️</button>
+        <button id="npTHl" onclick="NP.setMode('hl')" oncontextmenu="event.preventDefault();NP.toggleHlOpts()" title="Highlight (right-click for options)">🖍️</button>
         <button id="npTEraser" onclick="NP.setMode('eraser')" title="Eraser"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 20H7L3 16c-.6-.6-.6-1.5 0-2.1l10-10c.6-.6 1.5-.6 2.1 0l7 7c.6.6.6 1.5 0 2.1L16 19"/></svg></button><div class="sep"></div>
         <button id="npTArrow" onclick="NP.setMode('arrow')" title="Arrow">↗</button>
         <button id="npTConv" onclick="NP.setMode('convert')" title="Convert to text" style="color:#34d399">✨</button>
@@ -979,7 +992,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
     <button class="ch-close" onclick="toggleChat()">✕</button>
   </div>
   <div class="ch-msgs" id="aiMsgs">
-    <div class="ch-msg bot">Hey Anhelina! 💜 I'm Theodore, your study buddy. Ask me anything about your lessons — I can explain concepts, quiz you, or break down tough topics. What do you need help with?</div>
+    <div class="ch-msg bot">Hey Anhelina! 💜 I'm Theodore, your AI study buddy powered by Gemini. Ask me anything about your lessons — I can explain concepts, quiz you, or break down tough topics!</div>
   </div>
   <div class="ch-input">
     <input id="aiIn" type="text" placeholder="Ask a question..." onkeydown="if(event.key==='Enter'&&!aiLoading)aiSend()">
@@ -1070,13 +1083,12 @@ async function aiSend(){
       gemContents.push({role:"user",parts:[{text:sysPrompt+"\n\nPlease respond to the student."}]});
       gemContents.push({role:"model",parts:[{text:"I'm Theodore, ready to help! 💜"}]});
 
-      for(var h=0;h<aiHistory.length;h++){
-        var r2=aiHistory[h].role==="user"?"user":"model";
-        // Avoid consecutive same-role messages
+      for(var hi=0;hi<aiHistory.length;hi++){
+        var r2=aiHistory[hi].role==="user"?"user":"model";
         if(gemContents.length>0&&gemContents[gemContents.length-1].role===r2){
-          gemContents[gemContents.length-1].parts[0].text+=" "+aiHistory[h].content;
+          gemContents[gemContents.length-1].parts[0].text+=" "+aiHistory[hi].content;
         } else {
-          gemContents.push({role:r2,parts:[{text:aiHistory[h].content}]});
+          gemContents.push({role:r2,parts:[{text:aiHistory[hi].content}]});
         }
       }
 
@@ -1095,7 +1107,8 @@ async function aiSend(){
       });
 
       if(!resp.ok){
-        console.warn("Theodore: "+models[mi]+" returned "+resp.status);
+        var errBody=await resp.text().catch(function(){return ""});
+        console.warn("Theodore: "+models[mi]+" HTTP "+resp.status+":",errBody.substring(0,200));
         continue;
       }
 
@@ -1416,12 +1429,31 @@ function getStrokeBounds(s){
 function hitTestStroke(x,y,threshold){
   for(var i=strokes.length-1;i>=0;i--){
     var s=strokes[i],ox=s.offX||0,oy=s.offY||0;
+    // Check distance to points
     for(var j=0;j<s.pts.length;j++){
       var dx=(s.pts[j].x+ox)-x,dy=(s.pts[j].y+oy)-y;
       if(dx*dx+dy*dy<threshold*threshold) return i;
     }
+    // Check distance to line segments between points (important for straight highlighter lines)
+    for(var j=0;j<s.pts.length-1;j++){
+      var ax=s.pts[j].x+ox,ay=s.pts[j].y+oy;
+      var bx=s.pts[j+1].x+ox,by=s.pts[j+1].y+oy;
+      var dist=ptSegDist(x,y,ax,ay,bx,by);
+      var th=Math.max(threshold,s.size||4);
+      if(dist<th) return i;
+    }
   }
   return -1;
+}
+
+// Point-to-line-segment distance
+function ptSegDist(px,py,ax,ay,bx,by){
+  var dx=bx-ax,dy=by-ay;
+  var len2=dx*dx+dy*dy;
+  if(len2===0) return Math.sqrt((px-ax)*(px-ax)+(py-ay)*(py-ay));
+  var t=Math.max(0,Math.min(1,((px-ax)*dx+(py-ay)*dy)/len2));
+  var projX=ax+t*dx,projY=ay+t*dy;
+  return Math.sqrt((px-projX)*(px-projX)+(py-projY)*(py-projY));
 }
 
 /* ─── Mode ─── */
@@ -1455,6 +1487,7 @@ function setMode(m){
   }
   document.getElementById("npPalette").classList.remove("show");
   var tcp=document.getElementById("npTapeColors");if(tcp)tcp.classList.remove("show");
+  var hlo=document.getElementById("npHlOpts");if(hlo)hlo.classList.remove("show");
   var ec=document.getElementById("npEraserC");if(ec&&m!=="eraser")ec.classList.remove("show");
   deselectAll();selStroke=null;selStrokeIdx=-1;
   hideArrCtrls();
@@ -1593,8 +1626,11 @@ function cPos(e){var c=document.getElementById("npDrawC"),r=c.getBoundingClientR
 
 function dStart(e){
   if(mode==="text"||mode==="arrow")return;
+  e.preventDefault();e.stopPropagation();
+  var p=cPos(e);
+  var pr=(e.pressure>0&&e.pressure<1)?e.pressure:0.5;
+
   if(mode==="tape"){
-    // First check if clicking on a stroke (select it like select mode)
     var sIdx=hitTestStroke(p.x,p.y,15);
     if(sIdx>=0){
       deselectAll();
@@ -1626,10 +1662,6 @@ function dStart(e){
     isDraw=true;
     return;
   }
-  e.preventDefault();e.stopPropagation();
-  var p=cPos(e);
-  var pr=(e.pressure>0&&e.pressure<1)?e.pressure:0.5;
-
   if(mode==="select"){
     // Hit test strokes
     var idx=hitTestStroke(p.x,p.y,15);
@@ -1728,8 +1760,8 @@ function dMove(e){
   // Drawing: add point to current stroke
   if(curStroke){
     var pr=(e.pressure>0&&e.pressure<1)?e.pressure:0.5;
-    // Highlighter: straight line only (2 points)
-    if(mode==="hl"&&curStroke.hlStart){
+    // Highlighter: straight or freeform based on hlMode
+    if(mode==="hl"&&curStroke.hlStart&&hlMode==="straight"){
       curStroke.pts=[{x:curStroke.hlStart.x,y:curStroke.hlStart.y},{x:p.x,y:p.y}];
     } else {
       // Decimate: skip if too close to last point
@@ -1746,8 +1778,8 @@ function dMove(e){
     }
     // Live render
     renderStrokes();
-    // Highlighter: draw straight line preview
-    if(mode==="hl"&&curStroke&&curStroke.hlStart){
+    // Highlighter: draw straight line preview (only in straight mode)
+    if(mode==="hl"&&curStroke&&curStroke.hlStart&&hlMode==="straight"){
       ctx.beginPath();
       ctx.moveTo(curStroke.hlStart.x,curStroke.hlStart.y);
       ctx.lineTo(p.x,p.y);
@@ -2076,13 +2108,16 @@ async function convertHW(){
   var key=localStorage.getItem("np_gk")||"AIzaSyDSfXQePREr1UZgTJOdUJL-f9eEAP31Wj4";
   if(!key){showKey();return}
 
-  // Make sure canvas has the strokes rendered
+  // Ensure canvas is initialized and rendered
+  if(!cvReady){initCv();await new Promise(function(r){setTimeout(r,200)})}
   renderStrokes();
 
   showOv("Converting handwriting...");
   try{
     var c=document.getElementById("npDrawC");
+    if(!c||c.width===0){toast("Canvas not ready");hideOv();return}
     var b64=c.toDataURL("image/png").split(",")[1];
+    if(!b64||b64.length<100){toast("Nothing to convert");hideOv();return}
 
     var models=["gemini-2.0-flash","gemini-1.5-flash"];
     var text="";
@@ -2371,6 +2406,7 @@ function startConvertBox(){
 }
 
 async function doConvertArea(bx,by,bw,bh){
+  if(!cvReady){initCv();await new Promise(function(r){setTimeout(r,200)});renderStrokes()}
   var key=localStorage.getItem("np_gk")||"AIzaSyDSfXQePREr1UZgTJOdUJL-f9eEAP31Wj4";
   if(!key){showKey();return}
   
@@ -2732,6 +2768,23 @@ function toggleTapeColors(){
   document.getElementById("npTapeColors").classList.toggle("show");
 }
 
+
+/* ─── Highlighter Mode ─── */
+var hlMode="straight"; // "straight" or "free"
+
+function setHlMode(m){
+  hlMode=m;
+  document.querySelectorAll(".hl-opt").forEach(function(o){o.classList.remove("on")});
+  var opts=document.querySelectorAll(".hl-opt");
+  if(m==="straight"&&opts[0]) opts[0].classList.add("on");
+  if(m==="free"&&opts[1]) opts[1].classList.add("on");
+  document.getElementById("npHlOpts").classList.remove("show");
+  toast(m==="straight"?"📏 Straight highlighter":"〰️ Freeform highlighter");
+}
+
+function toggleHlOpts(){
+  document.getElementById("npHlOpts").classList.toggle("show");
+}
 function renameNote(name){
   if(!curNote)return;
   curNote.title=name.trim()||"Untitled";
@@ -2773,7 +2826,7 @@ function renameNote(name){
   },500);
 })();
 
-return{toggle:toggle,toggleSB:toggleSB,closeSB:closeSB,togglePalette:togglePalette,toggleBar2:toggleBar2,renameNote:renameNote,setTapeColor:setTapeColor,toggleTapeColors:toggleTapeColors,
+return{toggle:toggle,toggleSB:toggleSB,closeSB:closeSB,togglePalette:togglePalette,toggleBar2:toggleBar2,renameNote:renameNote,setHlMode:setHlMode,toggleHlOpts:toggleHlOpts,setTapeColor:setTapeColor,toggleTapeColors:toggleTapeColors,
   setBg:setBg,setBgImage:setBgImage,setMode:setMode,pickC:pickC,setColor:setColor,
   newNote:newNote,openNote:openNote,saveNote:saveNote,delNote:delNote,filter:filter,
   addImg:addImg,handleImg:handleImg,
