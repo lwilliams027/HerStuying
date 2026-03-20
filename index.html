@@ -2504,71 +2504,92 @@ function addSticky(){
 
 function createSticky(x,y,w,colors,htm,id){
   var el=document.createElement("div");
-  el.className="np-sticky"+(mode==="select"||mode==="text"?" interact":"");
+  el.className="np-sticky interact";
   el.id=id||"st"+Date.now();
   el.style.cssText="left:"+x+"px;top:"+y+"px;width:"+w+"px;background:"+colors.bg;
   el.setAttribute("data-colors",JSON.stringify(colors));
-  
+
+  // Header
   var hdr=document.createElement("div");
-  hdr.className="np-sticky-hdr";hdr.style.background=colors.hdr;hdr.style.color=colors.text;
-  hdr.innerHTML='<span class="s-name">📌 Sticky</span> <span class="s-min" onclick="NP.toggleStickyMin(this)">\u2212</span><span class="s-del">✕</span>';
-  var delBtn=hdr.querySelector(".s-del");
+  hdr.className="np-sticky-hdr";
+  hdr.style.background=colors.hdr;hdr.style.color=colors.text;
+
+  // Name (double-click to edit inline)
+  var nameEl=document.createElement("span");
+  nameEl.className="s-name";nameEl.textContent="📌 Sticky";
+  nameEl.style.cursor="pointer";nameEl.style.flex="1";nameEl.style.overflow="hidden";nameEl.style.whiteSpace="nowrap";
+  nameEl.addEventListener("dblclick",function(ev){
+    ev.stopPropagation();ev.preventDefault();
+    nameEl.contentEditable="true";nameEl.focus();
+    nameEl.style.background="rgba(0,0,0,.25)";nameEl.style.borderRadius="3px";nameEl.style.padding="0 4px";nameEl.style.outline="none";
+    try{var s=window.getSelection();s.selectAllChildren(nameEl)}catch(ex){}
+    function finishRename(){nameEl.contentEditable="false";nameEl.style.background="";nameEl.style.padding="";if(!nameEl.textContent.trim())nameEl.textContent="📌 Sticky"}
+    nameEl.addEventListener("blur",finishRename,{once:true});
+    nameEl.addEventListener("keydown",function(ke){if(ke.key==="Enter"){ke.preventDefault();nameEl.blur()}},{once:true});
+  });
+  hdr.appendChild(nameEl);
+
+  // Minimize button
+  var minBtn=document.createElement("span");
+  minBtn.className="s-min";minBtn.textContent="\u2212";minBtn.style.cursor="pointer";
+  minBtn.addEventListener("pointerdown",function(ev){ev.stopPropagation()});
+  minBtn.addEventListener("click",function(ev){
+    ev.stopPropagation();
+    el.classList.toggle("minimized");
+    minBtn.textContent=el.classList.contains("minimized")?"+":"\u2212";
+  });
+  hdr.appendChild(minBtn);
+
+  // Delete button
+  var delBtn=document.createElement("span");
+  delBtn.className="s-del";delBtn.textContent="✕";delBtn.style.cursor="pointer";
+  delBtn.addEventListener("pointerdown",function(ev){ev.stopPropagation()});
   delBtn.addEventListener("click",function(ev){ev.stopPropagation();el.remove()});
-  // Double-click header to rename
-  var nameSpan=hdr.querySelector(".s-name");
-  nameSpan.style.cursor="pointer";
+  hdr.appendChild(delBtn);
+
+  // Right-click header to change color to pen color
   hdr.addEventListener("contextmenu",function(ev){
     ev.preventDefault();ev.stopPropagation();
-    // Use current pen color for sticky
-    var ic=inkColor;
-    var nc={bg:ic+"22",hdr:ic,text:"#fff"};
-    el.style.background=nc.bg;
-    hdr.style.background=nc.hdr;hdr.style.color=nc.text;
+    var nc={bg:inkColor+"22",hdr:inkColor,text:"#fff"};
+    el.style.background=nc.bg;hdr.style.background=nc.hdr;hdr.style.color=nc.text;
     var bd=el.querySelector(".np-sticky-body");
     if(bd){bd.style.background=nc.bg;bd.style.color="#e2d5f5"}
     el.setAttribute("data-colors",JSON.stringify(nc));
-    toast("Color → pen color!");
+    toast("Color changed!");
   });
-  nameSpan.addEventListener("dblclick",function(ev){
-    ev.stopPropagation();
-    var newName=prompt("Rename sticky:",nameSpan.textContent);
-    if(newName!==null) nameSpan.textContent=newName.trim()||"📌 Sticky";
+
+  // Drag via header (but not on buttons or name editing)
+  hdr.addEventListener("pointerdown",function(e){
+    if(e.target!==hdr)return;
+    e.preventDefault();
+    dragEl=el;dragOff.x=e.clientX-el.offsetLeft;dragOff.y=e.clientY-el.offsetTop;
+    document.addEventListener("pointermove",dragMove);
+    document.addEventListener("pointerup",dragEnd);
   });
-  
+
+  // Body
   var body=document.createElement("div");
   body.className="np-sticky-body";
   body.contentEditable="true";
   body.style.cssText="background:"+colors.bg+";color:"+colors.text;
   body.innerHTML=htm||"";
-  body.setAttribute("data-placeholder","Note...");
+  body.setAttribute("data-placeholder","Type here...");
   body.addEventListener("pointerdown",function(ev){ev.stopPropagation()});
-  body.addEventListener("focus",function(){el.classList.add("interact")});
-  
+
   // Resize handles
   ["tl","tr","bl","br"].forEach(function(pos){
     var handle=document.createElement("div");handle.className="sel-handle "+pos;
     handle.addEventListener("pointerdown",function(e){e.stopPropagation();startResize(el,pos,e)});
     el.appendChild(handle);
   });
-  
+
   el.appendChild(hdr);el.appendChild(body);
-  
-  // Drag via header
-  hdr.addEventListener("pointerdown",function(e){
-    if(e.target.classList.contains("s-min")||e.target.classList.contains("s-del"))return;
-    e.preventDefault();
-    if(mode==="select")selectEl(el);
-    dragEl=el;dragOff.x=e.clientX-el.offsetLeft;dragOff.y=e.clientY-el.offsetTop;
-    document.addEventListener("pointermove",dragMove);
-    document.addEventListener("pointerup",dragEnd);
-  });
-  
   document.getElementById("npCanvas").appendChild(el);
 }
-
 function toggleStickyMin(btn){
-  btn.closest(".np-sticky").classList.toggle("minimized");
-  btn.textContent=btn.closest(".np-sticky").classList.contains("minimized")?"+":"−";
+  var s=btn.closest(".np-sticky");if(!s)return;
+  s.classList.toggle("minimized");
+  btn.textContent=s.classList.contains("minimized")?"+":"−";
 }
 
 /* ═══ TAPE / COVER TOOL ═══ */
