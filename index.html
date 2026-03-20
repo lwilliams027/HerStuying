@@ -2495,7 +2495,7 @@ async function doConvertArea(bx,by,bw,bh){
 
     if(!isGemini){
       // Groq vision (OpenAI-compatible)
-      var vModels=["llama-3.2-90b-vision-preview","llama-3.2-11b-vision-preview"];
+      var vModels=["meta-llama/llama-4-scout-17b-16e-instruct","meta-llama/llama-4-maverick-17b-128e-instruct"];
       for(var mi=0;mi<vModels.length&&!text;mi++){
         try{
           console.log("Convert: trying Groq/"+vModels[mi]);
@@ -2554,7 +2554,7 @@ async function doConvertArea(bx,by,bw,bh){
         return(sb.x+sb.w<bx||sb.x>bx+bw||sb.y+sb.h<by||sb.y>by+bh);
       });
       renderStrokes();setMode("text");toast("\u2728 Converted!");
-    } else {toast("Couldn\u2019t read \u2014 try writing bigger")}
+    } else {toast("Couldn\u2019t read. Try writing bigger and clearer.")}
   }catch(err){console.error("Convert error:",err);toast("Error \u2014 try again")}
   finally{hideOv()}
 }
