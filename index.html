@@ -1781,10 +1781,22 @@ function dMove(e){
     return;
   }
 
-  // Eraser mode: continuous deletion
+  // Eraser mode: continuous deletion (strokes + arrows)
   if(mode==="eraser"){
     var idx=hitTestStroke(p.x,p.y,Math.max(penSz*3,10));
-    if(idx>=0){strokes.splice(idx,1);renderStrokes()}
+    if(idx>=0){strokes.splice(idx,1);renderStrokes();return}
+    // Check arrows while dragging
+    var arrows=document.querySelectorAll("#npArrowSvg .np-arr");
+    for(var ai=arrows.length-1;ai>=0;ai--){
+      var a=arrows[ai];
+      var ax1=+a.getAttribute("data-x1"),ay1=+a.getAttribute("data-y1");
+      var ax2=+a.getAttribute("data-x2"),ay2=+a.getAttribute("data-y2");
+      var adx=ax2-ax1,ady=ay2-ay1,alen2=adx*adx+ady*ady;
+      var adist;
+      if(alen2===0){adist=Math.sqrt((p.x-ax1)*(p.x-ax1)+(p.y-ay1)*(p.y-ay1))}
+      else{var at=Math.max(0,Math.min(1,((p.x-ax1)*adx+(p.y-ay1)*ady)/alen2));adist=Math.sqrt((p.x-ax1-at*adx)*(p.x-ax1-at*adx)+(p.y-ay1-at*ady)*(p.y-ay1-at*ady))}
+      if(adist<20){a.remove();hideArrCtrls();toast("Erased");return}
+    }
     return;
   }
 
@@ -1914,11 +1926,39 @@ function clearDraw(){
 /* ═══ SELECTION ═══ */
 
 function eraseElementAt(e){
+  // Check DOM elements
   var els=document.querySelectorAll(".np-sticky,.np-tape,.np-tbox,.np-img");
   for(var i=els.length-1;i>=0;i--){
     var r=els[i].getBoundingClientRect();
     if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom){
       els[i].remove();toast("Erased");return;
+    }
+  }
+  // Check arrows — hit test against arrow paths
+  var p=cPos(e);
+  var arrows=document.querySelectorAll("#npArrowSvg .np-arr");
+  for(var i=arrows.length-1;i>=0;i--){
+    var a=arrows[i];
+    var x1=+a.getAttribute("data-x1"),y1=+a.getAttribute("data-y1");
+    var x2=+a.getAttribute("data-x2"),y2=+a.getAttribute("data-y2");
+    var cx=+a.getAttribute("data-cx"),cy=+a.getAttribute("data-cy");
+    // Check distance to line/curve
+    var dist;
+    if(a.getAttribute("data-curved")==="1"){
+      // Check distance to midpoint area
+      var dm=Math.sqrt((p.x-cx)*(p.x-cx)+(p.y-cy)*(p.y-cy));
+      var d1=Math.sqrt((p.x-x1)*(p.x-x1)+(p.y-y1)*(p.y-y1));
+      var d2=Math.sqrt((p.x-x2)*(p.x-x2)+(p.y-y2)*(p.y-y2));
+      dist=Math.min(dm,d1,d2);
+    } else {
+      // Straight line distance
+      var dx=x2-x1,dy=y2-y1;
+      var len2=dx*dx+dy*dy;
+      if(len2===0){dist=Math.sqrt((p.x-x1)*(p.x-x1)+(p.y-y1)*(p.y-y1))}
+      else{var t=Math.max(0,Math.min(1,((p.x-x1)*dx+(p.y-y1)*dy)/len2));dist=Math.sqrt((p.x-x1-t*dx)*(p.x-x1-t*dx)+(p.y-y1-t*dy)*(p.y-y1-t*dy))}
+    }
+    if(dist<20){
+      a.remove();hideArrCtrls();toast("Erased");return;
     }
   }
 }
