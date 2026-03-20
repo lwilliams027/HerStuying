@@ -820,12 +820,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 .tape-color-pick-label{font-size:9px;color:rgba(155,143,187,.4);font-weight:600;letter-spacing:1px;text-transform:uppercase;width:100%;margin-bottom:2px}
 
 
-/* Highlighter options */
-.hl-opts{position:absolute;bottom:54px;left:50%;transform:translateX(-50%);background:#161230;border:1px solid rgba(168,85,247,.15);border-radius:12px;padding:8px;display:none;z-index:25;box-shadow:0 -8px 24px rgba(0,0,0,.4);gap:4px;flex-direction:column;min-width:130px}
-.hl-opts.show{display:flex}
-.hl-opt{padding:8px 12px;border-radius:8px;cursor:pointer;font-size:11px;font-weight:600;color:#c4b5fd;display:flex;align-items:center;gap:8px;transition:all .15s;border:1px solid transparent}
-.hl-opt:hover{background:rgba(168,85,247,.08)}
-.hl-opt.on{background:rgba(168,85,247,.12);border-color:rgba(168,85,247,.2);color:#e2d5f5}
+
 .hl-opt span{font-size:14px}
 
 /* ── Responsive ── */
@@ -926,10 +921,6 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
         <div class="tc" style="background:linear-gradient(135deg,#e2e8f0,#94a3b8)" data-tc="e2e8f0,cbd5e1,94a3b8" onclick="NP.setTapeColor(this)"></div>
         <div class="tc" style="background:linear-gradient(135deg,#fef08a,#84cc16)" data-tc="fef08a,bef264,84cc16" onclick="NP.setTapeColor(this)"></div>
       </div>
-      <div class="hl-opts" id="npHlOpts">
-        <div class="hl-opt on" onclick="NP.setHlMode('straight')"><span>📏</span> Straight line</div>
-        <div class="hl-opt" onclick="NP.setHlMode('free')"><span>〰️</span> Freeform</div>
-      </div>
       <div class="np-bar2" id="npBar2">
         <button onclick="NP.togglePalette()" title="Colors">🎨</button>
         <button onclick="NP.addImg()" title="Image">🖼️</button><input type="file" id="npImgF" accept="image/*" style="display:none" onchange="NP.handleImg(this)">
@@ -958,7 +949,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
         <button id="npTPencil" onclick="NP.setMode('pencil')" title="Pencil">✎</button>
         <button id="npTBrush" onclick="NP.setMode('brush')" title="Brush">🖌️</button>
         <button id="npTCalli" onclick="NP.setMode('calli')" title="Calli"><i style="font-family:serif;font-size:14px">C</i></button>
-        <button id="npTHl" onclick="NP.setMode('hl')" oncontextmenu="event.preventDefault();NP.toggleHlOpts()" title="Highlight (right-click for options)">🖍️</button>
+        <button id="npTHl" onclick="NP.setMode('hl')" title="Highlighter">🖍️</button>
         <button id="npTEraser" onclick="NP.setMode('eraser')" title="Eraser"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 20H7L3 16c-.6-.6-.6-1.5 0-2.1l10-10c.6-.6 1.5-.6 2.1 0l7 7c.6.6.6 1.5 0 2.1L16 19"/></svg></button><div class="sep"></div>
         <button id="npTArrow" onclick="NP.setMode('arrow')" title="Arrow">↗</button>
         <button id="npTConv" onclick="NP.setMode('convert')" title="Convert to text" style="color:#34d399">✨</button>
@@ -1486,7 +1477,6 @@ function setMode(m){
   }
   document.getElementById("npPalette").classList.remove("show");
   var tcp=document.getElementById("npTapeColors");if(tcp)tcp.classList.remove("show");
-  var hlo=document.getElementById("npHlOpts");if(hlo)hlo.classList.remove("show");
   var ec=document.getElementById("npEraserC");if(ec&&m!=="eraser")ec.classList.remove("show");
   deselectAll();selStroke=null;selStrokeIdx=-1;
   hideArrCtrls();
@@ -1738,6 +1728,7 @@ function dStart(e){
   else if(mode==="calli")sz=penSz*1.5;
   else if(mode==="hl")sz=penSz*6;
 
+  if(shapeTimer){clearTimeout(shapeTimer);shapeTimer=null}
   curStroke={pts:[{x:p.x,y:p.y}],color:inkColor,size:sz,tool:mode,offX:0,offY:0};
   if(mode==="hl") curStroke.hlStart={x:p.x,y:p.y};
   isDraw=true;lx=p.x;ly=p.y;
@@ -1801,7 +1792,7 @@ function dMove(e){
   if(curStroke){
     var pr=(e.pressure>0&&e.pressure<1)?e.pressure:0.5;
     // Highlighter: straight or freeform based on hlMode
-    if(mode==="hl"&&curStroke.hlStart&&hlMode==="straight"){
+    if(mode==="hl"&&curStroke.hlStart&&false){
       curStroke.pts=[{x:curStroke.hlStart.x,y:curStroke.hlStart.y},{x:p.x,y:p.y}];
     } else {
       // Decimate: skip if too close to last point
@@ -1819,7 +1810,7 @@ function dMove(e){
     // Live render
     renderStrokes();
     // Highlighter: draw straight line preview (only in straight mode)
-    if(mode==="hl"&&curStroke&&curStroke.hlStart&&hlMode==="straight"){
+    if(false){
       ctx.beginPath();
       ctx.moveTo(curStroke.hlStart.x,curStroke.hlStart.y);
       ctx.lineTo(p.x,p.y);
@@ -1856,7 +1847,14 @@ function dEnd(){
   if(curStroke&&curStroke.pts.length>1){
     strokes.push(curStroke);
     renderStrokes();
+    // Shape recognition: hold after drawing to snap
+    lastStrokeTime=Date.now();
+    if(shapeTimer)clearTimeout(shapeTimer);
+    shapeTimer=setTimeout(function(){
+      if(Date.now()-lastStrokeTime>=300) tryShapeSnap();
+    },400);
   }
+  curStroke=null;
   // Tape mode: create tape
   if(mode==="tape"&&tempTape&&tapeStart){
     var tw2=parseInt(tempTape.style.width),th2=parseInt(tempTape.style.height);
@@ -1878,7 +1876,7 @@ function dEnd(){
     }
     return;
   }
-  curStroke=null;isDraw=false;
+  isDraw=false;
   document.getElementById("npEraserC").classList.remove("show");
   if(mode==="select"&&selStrokeIdx>=0) showStrokeBox(selStrokeIdx);
 }
@@ -2839,7 +2837,7 @@ function toggleTapeColors(){
 
 
 /* ─── Highlighter Mode ─── */
-var hlMode="straight"; // "straight" or "free"
+var hlMode="free"; // "straight" or "free"
 
 function setHlMode(m){
   hlMode=m;
@@ -2894,6 +2892,161 @@ function renameNote(name){
     ro.observe(panel);
   },500);
 })();
+
+/* ═══ SHAPE RECOGNITION — hold after drawing to snap ═══ */
+var shapeTimer=null;
+var lastStrokeTime=0;
+
+function tryShapeSnap(){
+  console.log("Shape snap: checking",strokes.length,"strokes");
+  if(!strokes.length)return;
+  var s=strokes[strokes.length-1];
+  if(!s.pts||s.pts.length<3)return;
+
+  var shape=detectShape(s.pts);
+  console.log("Shape result:",shape?shape.type:"none","from",s.pts.length,"points");
+  if(!shape)return;
+
+  // Replace points with clean shape
+  var oldPts=s.pts;
+  s.pts=shape.pts;
+  s.snapped=shape.type;
+  renderStrokes();
+  toast(shape.icon+" "+shape.type+"!");
+}
+
+function detectShape(pts){
+  if(pts.length<3)return null;
+
+  var first=pts[0],last=pts[pts.length-1];
+  var dx=last.x-first.x,dy=last.y-first.y;
+  var endDist=Math.sqrt(dx*dx+dy*dy);
+
+  // Bounding box
+  var minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+  for(var i=0;i<pts.length;i++){
+    if(pts[i].x<minX)minX=pts[i].x;if(pts[i].y<minY)minY=pts[i].y;
+    if(pts[i].x>maxX)maxX=pts[i].x;if(pts[i].y>maxY)maxY=pts[i].y;
+  }
+  var bw=maxX-minX,bh=maxY-minY;
+  var cx=minX+bw/2,cy=minY+bh/2;
+  var diag=Math.sqrt(bw*bw+bh*bh);
+
+  // Path length
+  var pathLen=0;
+  for(var i=1;i<pts.length;i++){
+    var px=pts[i].x-pts[i-1].x,py=pts[i].y-pts[i-1].y;
+    pathLen+=Math.sqrt(px*px+py*py);
+  }
+
+  // ─── STRAIGHT LINE ───
+  // If path stays very close to the line from first to last
+  if(pathLen>20){
+    var maxDev=0;
+    var lineLen=Math.sqrt((last.x-first.x)*(last.x-first.x)+(last.y-first.y)*(last.y-first.y));
+    if(lineLen>15){
+      for(var i=0;i<pts.length;i++){
+        var ldx=last.x-first.x,ldy=last.y-first.y;
+        var t2=ldx*ldx+ldy*ldy;
+        var proj=t2>0?Math.max(0,Math.min(1,((pts[i].x-first.x)*ldx+(pts[i].y-first.y)*ldy)/t2)):0;
+        var px2=first.x+proj*ldx,py2=first.y+proj*ldy;
+        var dev=Math.sqrt((pts[i].x-px2)*(pts[i].x-px2)+(pts[i].y-py2)*(pts[i].y-py2));
+        if(dev>maxDev)maxDev=dev;
+      }
+      if(maxDev<lineLen*0.15&&lineLen>25){
+        return{type:"Line",icon:"📏",pts:[{x:first.x,y:first.y},{x:last.x,y:last.y}]};
+      }
+    }
+  }
+
+  // ─── CIRCLE / ELLIPSE ───
+  // Closed shape + points roughly equidistant from center
+  if(endDist<diag*0.35&&pathLen>60){
+    var avgR=0;
+    for(var i=0;i<pts.length;i++){
+      var rdx=pts[i].x-cx,rdy=pts[i].y-cy;
+      avgR+=Math.sqrt(rdx*rdx+rdy*rdy);
+    }
+    avgR/=pts.length;
+    var variance=0;
+    for(var i=0;i<pts.length;i++){
+      var rdx=pts[i].x-cx,rdy=pts[i].y-cy;
+      var r=Math.sqrt(rdx*rdx+rdy*rdy);
+      variance+=(r-avgR)*(r-avgR);
+    }
+    variance/=pts.length;
+    var stdDev=Math.sqrt(variance);
+
+    if(stdDev<avgR*0.35){
+      // Generate circle/ellipse points
+      var rx=bw/2,ry=bh/2;
+      var cirPts=[];
+      var steps=48;
+      for(var i=0;i<=steps;i++){
+        var a=(i/steps)*Math.PI*2;
+        cirPts.push({x:cx+Math.cos(a)*rx,y:cy+Math.sin(a)*ry});
+      }
+      var aspect=Math.min(rx,ry)/Math.max(rx,ry);
+      return{type:aspect>0.8?"Circle":"Ellipse",icon:aspect>0.8?"⭕":"🔵",pts:cirPts};
+    }
+  }
+
+  // ─── RECTANGLE ───
+  // Closed shape with ~4 corners (high curvature points)
+  if(endDist<diag*0.35&&pathLen>60){
+    var corners=findCorners(pts);
+    if(corners.length>=3&&corners.length<=5){
+      // Snap to rectangle using bounding box
+      var pad=2;
+      var rectPts=[
+        {x:minX+pad,y:minY+pad},{x:maxX-pad,y:minY+pad},
+        {x:maxX-pad,y:maxY-pad},{x:minX+pad,y:maxY-pad},
+        {x:minX+pad,y:minY+pad}
+      ];
+      return{type:"Rectangle",icon:"⬜",pts:rectPts};
+    }
+  }
+
+  // ─── TRIANGLE ───
+  if(endDist<diag*0.35&&pathLen>60){
+    var corners=findCorners(pts);
+    if(corners.length===3){
+      var triPts=[pts[corners[0]],pts[corners[1]],pts[corners[2]],pts[corners[0]]];
+      return{type:"Triangle",icon:"🔺",pts:triPts};
+    }
+  }
+
+  return null;
+}
+
+function findCorners(pts){
+  // Find points with high curvature (direction change)
+  var corners=[];
+  var windowSize=Math.max(3,Math.floor(pts.length/15));
+
+  for(var i=windowSize;i<pts.length-windowSize;i++){
+    var prevDx=pts[i].x-pts[i-windowSize].x;
+    var prevDy=pts[i].y-pts[i-windowSize].y;
+    var nextDx=pts[i+windowSize].x-pts[i].x;
+    var nextDy=pts[i+windowSize].y-pts[i].y;
+
+    var prevLen=Math.sqrt(prevDx*prevDx+prevDy*prevDy);
+    var nextLen=Math.sqrt(nextDx*nextDx+nextDy*nextDy);
+    if(prevLen<1||nextLen<1)continue;
+
+    var dot=(prevDx*nextDx+prevDy*nextDy)/(prevLen*nextLen);
+    // Sharp angle = low dot product
+    if(dot<0.6){
+      // Check it's not too close to another corner
+      var tooClose=false;
+      for(var j=0;j<corners.length;j++){
+        if(Math.abs(i-corners[j])<pts.length/6){tooClose=true;break}
+      }
+      if(!tooClose) corners.push(i);
+    }
+  }
+  return corners;
+}
 
 return{toggle:toggle,toggleSB:toggleSB,closeSB:closeSB,togglePalette:togglePalette,toggleBar2:toggleBar2,renameNote:renameNote,setHlMode:setHlMode,toggleHlOpts:toggleHlOpts,setTapeColor:setTapeColor,toggleTapeColors:toggleTapeColors,
   setBg:setBg,setBgImage:setBgImage,setMode:setMode,pickC:pickC,setColor:setColor,
