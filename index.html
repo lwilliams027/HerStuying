@@ -981,7 +981,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
   <div class="ch-hdr">
     <div class="av">🧸</div>
     <div class="ti"><h4>Theodore</h4><small id="aiCtx">Ask me anything about your lessons</small></div>
-    <button class="ch-close" onclick="toggleChat()">✕</button>
+    <button onclick="showApiKeyModal()" title="Set API Key" style="background:none;border:none;color:var(--txd);font-size:14px;cursor:pointer;padding:4px;transition:color .15s">🔑</button><button class="ch-close" onclick="toggleChat()">✕</button>
   </div>
   <div class="ch-msgs" id="aiMsgs">
     <div class="ch-msg bot">Hey Anhelina! 💜 I'm Theodore, your AI study buddy powered by Gemini. Ask me anything about your lessons — I can explain concepts, quiz you, or break down tough topics!</div>
@@ -1063,7 +1063,8 @@ async function aiSend(){
   var sysPrompt=getContext();
   if(sysPrompt.length>3000) sysPrompt=sysPrompt.substring(0,3000);
 
-  var GEMKEY=localStorage.getItem("np_gk")||"AIzaSyDSfXQePREr1UZgTJOdUJL-f9eEAP31Wj4";
+  var GEMKEY=localStorage.getItem("np_gk");
+  if(!GEMKEY){typing.classList.remove("typing");typing.innerHTML="I need an API key to work! Tap the \ud83d\udd11 button above to add one (it is free). \ud83d\udc9c";aiLoading=false;document.getElementById("aiBtn").disabled=false;return}
   var models=["gemini-2.0-flash","gemini-1.5-flash"];
   var answer="";
 
@@ -1158,7 +1159,7 @@ async function aiSend(){
    NOTES — STROKE-BASED OBJECT SYSTEM
    ═══════════════════════════════════════════ */
 var NP=(function(){
-var KEY="AIzaSyDSfXQePREr1UZgTJOdUJL-f9eEAP31Wj4";
+var KEY="";
 var isOpen=false,sbOpen=false;
 var notes=[],curNote=null;
 var mode="text";
@@ -2204,7 +2205,7 @@ function createImg(x,y,w,src,id){
 /* ═══ HANDWRITING CONVERT ═══ */
 async function convertHW(){
   if(!strokes.length){toast("Draw something first!");return}
-  var key=localStorage.getItem("np_gk")||"AIzaSyDSfXQePREr1UZgTJOdUJL-f9eEAP31Wj4";
+  var key=localStorage.getItem("np_gk");
   if(!key){showKey();return}
 
   // Ensure canvas is initialized and rendered
@@ -2520,7 +2521,7 @@ function startConvertBox(){
 
 async function doConvertArea(bx,by,bw,bh){
   if(!cvReady){initCv();await new Promise(function(r){setTimeout(r,200)});renderStrokes()}
-  var key=localStorage.getItem("np_gk")||"AIzaSyDSfXQePREr1UZgTJOdUJL-f9eEAP31Wj4";
+  var key=localStorage.getItem("np_gk");
   if(!key){showKey();return}
   
   // Create a temp canvas with just the selected area
@@ -2848,7 +2849,7 @@ async function aiRemoveBg(){
   var overlay=document.getElementById("npCropOv");if(!overlay)return;
   var targetId=overlay.getAttribute("data-target");
   var img=overlay.querySelector("img");
-  var key=localStorage.getItem("np_gk")||"AIzaSyDSfXQePREr1UZgTJOdUJL-f9eEAP31Wj4";
+  var key=localStorage.getItem("np_gk");
   
   toast("AI background removal processing...");
   
@@ -3064,6 +3065,51 @@ return{toggle:toggle,toggleSB:toggleSB,closeSB:closeSB,togglePalette:togglePalet
   get penSz(){return penSz},set penSz(v){penSz=v}};
 })();
 
+
+
+function showApiKeyModal(){
+  if(document.getElementById("apiKeyModal"))return;
+  var currentKey=localStorage.getItem("np_gk")||"";
+  var m=document.createElement("div");
+  m.id="apiKeyModal";
+  m.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100000;display:flex;align-items:center;justify-content:center";
+  var inner=document.createElement("div");
+  inner.style.cssText="background:#1a1230;border:1px solid rgba(168,85,247,.2);border-radius:20px;padding:32px;max-width:380px;width:calc(100% - 40px);text-align:center";
+  inner.innerHTML='<div style="font-size:32px;margin-bottom:8px">\ud83d\udd11</div><h3 style="color:#e0c6ff;font-size:16px;margin-bottom:4px">Gemini API Key</h3><p style="color:#9b8fbb;font-size:12px;margin-bottom:16px">Theodore needs a free Gemini API key to work.</p><div style="background:rgba(217,70,239,.06);border:1px solid rgba(217,70,239,.12);border-radius:10px;padding:12px;text-align:left;margin-bottom:14px"><p style="color:#e0c6ff;font-size:11px;line-height:1.7;margin:0"><b>Get a free key:</b><br>1. Go to <a href=\"https://aistudio.google.com/apikey\" target=\"_blank\" style=\"color:#d946ef\">aistudio.google.com/apikey</a><br>2. Click Create API Key<br>3. Paste below</p></div>';
+  var inp=document.createElement("input");
+  inp.id="apiKeyInput";inp.type="password";inp.value=currentKey;
+  inp.placeholder="Paste your API key here...";
+  inp.style.cssText="width:100%;padding:10px 14px;background:#0d0b1a;border:1.5px solid rgba(168,85,247,.2);border-radius:10px;color:#e0c6ff;font-size:13px;outline:none;font-family:monospace;margin-bottom:12px";
+  inner.appendChild(inp);
+  var btns=document.createElement("div");btns.style.cssText="display:flex;gap:8px";
+  var cancelBtn=document.createElement("button");
+  cancelBtn.textContent="Cancel";cancelBtn.style.cssText="flex:1;padding:10px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#9b8fbb;font-size:13px;cursor:pointer";
+  cancelBtn.onclick=function(){m.remove()};
+  var saveBtn=document.createElement("button");
+  saveBtn.textContent="Save Key";saveBtn.style.cssText="flex:1;padding:10px;border-radius:10px;background:linear-gradient(135deg,#d946ef,#a855f7);border:none;color:#fff;font-size:13px;font-weight:700;cursor:pointer";
+  saveBtn.onclick=function(){saveApiKey()};
+  btns.appendChild(cancelBtn);btns.appendChild(saveBtn);
+  inner.appendChild(btns);
+  var status=document.createElement("p");status.id="apiKeyStatus";status.style.cssText="color:#34d399;font-size:11px;margin-top:10px;min-height:16px";
+  inner.appendChild(status);
+  m.appendChild(inner);
+  m.addEventListener("click",function(e){if(e.target===m)m.remove()});
+  document.body.appendChild(m);
+  setTimeout(function(){inp.focus()},100);
+}
+function saveApiKey(){
+  var k=document.getElementById("apiKeyInput").value.trim();
+  var st=document.getElementById("apiKeyStatus");
+  if(!k){st.textContent="Please enter a key";st.style.color="#ff6b8a";return}
+  st.textContent="Testing key...";st.style.color="#fbbf24";
+  fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key="+encodeURIComponent(k),{
+    method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({contents:[{role:"user",parts:[{text:"Say ok"}]}],generationConfig:{maxOutputTokens:10}})
+  }).then(function(r){
+    if(r.ok){localStorage.setItem("np_gk",k);st.textContent="Key saved and working!";st.style.color="#34d399";setTimeout(function(){var m=document.getElementById("apiKeyModal");if(m)m.remove()},1500)}
+    else{r.text().then(function(t){st.textContent="Invalid key";st.style.color="#ff6b8a"})}
+  }).catch(function(e){st.textContent="Error: "+e.message;st.style.color="#ff6b8a"});
+}
 
 </script>
 
