@@ -3102,13 +3102,44 @@ function saveApiKey(){
   var st=document.getElementById("apiKeyStatus");
   if(!k){st.textContent="Please enter a key";st.style.color="#ff6b8a";return}
   st.textContent="Testing key...";st.style.color="#fbbf24";
-  fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key="+encodeURIComponent(k),{
-    method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({contents:[{role:"user",parts:[{text:"Say ok"}]}],generationConfig:{maxOutputTokens:10}})
-  }).then(function(r){
-    if(r.ok){localStorage.setItem("np_gk",k);st.textContent="Key saved and working!";st.style.color="#34d399";setTimeout(function(){var m=document.getElementById("apiKeyModal");if(m)m.remove()},1500)}
-    else{r.text().then(function(t){st.textContent="Invalid key";st.style.color="#ff6b8a"})}
-  }).catch(function(e){st.textContent="Error: "+e.message;st.style.color="#ff6b8a"});
+  var models=["gemini-2.0-flash","gemini-1.5-flash","gemini-pro"];
+  var tried=0;
+  function tryModel(i){
+    if(i>=models.length){
+      // All models failed but key might still be valid — save it anyway
+      localStorage.setItem("np_gk",k);
+      st.textContent="Key saved! If Theodore still fails, check the key at aistudio.google.com";
+      st.style.color="#fbbf24";
+      setTimeout(function(){var m=document.getElementById("apiKeyModal");if(m)m.remove()},2500);
+      return;
+    }
+    fetch("https://generativelanguage.googleapis.com/v1beta/models/"+models[i]+":generateContent?key="+encodeURIComponent(k),{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({contents:[{role:"user",parts:[{text:"Say ok"}]}],generationConfig:{maxOutputTokens:10}})
+    }).then(function(r){
+      if(r.ok){
+        localStorage.setItem("np_gk",k);
+        st.textContent="Key saved and working! ("+models[i]+")";
+        st.style.color="#34d399";
+        setTimeout(function(){var m=document.getElementById("apiKeyModal");if(m)m.remove()},1500);
+      } else {
+        r.text().then(function(t){
+          console.log("Key test "+models[i]+":",r.status,t.substring(0,200));
+          if(r.status===403||r.status===401){
+            st.textContent="Key rejected ("+r.status+"). Check your key is correct.";
+            st.style.color="#ff6b8a";
+          } else {
+            // Model might not be available, try next
+            tryModel(i+1);
+          }
+        }).catch(function(){tryModel(i+1)});
+      }
+    }).catch(function(e){
+      console.log("Key test "+models[i]+" error:",e.message);
+      tryModel(i+1);
+    });
+  }
+  tryModel(0);
 }
 
 </script>
