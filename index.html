@@ -814,14 +814,14 @@ function subT(){var s=0;for(var i=0;i<shuf.length;i++){var q=shuf[i];if(q.type==
 .np-canvas.bg-plain{background:none}
 
 /* ── Draw Canvas ── */
-#npDrawC{position:absolute;top:0;left:0;width:100%;height:100%;z-index:2;touch-action:none;pointer-events:none}
+#npDrawC{position:absolute;top:0;left:0;width:100%;height:100%;min-height:inherit;z-index:2;touch-action:none;pointer-events:none}
 #npDrawC.on{pointer-events:auto;cursor:crosshair;z-index:10}
 #npDrawC.select-on{pointer-events:auto;cursor:pointer;z-index:1}
 #npDrawC.convert-on{pointer-events:auto;cursor:crosshair;z-index:1}
 #npDrawC.tape-on{pointer-events:auto;cursor:crosshair;z-index:1}
 
 /* ── Arrow SVG ── */
-#npArrowSvg{position:absolute;top:0;left:0;width:100%;height:100%;z-index:3;pointer-events:none}
+#npArrowSvg{position:absolute;top:0;left:0;width:100%;height:100%;min-height:inherit;z-index:3;pointer-events:none}
 #npArrowSvg.on{pointer-events:auto;cursor:crosshair;z-index:10}
 #npArrowSvg.sel-on{pointer-events:auto;z-index:1}
 #npArrowSvg line,#npArrowSvg path{stroke:#a855f7;stroke-width:3;fill:none;filter:drop-shadow(0 0 3px rgba(168,85,247,.3))}
@@ -1222,26 +1222,85 @@ function showTheo(q,selIdx,fibInput){
 
   // Build wrong answer info
   var wrongHtml="";
+  var yourAns="";
   if(q.type==="fib"||q.type==="sa"){
-    wrongHtml="Your answer: <b>"+(fibInput||"(empty)")+"</b><br><div class='theo-correct-pill'>✓ Correct: "+q.ans+"</div>";
+    yourAns=fibInput||"(empty)";
+    wrongHtml="You picked: <b>"+yourAns+"</b><br><div class='theo-correct-pill'>✓ Correct: "+q.ans+"</div>";
   } else {
-    var yourAns=selIdx!==null&&selIdx!==undefined?q.a[selIdx]:"(none)";
+    yourAns=selIdx!==null&&selIdx!==undefined?q.a[selIdx]:"(none)";
     wrongHtml="You picked: <b>"+yourAns+"</b><br><div class='theo-correct-pill'>✓ Correct: "+q.a[q.c]+"</div>";
   }
   wrongInfo.innerHTML=wrongHtml;
 
-  // Build explanation
-  var expHtml="";
-  if(q.exp){
-    expHtml=q.exp.replace(/\\"/g,'"');
-  } else {
-    expHtml="The correct answer is <b>"+(q.ans||q.a[q.c])+"</b>. Review this concept in your notes for a deeper understanding.";
-  }
-  explainText.innerHTML=expHtml;
+  // Show loading state for explanation
+  explainText.innerHTML="<span style='color:#9b8fbb;font-style:italic'>🧸 Theodore is thinking about this one...</span>";
 
   // Show with animation
   overlay.classList.add("show");
   setTimeout(function(){inp.focus()},400);
+
+  // Generate AI explanation
+  theoGenerateExplanation(q,yourAns);
+}
+
+async function theoGenerateExplanation(q,yourAns){
+  var explainText=document.getElementById("theoExplainText");
+  var APIKEY=localStorage.getItem("np_gk");
+  if(!APIKEY){
+    // Fallback to static exp if available, or generic message
+    if(q.exp){
+      explainText.innerHTML=q.exp.replace(/\\"/g,'"');
+    } else {
+      explainText.innerHTML="The correct answer is <b>"+(q.ans||q.a[q.c])+"</b>. Add an API key (🔑 in the chat) so I can give you a full explanation! 💜";
+    }
+    return;
+  }
+
+  var correctAns=(q.type==="fib"||q.type==="sa")?q.ans:q.a[q.c];
+  var sysPrompt="You are Theodore 🧸, a warm and encouraging study tutor for a college student named Anhelina. She just got a quiz question WRONG. Explain WHY the correct answer is right and WHY her answer was wrong in a clear, friendly way. Use 2-4 sentences. Don't repeat the question. Be specific and educational — connect it to the underlying concept. Use one emoji. Don't start with 'Great question' or similar.\n";
+  if(curL){
+    sysPrompt+="Subject: "+curL.title+"\n";
+    for(var i=0;i<curL.notes.length;i++){
+      sysPrompt+=curL.notes[i].heading+": "+curL.notes[i].body.replace(/<[^>]*>/g,"").substring(0,200)+"\n";
+    }
+  }
+  if(sysPrompt.length>2500)sysPrompt=sysPrompt.substring(0,2500);
+
+  var userMsg="Question: "+q.q+"\n";
+  if(q.a)userMsg+="Options: "+q.a.join(" | ")+"\n";
+  userMsg+="She answered: "+yourAns+"\n";
+  userMsg+="Correct answer: "+correctAns+"\n";
+  userMsg+="Explain why the correct answer is right and why hers was wrong.";
+
+  var answer="";var isGemini=APIKEY.startsWith("AIza");
+  try{
+    if(!isGemini){
+      var models=["llama-3.3-70b-versatile","llama-3.1-8b-instant"];
+      for(var mi=0;mi<models.length&&!answer;mi++){
+        try{var resp=await fetch("https://api.groq.com/openai/v1/chat/completions",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+APIKEY},body:JSON.stringify({model:models[mi],messages:[{role:"system",content:sysPrompt},{role:"user",content:userMsg}],max_tokens:300,temperature:0.7})});
+        if(resp.ok){var data=await resp.json();if(data.choices&&data.choices[0])answer=data.choices[0].message.content}
+        else{if(resp.status===429)continue}}catch(err){console.warn(err)}
+      }
+    } else {
+      var models=["gemini-2.0-flash","gemini-2.0-flash-lite"];
+      for(var mi=0;mi<models.length&&!answer;mi++){
+        try{var resp=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+models[mi]+":generateContent?key="+encodeURIComponent(APIKEY),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({contents:[{role:"user",parts:[{text:userMsg}]}],systemInstruction:{parts:[{text:sysPrompt}]},generationConfig:{temperature:0.7,maxOutputTokens:300}})});
+        if(resp.ok){var data=await resp.json();if(data.candidates&&data.candidates[0]&&data.candidates[0].content)answer=data.candidates[0].content.parts.map(function(p){return p.text||""}).join("")}
+        else{console.warn("Gemini "+models[mi]+": "+resp.status)}}catch(err){console.warn(err)}
+      }
+    }
+  }catch(err){console.warn(err)}
+
+  if(!answer){
+    // Fallback to static if AI fails
+    if(q.exp) answer=q.exp.replace(/\\"/g,'"');
+    else answer="The correct answer is "+correctAns+". Review this concept in your notes for a deeper understanding. 💜";
+  } else {
+    answer=answer.replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/\*(.+?)\*/g,"<i>$1</i>").replace(/\n/g,"<br>");
+  }
+  // Store in theoHistory so follow-up questions have context
+  theoHistory=[{role:"user",content:userMsg},{role:"assistant",content:answer.replace(/<[^>]*>/g,"")}];
+  explainText.innerHTML=answer;
 }
 
 function closeTheo(){
@@ -1762,12 +1821,7 @@ function initCv(){
   var c=document.getElementById("npDrawC");
   var cv=document.getElementById("npCanvas");
   if(!wrap||!c)return;
-  var w=cv.offsetWidth,h=cv.offsetHeight;if(w<10)return;
-  var dpr=window.devicePixelRatio||1;
-  c.width=w*dpr;c.height=h*dpr;
-  c.style.width=w+"px";c.style.height=h+"px";
-  ctx=c.getContext("2d");ctx.scale(dpr,dpr);
-  ctx.lineCap="round";ctx.lineJoin="round";
+  resizeCv();
   cvReady=true;
   c.addEventListener("pointerdown",dStart);
   c.addEventListener("pointermove",dMove);
@@ -1777,13 +1831,39 @@ function initCv(){
     
   });
   var svg=document.getElementById("npArrowSvg");
-  svg.setAttribute("width",w);svg.setAttribute("height",h);
   svg.addEventListener("pointerdown",arrStart);
   // Auto-render any existing strokes after canvas init
   if(strokes.length>0) renderStrokes();
   svg.addEventListener("pointermove",arrMove);
   svg.addEventListener("pointerup",arrEnd);
   cv.addEventListener("pointerdown",canvasClick);
+  // Observe resize so drawing canvas always matches
+  if(typeof ResizeObserver!=="undefined"){
+    if(!window._npResObs){
+      window._npResObs=new ResizeObserver(function(){resizeCv()});
+      window._npResObs.observe(cv);
+    }
+  }
+}
+
+function resizeCv(){
+  var c=document.getElementById("npDrawC");
+  var cv=document.getElementById("npCanvas");
+  var svg=document.getElementById("npArrowSvg");
+  if(!c||!cv)return;
+  var w=cv.scrollWidth||cv.offsetWidth;
+  var h=Math.max(cv.scrollHeight,cv.offsetHeight);
+  if(w<10||h<10)return;
+  var dpr=window.devicePixelRatio||1;
+  var needW=Math.round(w*dpr),needH=Math.round(h*dpr);
+  // Only resize if dimensions actually changed
+  if(c.width===needW&&c.height===needH&&ctx)return;
+  c.width=needW;c.height=needH;
+  c.style.width=w+"px";c.style.height=h+"px";
+  ctx=c.getContext("2d");ctx.scale(dpr,dpr);
+  ctx.lineCap="round";ctx.lineJoin="round";
+  if(svg){svg.setAttribute("width",w);svg.setAttribute("height",h);svg.style.width=w+"px";svg.style.height=h+"px"}
+  renderStrokes();
 }
 
 /* ═══ DRAWING ═══ */
@@ -2138,17 +2218,23 @@ function clearArrowSvg(){hideArrCtrls();document.querySelectorAll("#npArrowSvg .
 /* ═══ TEXT BOXES ═══ */
 function canvasClick(e){
   if(mode==="text"){
-    if(e.target.id!=="npCanvas"&&!e.target.classList.contains("np-canvas"))return;
+    var tgt=e.target;
+    if(tgt.closest&&!tgt.closest("#npCanvas"))return;
+    if(tgt.classList.contains("np-tbox")||tgt.closest(".np-tbox"))return;
+    if(tgt.classList.contains("np-sticky")||tgt.closest(".np-sticky"))return;
+    if(tgt.classList.contains("np-img")||tgt.closest(".np-img"))return;
     var cv=document.getElementById("npCanvas"),r=cv.getBoundingClientRect();
     var x=e.clientX-r.left+document.getElementById("npWrap").scrollLeft;
     var y=e.clientY-r.top+document.getElementById("npWrap").scrollTop;
-    var cv=document.getElementById("npCanvas");
     x=Math.max(4,Math.min(cv.offsetWidth-40,x));
     y=Math.max(4,Math.min(cv.offsetHeight-20,y));
     createTBox(x,y,0,"",null);
   }
-  if(mode==="select"&&(e.target.id==="npCanvas"||e.target.classList.contains("np-canvas"))){
-    deselectAll();selStroke=null;selStrokeIdx=-1;renderStrokes();
+  if(mode==="select"){
+    var tgt2=e.target;
+    if(tgt2.id==="npCanvas"||tgt2.id==="npDrawC"||tgt2.id==="npArrowSvg"||(tgt2.closest&&tgt2.closest("#npCanvas")&&!tgt2.closest(".np-tbox,.np-img,.np-sticky,.sel-handle,.sel-del"))){
+      deselectAll();selStroke=null;selStrokeIdx=-1;renderStrokes();
+    }
   }
 }
 
