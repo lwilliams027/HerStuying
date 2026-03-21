@@ -2224,8 +2224,8 @@ function canvasClick(e){
     if(tgt.classList.contains("np-sticky")||tgt.closest(".np-sticky"))return;
     if(tgt.classList.contains("np-img")||tgt.closest(".np-img"))return;
     var cv=document.getElementById("npCanvas"),r=cv.getBoundingClientRect();
-    var x=e.clientX-r.left+document.getElementById("npWrap").scrollLeft;
-    var y=e.clientY-r.top+document.getElementById("npWrap").scrollTop;
+    var x=e.clientX-r.left;
+    var y=e.clientY-r.top;
     x=Math.max(4,Math.min(cv.offsetWidth-40,x));
     y=Math.max(4,Math.min(cv.offsetHeight-20,y));
     createTBox(x,y,0,"",null);
