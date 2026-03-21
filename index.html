@@ -632,8 +632,8 @@ function go(v,cls,idx){
   if(v==="lesson")rq();
   pushURL();render();scrollTo({top:0,behavior:"smooth"});
 }
-function qA(j){if(pS.sh)return;pS.sel=j;pS.sh=true;pS.an++;if(j===shuf[pS.i].c)pS.sc++;render()}
-function fibCheck(){var el=document.getElementById("fibIn");if(!el)return;var v=el.value;pS.fibAns=v;pS.sh=true;pS.an++;if(saMatch(v,shuf[pS.i].ans))pS.sc++;render()}
+function qA(j){if(pS.sh)return;pS.sel=j;pS.sh=true;pS.an++;if(j===shuf[pS.i].c)pS.sc++;else showTheo(shuf[pS.i],j);render()}
+function fibCheck(){var el=document.getElementById("fibIn");if(!el)return;var v=el.value;pS.fibAns=v;pS.sh=true;pS.an++;var q=shuf[pS.i];var ok=saMatch(v,q.ans);if(ok)pS.sc++;else showTheo(q,null,v);render()}
 function qN(){pS.i++;pS.sel=null;pS.sh=false;pS.fibAns="";render()}
 function tTa(i,v){if(tS.done)return;if(!tS.ta)tS.ta={};tS.ta[i]=v;tS.a[i]=v.trim()?-99:undefined;render()}
 function tA(i,j){if(tS.done)return;tS.a[i]=j;render()}
@@ -979,6 +979,50 @@ function subT(){var s=0;for(var i=0;i<shuf.length;i++){var q=shuf[i];if(q.type==
 .login-box .lb-err{color:#ff6b8a;font-size:12px;margin-top:10px;min-height:18px;transition:opacity .2s}
 .login-box .lb-footer{margin-top:20px;font-size:11px;color:#6b3fa0}
 
+/* Theodore Wrong Answer Popup */
+#theoOverlay{position:fixed;inset:0;background:rgba(5,3,15,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:9999;display:none;align-items:flex-end;justify-content:center;padding:0;opacity:0;transition:opacity .25s ease}
+#theoOverlay.show{display:flex;opacity:1}
+#theoPopup{width:100%;max-width:480px;max-height:92dvh;background:linear-gradient(170deg,#1a1230 0%,#0d0b1a 60%,#130e24 100%);border-radius:28px 28px 0 0;display:flex;flex-direction:column;overflow:hidden;transform:translateY(40px);transition:transform .35s cubic-bezier(.22,.61,.36,1);box-shadow:0 -8px 60px rgba(168,85,247,.18),0 -2px 20px rgba(0,0,0,.5);border:1px solid rgba(168,85,247,.12);border-bottom:none}
+#theoOverlay.show #theoPopup{transform:translateY(0)}
+.theo-header{display:flex;align-items:center;gap:14px;padding:20px 22px 16px;border-bottom:1px solid rgba(168,85,247,.1);flex-shrink:0}
+.theo-avatar{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#d946ef,#a855f7);display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 4px 20px rgba(217,70,239,.3);flex-shrink:0;animation:theoPulse 2s ease-in-out infinite}
+@keyframes theoPulse{0%,100%{box-shadow:0 4px 20px rgba(217,70,239,.3)}50%{box-shadow:0 4px 30px rgba(217,70,239,.5)}}
+.theo-header-text h3{margin:0;font-size:17px;color:#f0e6ff;font-weight:700}
+.theo-header-text small{color:#9b8fbb;font-size:12px}
+.theo-close{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:#9b8fbb;font-size:18px;width:34px;height:34px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:auto;transition:all .15s}
+.theo-close:hover{background:rgba(239,83,80,.15);color:#ef5350;border-color:rgba(239,83,80,.2)}
+.theo-body{flex:1;overflow-y:auto;padding:0 22px 12px;-webkit-overflow-scrolling:touch}
+.theo-wrong-banner{display:flex;align-items:center;gap:10px;padding:14px 16px;margin:16px 0;border-radius:14px;background:rgba(239,83,80,.08);border:1px solid rgba(239,83,80,.18)}
+.theo-wrong-banner .wrong-x{width:32px;height:32px;border-radius:50%;background:rgba(239,83,80,.15);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.theo-wrong-info{font-size:13px;line-height:1.5;color:#cbb8e0}
+.theo-wrong-info b{color:#ef5350}
+.theo-correct-pill{display:inline-block;background:rgba(76,175,80,.12);border:1px solid rgba(76,175,80,.2);color:#66bb6a;padding:3px 10px;border-radius:8px;font-size:12px;font-weight:600;margin-top:4px}
+.theo-explain{margin:14px 0;padding:16px 18px;border-radius:16px;background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.12);position:relative}
+.theo-explain::before{content:'💡';position:absolute;top:-10px;left:14px;background:#1a1230;padding:0 6px;font-size:14px}
+.theo-explain-text{font-size:14px;line-height:1.65;color:#d4c6ee}
+.theo-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(168,85,247,.15),transparent);margin:16px 0}
+.theo-chat-label{font-size:12px;font-weight:700;color:#9b8fbb;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.theo-chat-label::after{content:'';flex:1;height:1px;background:rgba(168,85,247,.1)}
+.theo-msgs{display:flex;flex-direction:column;gap:10px;margin-bottom:12px;min-height:20px}
+.theo-msg{max-width:88%;padding:10px 14px;border-radius:14px;font-size:13.5px;line-height:1.55;animation:tmsgIn .25s ease}
+@keyframes tmsgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.theo-msg.usr{align-self:flex-end;background:linear-gradient(135deg,rgba(168,85,247,.2),rgba(217,70,239,.15));color:#e8d5ff;border-bottom-right-radius:4px}
+.theo-msg.bot{align-self:flex-start;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);color:#cbb8e0;border-bottom-left-radius:4px}
+.theo-msg.bot.typing{opacity:.6}
+.theo-input-row{display:flex;gap:8px;padding:14px 22px 20px;border-top:1px solid rgba(168,85,247,.08);flex-shrink:0;background:rgba(13,11,26,.6)}
+.theo-input-row input{flex:1;padding:12px 16px;border-radius:14px;border:1.5px solid rgba(168,85,247,.15);background:rgba(26,18,48,.7);color:#e2d5f5;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s}
+.theo-input-row input:focus{border-color:rgba(168,85,247,.4)}
+.theo-input-row input::placeholder{color:#6b5a8a}
+.theo-input-row button{padding:10px 18px;border-radius:14px;background:linear-gradient(135deg,#d946ef,#a855f7);border:none;color:#fff;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity .15s,transform .1s}
+.theo-input-row button:hover{opacity:.9}
+.theo-input-row button:active{transform:scale(.96)}
+.theo-input-row button:disabled{opacity:.4;cursor:not-allowed}
+.theo-continue{padding:14px 22px 16px;border-top:1px solid rgba(168,85,247,.06);flex-shrink:0;display:flex;gap:8px}
+.theo-continue button{flex:1;padding:13px;border-radius:14px;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s}
+.theo-continue .tc-got-it{background:linear-gradient(135deg,#d946ef,#a855f7);border:none;color:#fff}
+.theo-continue .tc-got-it:hover{opacity:.9}
+@media(min-width:500px){#theoPopup{border-radius:28px;margin-bottom:20px;max-height:85dvh;border:1px solid rgba(168,85,247,.12)}#theoOverlay{align-items:center}}
+
 </style>
 
 <button id="aiBubble" onclick="toggleChat()" title="Ask Theodore">💬<span class="dot"></span></button>
@@ -1092,6 +1136,38 @@ function subT(){var s=0;for(var i=0;i<shuf.length;i++){var q=shuf[i];if(q.type==
 
 
 
+<div id="theoOverlay" onclick="if(event.target===this)closeTheo()">
+  <div id="theoPopup">
+    <div class="theo-header">
+      <div class="theo-avatar">🧸</div>
+      <div class="theo-header-text">
+        <h3>Theodore says...</h3>
+        <small>Let me help you understand this!</small>
+      </div>
+      <button class="theo-close" onclick="closeTheo()">✕</button>
+    </div>
+    <div class="theo-body" id="theoBody">
+      <div class="theo-wrong-banner">
+        <div class="wrong-x">✗</div>
+        <div class="theo-wrong-info" id="theoWrongInfo"></div>
+      </div>
+      <div class="theo-explain">
+        <div class="theo-explain-text" id="theoExplainText"></div>
+      </div>
+      <div class="theo-divider"></div>
+      <div class="theo-chat-label">Still confused? Ask me anything</div>
+      <div class="theo-msgs" id="theoMsgs"></div>
+    </div>
+    <div class="theo-input-row">
+      <input id="theoIn" type="text" placeholder="Why is that the answer?" onkeydown="if(event.key==='Enter'&&!theoLoading)theoAsk()">
+      <button id="theoSendBtn" onclick="theoAsk()">Ask</button>
+    </div>
+    <div class="theo-continue">
+      <button class="tc-got-it" onclick="closeTheo()">Got it! Continue →</button>
+    </div>
+  </div>
+</div>
+
 <div id="aiChat">
   <div class="ch-hdr">
     <div class="av">🧸</div>
@@ -1130,6 +1206,134 @@ function updateAiCtx(){
   }else{
     el.textContent="Ask me anything about your lessons";
   }
+}
+
+var theoLoading=false;var theoHistory=[];var theoCurrentQ=null;
+
+function showTheo(q,selIdx,fibInput){
+  theoHistory=[];theoCurrentQ=q;theoLoading=false;
+  var overlay=document.getElementById("theoOverlay");
+  var wrongInfo=document.getElementById("theoWrongInfo");
+  var explainText=document.getElementById("theoExplainText");
+  var msgs=document.getElementById("theoMsgs");
+  var inp=document.getElementById("theoIn");
+  msgs.innerHTML="";inp.value="";
+  document.getElementById("theoSendBtn").disabled=false;
+
+  // Build wrong answer info
+  var wrongHtml="";
+  if(q.type==="fib"||q.type==="sa"){
+    wrongHtml="Your answer: <b>"+(fibInput||"(empty)")+"</b><br><div class='theo-correct-pill'>✓ Correct: "+q.ans+"</div>";
+  } else {
+    var yourAns=selIdx!==null&&selIdx!==undefined?q.a[selIdx]:"(none)";
+    wrongHtml="You picked: <b>"+yourAns+"</b><br><div class='theo-correct-pill'>✓ Correct: "+q.a[q.c]+"</div>";
+  }
+  wrongInfo.innerHTML=wrongHtml;
+
+  // Build explanation
+  var expHtml="";
+  if(q.exp){
+    expHtml=q.exp.replace(/\\"/g,'"');
+  } else {
+    expHtml="The correct answer is <b>"+(q.ans||q.a[q.c])+"</b>. Review this concept in your notes for a deeper understanding.";
+  }
+  explainText.innerHTML=expHtml;
+
+  // Show with animation
+  overlay.classList.add("show");
+  setTimeout(function(){inp.focus()},400);
+}
+
+function closeTheo(){
+  var overlay=document.getElementById("theoOverlay");
+  var popup=document.getElementById("theoPopup");
+  popup.style.transform="translateY(40px)";
+  overlay.style.opacity="0";
+  setTimeout(function(){
+    overlay.classList.remove("show");
+    overlay.style.opacity="";
+    popup.style.transform="";
+  },250);
+}
+
+function theoAddMsg(text,role){
+  var msgs=document.getElementById("theoMsgs");
+  var div=document.createElement("div");
+  div.className="theo-msg "+(role==="user"?"usr":"bot");
+  div.innerHTML=text;
+  msgs.appendChild(div);
+  var body=document.getElementById("theoBody");
+  body.scrollTop=body.scrollHeight;
+  return div;
+}
+
+async function theoAsk(){
+  var inp=document.getElementById("theoIn");
+  var txt=inp.value.trim();
+  if(!txt||theoLoading)return;
+  inp.value="";theoLoading=true;
+  document.getElementById("theoSendBtn").disabled=true;
+  theoAddMsg(txt,"user");
+  var typing=theoAddMsg("Thinking...","bot");
+  typing.classList.add("typing");
+  theoHistory.push({role:"user",content:txt});
+  if(theoHistory.length>12)theoHistory=theoHistory.slice(-8);
+
+  // Build a focused context for this question
+  var q=theoCurrentQ;
+  var sysPrompt="You are Theodore 🧸, a friendly study buddy for Anhelina. She just got a quiz question WRONG and is asking you about it. Be warm, encouraging, and explain clearly in 2-4 sentences. Use emoji occasionally.\n\n";
+  sysPrompt+="THE QUESTION: "+q.q+"\n";
+  if(q.type==="fib"||q.type==="sa"){
+    sysPrompt+="CORRECT ANSWER: "+q.ans+"\n";
+  } else {
+    sysPrompt+="OPTIONS: "+q.a.join(" | ")+"\n";
+    sysPrompt+="CORRECT ANSWER: "+q.a[q.c]+"\n";
+  }
+  if(q.exp) sysPrompt+="EXPLANATION: "+q.exp+"\n";
+  if(curL){
+    sysPrompt+="\nLESSON CONTEXT ("+curL.title+"):\n";
+    for(var i=0;i<curL.notes.length;i++){
+      sysPrompt+=curL.notes[i].heading+": "+curL.notes[i].body.replace(/<[^>]*>/g,"").substring(0,200)+"\n";
+    }
+  }
+  if(sysPrompt.length>3000)sysPrompt=sysPrompt.substring(0,3000);
+
+  var APIKEY=localStorage.getItem("np_gk");
+  if(!APIKEY){
+    typing.classList.remove("typing");
+    typing.innerHTML="Tap the 🔑 button in the main chat to add a free API key, then I can answer your questions! 💜";
+    theoLoading=false;document.getElementById("theoSendBtn").disabled=false;return;
+  }
+
+  var answer="";var isGemini=APIKEY.startsWith("AIza");
+  if(!isGemini){
+    var msgs=[{role:"system",content:sysPrompt}];
+    for(var hi=0;hi<theoHistory.length;hi++)msgs.push({role:theoHistory[hi].role==="user"?"user":"assistant",content:theoHistory[hi].content});
+    var models=["llama-3.3-70b-versatile","llama-3.1-8b-instant"];
+    for(var mi=0;mi<models.length&&!answer;mi++){
+      try{var resp=await fetch("https://api.groq.com/openai/v1/chat/completions",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+APIKEY},body:JSON.stringify({model:models[mi],messages:msgs,max_tokens:512,temperature:0.7})});
+      if(resp.ok){var data=await resp.json();if(data.choices&&data.choices[0])answer=data.choices[0].message.content}
+      else{if(resp.status===429)continue}}catch(err){console.warn(err)}
+    }
+  } else {
+    var contents=[];
+    for(var hi=0;hi<theoHistory.length;hi++){var role=theoHistory[hi].role==="user"?"user":"model";if(contents.length>0&&contents[contents.length-1].role===role)contents[contents.length-1].parts[0].text+="\n"+theoHistory[hi].content;else contents.push({role:role,parts:[{text:theoHistory[hi].content}]})}
+    if(contents[0]&&contents[0].role!=="user")contents.unshift({role:"user",parts:[{text:"Hello"}]});
+    if(contents[contents.length-1]&&contents[contents.length-1].role!=="user")contents.push({role:"user",parts:[{text:"Please respond."}]});
+    var models=["gemini-2.0-flash","gemini-2.0-flash-lite"];
+    for(var mi=0;mi<models.length&&!answer;mi++){
+      try{var resp=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+models[mi]+":generateContent?key="+encodeURIComponent(APIKEY),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({contents:contents,systemInstruction:{parts:[{text:sysPrompt}]},generationConfig:{temperature:0.7,maxOutputTokens:512}})});
+      if(resp.ok){var data=await resp.json();if(data.candidates&&data.candidates[0]&&data.candidates[0].content)answer=data.candidates[0].content.parts.map(function(p){return p.text||""}).join("")}
+      else{console.warn("Gemini "+models[mi]+": "+resp.status)}}catch(err){console.warn(err)}
+    }
+  }
+  if(!answer)answer="Hmm, couldn't connect right now. Try again in a moment! 💜";
+  answer=answer.replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/\*(.+?)\*/g,"<i>$1</i>").replace(/\n/g,"<br>");
+  theoHistory.push({role:"assistant",content:answer.replace(/<[^>]*>/g,"")});
+  typing.classList.remove("typing");typing.innerHTML=answer;
+  theoLoading=false;document.getElementById("theoSendBtn").disabled=false;
+  var body=document.getElementById("theoBody");body.scrollTop=body.scrollHeight;
+  setTimeout(function(){document.getElementById("theoIn").focus()},100);
 }
 
 function getContext(){
