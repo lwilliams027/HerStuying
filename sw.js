@@ -1,4 +1,4 @@
-const CACHE='studyhub-v1';
+const CACHE='studyhub-v2';
 const ASSETS=['/','index.html'];
 
 self.addEventListener('install',e=>{
@@ -14,6 +14,12 @@ self.addEventListener('activate',e=>{
 });
 
 self.addEventListener('fetch',e=>{
+  // Skip non-GET requests (POST/PUT/DELETE to Supabase, etc.)
+  if(e.request.method!=='GET') return;
+  // Skip Supabase and external API calls
+  var url=e.request.url;
+  if(url.includes('supabase.co')||url.includes('googleapis.com')||url.includes('groq.com')) return;
+
   e.respondWith(
     fetch(e.request).then(r=>{
       if(r.ok){
