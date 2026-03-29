@@ -1682,10 +1682,14 @@ function save(){
 function cloudPush(){
   var sb=_supaClient();if(!sb||_syncing)return;
   _syncing=true;_syncStatus("Syncing…","#fbbf24");
-  var rows=notes.map(function(n){return{id:n.id,data:n,updated_at:n.mod||Date.now()}});
+  var rows=notes.map(function(n){
+    var ts=n.mod;
+    if(!ts||typeof ts!=='number')ts=Date.now();
+    return{id:n.id,data:n,updated_at:Math.floor(ts)};
+  });
   if(!rows.length){_syncing=false;_syncStatus("Synced","#34d399");return}
   var payload=JSON.stringify(rows);
-  console.log("Cloud push: "+rows.length+" notes, payload size: "+(payload.length/1024).toFixed(1)+"KB");
+  console.log("Cloud push: "+rows.length+" notes, payload size: "+(payload.length/1024).toFixed(1)+"KB, updated_at sample: "+rows[0].updated_at+" (type: "+typeof rows[0].updated_at+")");
   sb.from("notes").upsert(rows,{onConflict:"id"}).select().then(function(res){
     _syncing=false;
     if(res.error){console.warn("Cloud push error:",res.error.message||String(res.error));_syncStatus("Sync error","#ef4444")}
@@ -3619,6 +3623,15 @@ function showApiKeyModal(){
 
 </script>
 
-<script>if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){})</script>
+<script>
+// v2.1: Clear old SW cache to ensure latest code loads
+if('serviceWorker' in navigator){
+  if('caches' in window){caches.keys().then(function(names){names.forEach(function(n){caches.delete(n)})})}
+  navigator.serviceWorker.getRegistrations().then(function(regs){
+    regs.forEach(function(r){r.unregister()});
+  });
+}
+console.log("StudyHub v2.1 — cloud sync fix active");
+</script>
 </body>
 </html>
