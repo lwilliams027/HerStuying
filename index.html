@@ -560,9 +560,63 @@ var CD_KEY="sh_custom_data";
 var BI_KEY="sh_builtin_mods";
 function getCD(){try{return JSON.parse(localStorage.getItem(CD_KEY)||"{}")}catch(e){return{}}}
 function saveCD(d){localStorage.setItem(CD_KEY,JSON.stringify(d));rebuildMaps()}
-// Save modifications to built-in sections
-function saveBIMods(){try{var m={};for(var k in D){m[k]={lessons:D[k].lessons,name:D[k].name,sub:D[k].sub}}localStorage.setItem(BI_KEY,JSON.stringify(m))}catch(e){}}
-function loadBIMods(){try{var m=JSON.parse(localStorage.getItem(BI_KEY)||"{}");for(var k in m){if(D[k]){D[k].lessons=m[k].lessons;if(m[k].name)D[k].name=m[k].name;if(m[k].sub)D[k].sub=m[k].sub}}}catch(e){}}
+// Save modifications to built-in sections (delta-only to avoid hitting localStorage quota)
+function saveBIMods(){
+  try{
+    var m={};
+    for(var k in D){
+      var sec=D[k];
+      var entry={name:sec.name,sub:sec.sub,modLessons:{}};
+      var hasData=false;
+      sec.lessons.forEach(function(l){
+        if(l._touched||( l.id&&l.id.indexOf('cl-')===0)){
+          entry.modLessons[l.id]=l;hasData=true;
+        }
+      });
+      if(hasData)m[k]=entry;
+    }
+    var str=JSON.stringify(m);
+    localStorage.setItem(BI_KEY,str);
+  }catch(e){console.warn("saveBIMods failed:",e.message)}
+}
+function loadBIMods(){
+  try{
+    var raw=localStorage.getItem(BI_KEY);if(!raw)return;
+    var m=JSON.parse(raw);
+    var needsMigrate=false;
+    for(var k in m){
+      if(!D[k])continue;
+      var entry=m[k];
+      // Old format compat: if entry has 'lessons' array, migrate
+      if(entry.lessons&&Array.isArray(entry.lessons)){
+        D[k].lessons=entry.lessons;
+        if(entry.name)D[k].name=entry.name;
+        if(entry.sub)D[k].sub=entry.sub;
+        needsMigrate=true;
+        continue;
+      }
+      // New delta format
+      if(entry.name)D[k].name=entry.name;
+      if(entry.sub)D[k].sub=entry.sub;
+      if(entry.modLessons){
+        for(var lid in entry.modLessons){
+          var saved=entry.modLessons[lid];
+          // Find existing lesson or append
+          var found=false;
+          for(var i=0;i<D[k].lessons.length;i++){
+            if(D[k].lessons[i].id===lid){D[k].lessons[i]=saved;found=true;break}
+          }
+          if(!found)D[k].lessons.push(saved);
+        }
+      }
+    }
+    // Filter out deleted built-in lessons
+    var dels=[];try{dels=JSON.parse(localStorage.getItem("sh_bi_del")||"[]")}catch(e){}
+    if(dels.length){for(var k in D){D[k].lessons=D[k].lessons.filter(function(l){return dels.indexOf(l.id)<0})}}
+    // Migrate old format to delta to free localStorage space
+    if(needsMigrate){console.log("Migrating BI mods to delta format...");saveBIMods()}
+  }catch(e){console.warn("loadBIMods failed:",e.message)}
+}
 loadBIMods();
 // Unified section helpers
 function getSection(key){return D[key]||getCD()[key]||null}
@@ -3461,13 +3515,22 @@ function doEditLesson(catKey,idx){
   var sec=getSection(catKey);if(!sec||!sec.lessons[idx])return;
   sec.lessons[idx].title=document.getElementById("elTitle").value.trim()||sec.lessons[idx].title;
   sec.lessons[idx].ln=document.getElementById("elLabel").value.trim()||sec.lessons[idx].ln;
+  sec.lessons[idx]._touched=true;
   saveSection(catKey);curL=sec.lessons[idx];_closeModal();render();csToast("✅ Lesson updated");
 }
 function delLesson(catKey){
   if(!confirm("Delete this lesson and all its notes/quizzes?"))return;
   var sec=getSection(catKey);if(!sec)return;
   var idx=-1;for(var i=0;i<sec.lessons.length;i++){if(sec.lessons[i].id===curL.id){idx=i;break}}
-  if(idx>=0){sec.lessons.splice(idx,1);saveSection(catKey)}
+  if(idx>=0){
+    // Track deleted built-in lesson IDs so they stay gone on reload
+    if(D[catKey]){
+      var delKey="sh_bi_del";
+      var dels=[];try{dels=JSON.parse(localStorage.getItem(delKey)||"[]")}catch(e){}
+      if(dels.indexOf(curL.id)<0){dels.push(curL.id);localStorage.setItem(delKey,JSON.stringify(dels))}
+    }
+    sec.lessons.splice(idx,1);saveSection(catKey)
+  }
   view="class";curL=null;render();csToast("🗑️ Lesson deleted");
 }
 
@@ -3483,6 +3546,7 @@ function doAddNote(){
   var sec=getSection(curC);if(!sec)return;
   var idx=findLessonIdx(curC);if(idx<0)return;
   sec.lessons[idx].notes.push({heading:head,body:body});
+  sec.lessons[idx]._touched=true;
   saveSection(curC);curL=sec.lessons[idx];_closeModal();render();csToast("📝 Note added");
 }
 function showEditNote(ni){
@@ -3494,6 +3558,7 @@ function doEditNote(ni){
   var idx=findLessonIdx(curC);if(idx<0)return;
   sec.lessons[idx].notes[ni].heading=document.getElementById("enHead").value.trim()||"Untitled";
   sec.lessons[idx].notes[ni].body=document.getElementById("enBody").value.trim()||"";
+  sec.lessons[idx]._touched=true;
   saveSection(curC);curL=sec.lessons[idx];_closeModal();render();csToast("✅ Note updated");
 }
 function delNote(ni){
@@ -3501,6 +3566,7 @@ function delNote(ni){
   var sec=getSection(curC);if(!sec)return;
   var idx=findLessonIdx(curC);if(idx<0)return;
   sec.lessons[idx].notes.splice(ni,1);
+  sec.lessons[idx]._touched=true;
   saveSection(curC);curL=sec.lessons[idx];render();csToast("🗑️ Note removed");
 }
 
@@ -3525,6 +3591,7 @@ function processNoteFile(file){
     var sec=getSection(curC);if(!sec)return;
     var idx=findLessonIdx(curC);if(idx<0)return;
     sec.lessons[idx].notes.push({heading:heading,body:body});
+    sec.lessons[idx]._touched=true;
     saveSection(curC);curL=sec.lessons[idx];_closeModal();render();csToast("📄 Notes uploaded from "+file.name);
   };
   reader.readAsText(file);
@@ -3576,6 +3643,7 @@ function doAddQuestion(catKey){
   var exp=document.getElementById("cqExp").value.trim();
   if(exp)qObj.exp=exp;
   sec.lessons[idx].quiz.push(qObj);
+  sec.lessons[idx]._touched=true;
   saveSection(catKey);curL=sec.lessons[idx];
   // Clear form for next question
   document.getElementById("cqQuestion").value="";
