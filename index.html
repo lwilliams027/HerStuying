@@ -3692,12 +3692,10 @@ function showApiKeyModal(){
 </script>
 
 <script>
-// v2.1: Clear old SW cache to ensure latest code loads
+// v2.1: Register self-destructing SW to replace old cached version, then clear caches
 if('serviceWorker' in navigator){
   if('caches' in window){caches.keys().then(function(names){names.forEach(function(n){caches.delete(n)})})}
-  navigator.serviceWorker.getRegistrations().then(function(regs){
-    regs.forEach(function(r){r.unregister()});
-  });
+  navigator.serviceWorker.register('sw.js').catch(function(){});
 }
 console.log("StudyHub v2.1 — cloud sync fix active");
 </script>
