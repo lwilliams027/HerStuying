@@ -1881,8 +1881,11 @@ function setMode(m){
 }
 
 function applyMode(){
+  // Blur any focused text box when switching modes
+  var ae=document.activeElement;
+  if(ae&&ae.classList&&ae.classList.contains("np-tbox"))ae.blur();
   document.querySelectorAll(".np-tbox").forEach(function(t){
-    t.classList.remove("typable","selectable","selected");
+    t.classList.remove("typable","selectable","selected","editing");
     t.contentEditable="false";
     if(mode==="text"){t.classList.add("typable");t.contentEditable="true"}
     else if(mode==="select"){t.classList.add("selectable")}
@@ -1962,6 +1965,9 @@ function cPos(e){var c=document.getElementById("npDrawC"),r=c.getBoundingClientR
 
 function dStart(e){
   if(mode==="text"||mode==="arrow")return;
+  // Blur any focused text box so keyboard input stops going there
+  var ae=document.activeElement;
+  if(ae&&ae.classList&&ae.classList.contains("np-tbox"))ae.blur();
   e.preventDefault();e.stopPropagation();
   var p=cPos(e);
   var pr=(e.pressure>0&&e.pressure<1)?e.pressure:0.5;
@@ -2411,6 +2417,11 @@ function canvasClick(e){
     if(tgt.classList.contains("np-tbox")||tgt.closest(".np-tbox"))return;
     if(tgt.classList.contains("np-sticky")||tgt.closest(".np-sticky"))return;
     if(tgt.classList.contains("np-img")||tgt.closest(".np-img"))return;
+    // Blur & deactivate any currently editing text box first
+    document.querySelectorAll(".np-tbox.editing").forEach(function(t){t.classList.remove("editing");t.blur()});
+    var ae=document.activeElement;
+    if(ae&&ae.classList&&ae.classList.contains("np-tbox"))ae.blur();
+    e.preventDefault();
     var cv=document.getElementById("npCanvas"),r=cv.getBoundingClientRect();
     var x=e.clientX-r.left;
     var y=e.clientY-r.top;
@@ -2458,7 +2469,7 @@ function createTBox(x,y,w,htm,id){
       var sel=window.getSelection();sel.selectAllChildren(box);sel.collapseToEnd()}
   });
   document.getElementById("npCanvas").appendChild(box);
-  if(!htm&&mode==="text"){box.classList.add("editing");box.focus()}
+  if(!htm&&mode==="text"){box.classList.add("editing");setTimeout(function(){box.focus()},0)}
 }
 
 function startResize(el,corner,e){
