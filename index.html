@@ -699,7 +699,7 @@ function subT(){var s=0;for(var i=0;i<shuf.length;i++){var q=shuf[i];if(q.type==
 .ch-msg.bot{align-self:flex-start;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.12);border-bottom-left-radius:4px}
 .ch-msg.usr{align-self:flex-end;background:rgba(99,102,241,.2);border:1px solid rgba(99,102,241,.15);border-bottom-right-radius:4px}
 .ch-msg.typing{color:rgba(226,224,240,.4);font-style:italic}
-.ch-msg b,.ch-msg strong{color:#c084fc}
+.ch-msg b,.ch-msg strong{color:#a855f7}
 #aiChat .ch-input{padding:12px 14px;border-top:1px solid rgba(168,85,247,.12);display:flex;gap:8px;background:rgba(13,11,26,.6)}
 #aiChat .ch-input input{flex:1;padding:10px 14px;border-radius:12px;border:1.5px solid rgba(168,85,247,.2);background:rgba(26,18,48,.7);color:#e2e0f0;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s}
 #aiChat .ch-input input:focus{border-color:rgba(168,85,247,.5)}
@@ -715,83 +715,84 @@ function subT(){var s=0;for(var i=0;i<shuf.length;i++){var q=shuf[i];if(q.type==
 /* ═══ NOTES POPUP ═══ */
 
 /* ── Floating Action Button ── */
-#notesBub{position:fixed;bottom:24px;left:24px;z-index:9999;width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#c084fc,#9333ea);box-shadow:0 4px 18px rgba(147,51,234,.3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:21px;transition:all .25s cubic-bezier(.34,1.56,.64,1);border:none;color:#fff}
+#notesBub{position:fixed;bottom:24px;left:24px;z-index:9999;width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#a855f7,#9333ea);box-shadow:0 4px 18px rgba(147,51,234,.3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:21px;transition:all .25s cubic-bezier(.34,1.56,.64,1);border:none;color:#fff}
 #notesBub:hover{transform:translateY(-2px) scale(1.05);box-shadow:0 6px 24px rgba(147,51,234,.35)}
 #notesBub:active{transform:scale(.93)}
 
 /* ── Main Panel ── */
-#notesPanel{position:fixed;bottom:40px;left:40px;z-index:9998;width:560px;height:680px;min-width:340px;min-height:400px;background:#0f0d1a;border:1px solid rgba(255,255,255,.06);border-radius:18px;display:none;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.03);resize:both;transition:opacity .3s,transform .3s}
+#notesPanel{position:fixed;bottom:40px;left:40px;z-index:9998;width:560px;height:680px;min-width:340px;min-height:400px;background:#0f0d1a;border:1px solid rgba(168,85,247,.12);border-radius:18px;display:none;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.55),0 0 0 1px rgba(168,85,247,.06);resize:both;transition:opacity .3s,transform .3s}
 #notesPanel.open{display:flex;animation:panelIn .35s cubic-bezier(.16,1,.3,1)}
 @keyframes panelIn{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
-#notesPanel::after{content:'';position:absolute;bottom:3px;right:3px;width:12px;height:12px;border-right:2px solid rgba(255,255,255,.08);border-bottom:2px solid rgba(255,255,255,.08);border-radius:0 0 3px 0;pointer-events:none}
+#notesPanel::after{content:'';position:absolute;bottom:3px;right:3px;width:12px;height:12px;border-right:2px solid rgba(168,85,247,.15);border-bottom:2px solid rgba(168,85,247,.15);border-radius:0 0 3px 0;pointer-events:none}
 
 /* ── Header ── */
-.np-hdr{padding:10px 14px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.np-hdr{padding:10px 14px;background:rgba(168,85,247,.04);border-bottom:1px solid rgba(168,85,247,.1);display:flex;align-items:center;gap:8px;flex-shrink:0}
 .np-hdr h4{font-size:13px;font-weight:600;color:#f0ebfa;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.2px}
-.np-hdr button{background:none;border:none;color:rgba(200,190,230,.4);font-size:14px;cursor:pointer;padding:4px 8px;border-radius:8px;transition:all .15s}
-.np-hdr button:hover{background:rgba(255,255,255,.05);color:#c4b5fd}
+.np-hdr button{background:none;border:none;color:rgba(200,190,230,.4);font-size:14px;cursor:pointer;padding:4px 8px;border-radius:6px;transition:all .15s}
+.np-hdr button:hover{background:rgba(168,85,247,.08);color:#d8b4fe}
 .np-hdr button:active{transform:scale(.9)}
 .np-hdr input,.np-title-input{font-size:13px;font-weight:600;color:#f0ebfa;flex:1;background:none;border:1px solid transparent;border-radius:6px;padding:2px 8px;outline:none;font-family:inherit;min-width:0;cursor:default;letter-spacing:-.2px;transition:all .15s}
-.np-hdr input:focus,.np-title-input:focus{border-color:rgba(192,132,252,.25);background:rgba(255,255,255,.03);cursor:text}
+.np-hdr input:focus,.np-title-input:focus{border-color:rgba(168,85,247,.25);background:rgba(168,85,247,.04);cursor:text}
 
 /* ── Body Layout ── */
 .np-body{flex:1;display:flex;overflow:hidden;position:relative}
 
 /* ── Sidebar ── */
-.np-sb{position:absolute;top:0;left:0;width:220px;height:100%;background:#0c0a16;border-right:1px solid rgba(255,255,255,.05);display:flex;flex-direction:column;z-index:15;transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);overflow:hidden}
+.np-sb{position:absolute;top:0;left:0;width:220px;height:100%;background:#0c0a16;border-right:1px solid rgba(168,85,247,.08);display:flex;flex-direction:column;z-index:15;transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);overflow:hidden}
 .np-sb.open{transform:translateX(0);box-shadow:8px 0 32px rgba(0,0,0,.4)}
 .np-dim{position:absolute;inset:0;background:rgba(0,0,0,.25);z-index:14;opacity:0;pointer-events:none;transition:opacity .28s}
 .np-dim.show{opacity:1;pointer-events:auto}
 
 .np-sb-hdr{padding:14px 16px 10px;font-size:10px;font-weight:700;color:rgba(200,190,230,.35);text-transform:uppercase;letter-spacing:1.5px}
-.np-sb-search{width:calc(100% - 24px);margin:0 12px 8px;padding:8px 12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:8px;color:#e2d5f5;font-size:12px;outline:none;font-family:inherit;transition:all .2s}
+.np-sb-search{width:calc(100% - 24px);margin:0 12px 8px;padding:8px 12px;background:rgba(168,85,247,.04);border:1px solid rgba(168,85,247,.08);border-radius:8px;color:#e2d5f5;font-size:12px;outline:none;font-family:inherit;transition:all .2s}
 .np-sb-search::placeholder{color:rgba(200,190,230,.25)}
-.np-sb-search:focus{border-color:rgba(192,132,252,.2);background:rgba(255,255,255,.05);box-shadow:0 0 0 2px rgba(192,132,252,.06)}
+.np-sb-search:focus{border-color:rgba(168,85,247,.2);background:rgba(168,85,247,.06);box-shadow:0 0 0 2px rgba(168,85,247,.06)}
 
 .np-sb-list{flex:1;overflow-y:auto;padding:4px 8px}
 .np-ni{padding:10px 12px;border-radius:8px;cursor:pointer;margin-bottom:2px;transition:all .15s;border:1px solid transparent}
-.np-ni:hover{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.04)}
-.np-ni.active{background:rgba(192,132,252,.06);border-color:rgba(192,132,252,.1)}
+.np-ni:hover{background:rgba(168,85,247,.04);border-color:rgba(168,85,247,.06)}
+.np-ni.active{background:rgba(168,85,247,.06);border-color:rgba(168,85,247,.1)}
 .np-ni h6{font-size:12px;color:#e2d5f5;font-weight:600;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .np-ni small{font-size:10px;color:rgba(200,190,230,.35);font-weight:400}
 
 /* Background picker */
-.np-sb-bg{padding:10px 12px;border-top:1px solid rgba(255,255,255,.04)}
+.np-sb-bg{padding:10px 12px;border-top:1px solid rgba(168,85,247,.06)}
 .np-sb-bg label{font-size:10px;color:rgba(200,190,230,.3);display:block;margin-bottom:6px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
 .np-bg-opts{display:flex;gap:6px}
 .np-bg-opt{width:34px;height:34px;border-radius:8px;border:2px solid transparent;cursor:pointer;transition:all .15s}
-.np-bg-opt:hover{border-color:rgba(192,132,252,.2);transform:scale(1.08)}
-.np-bg-opt.active{border-color:#c084fc;box-shadow:0 0 8px rgba(192,132,252,.15)}
+.np-bg-opt:hover{border-color:rgba(168,85,247,.2);transform:scale(1.08)}
+.np-bg-opt.active{border-color:#a855f7;box-shadow:0 0 8px rgba(168,85,247,.15)}
 
-.np-sb-ctrl{display:flex;gap:6px;padding:10px 12px;border-top:1px solid rgba(255,255,255,.04)}
-.np-sb-ctrl button{flex:1;padding:7px;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);color:rgba(200,190,230,.5);font-size:11px;cursor:pointer;font-weight:500;transition:all .15s}
-.np-sb-ctrl button:hover{background:rgba(255,255,255,.06);color:#c4b5fd;border-color:rgba(255,255,255,.08)}
+.np-sb-ctrl{display:flex;gap:6px;padding:10px 12px;border-top:1px solid rgba(168,85,247,.06)}
+.np-sb-ctrl button{flex:1;padding:7px;border-radius:8px;background:rgba(168,85,247,.04);border:1px solid rgba(168,85,247,.08);color:rgba(200,190,230,.5);font-size:11px;cursor:pointer;font-weight:500;transition:all .15s}
+.np-sb-ctrl button:hover{background:rgba(168,85,247,.08);color:#c4b5fd;border-color:rgba(168,85,247,.12)}
 .np-sb-ctrl button:active{transform:scale(.95)}
 
 /* ── Main Editor ── */
 .np-main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
 
 /* ── Two-row Toolbar ── */
-.np-bar,.np-bar2{display:flex;align-items:center;gap:0;padding:0 4px;background:rgba(255,255,255,.02);flex-shrink:0}
-.np-bar{height:42px;border-top:1px solid rgba(255,255,255,.05)}
-.np-bar button,.np-bar2 button{background:none;border:none;color:rgba(200,190,230,.4);padding:0;font-size:15px;cursor:pointer;transition:all .15s;width:34px;height:34px;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;border-radius:8px;margin:0 1px}
-.np-bar button:hover,.np-bar2 button:hover{color:#c4b5fd;background:rgba(255,255,255,.04)}
+.np-bar,.np-bar2{display:flex;align-items:center;gap:0;padding:0 3px;background:rgba(168,85,247,.03);flex-shrink:0}
+.np-bar{height:36px;border-top:1px solid rgba(168,85,247,.08)}
+.np-bar button,.np-bar2 button{background:none;border:none;color:rgba(200,190,230,.45);padding:0;font-size:14px;cursor:pointer;transition:all .15s;width:30px;height:30px;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;border-radius:6px;margin:0 1px}
+.np-bar button:hover,.np-bar2 button:hover{color:#d8b4fe;background:rgba(168,85,247,.08)}
 .np-bar button:active,.np-bar2 button:active{transform:scale(.88)}
-.np-bar button.on{color:#c084fc}
-.np-bar button.on::after{content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:14px;height:2px;background:#c084fc;border-radius:1px}
-.np-bar .sep,.np-bar2 .sep{width:1px;height:16px;background:rgba(255,255,255,.04);margin:0 2px;flex-shrink:0}
+.np-bar button.on{color:#a855f7}
+.np-bar button.on::after{content:'';position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:12px;height:2px;background:#a855f7;border-radius:1px}
+.np-bar .sep,.np-bar2 .sep{width:1px;height:14px;background:rgba(168,85,247,.08);margin:0 2px;flex-shrink:0}
 .np-bar .spacer{flex:1}
-.np-bar .xpd{color:rgba(200,190,230,.25);font-size:12px;transition:all .25s}
-.np-bar .xpd.flip{transform:rotate(180deg);color:#c084fc}
+.np-bar .xpd{color:rgba(200,190,230,.25);font-size:11px;transition:all .25s}
+.np-bar .xpd.flip{transform:rotate(180deg);color:#a855f7}
+.np-bar svg,.np-bar2 svg{width:15px;height:15px}
 
-.np-bar2{background:rgba(255,255,255,.015);border-top:1px solid rgba(255,255,255,.03);height:0;overflow:hidden;transition:height .25s cubic-bezier(.4,0,.2,1),opacity .2s;opacity:0}
-.np-bar2.open{height:36px;opacity:1}
-.np-bar2 button{height:32px;font-size:13px;padding:0 5px;width:auto;min-width:30px}
-.np-bar2 select{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:6px;color:#c4b5fd;padding:3px 6px;font-size:10px;cursor:pointer;flex-shrink:0;height:26px;font-family:inherit;transition:all .15s}
-.np-bar2 select:hover{border-color:rgba(255,255,255,.1)}
+.np-bar2{background:rgba(168,85,247,.02);border-top:1px solid rgba(168,85,247,.06);height:0;overflow:hidden;transition:height .25s cubic-bezier(.4,0,.2,1),opacity .2s;opacity:0}
+.np-bar2.open{height:32px;opacity:1}
+.np-bar2 button{height:28px;font-size:12px;padding:0 4px;width:auto;min-width:28px}
+.np-bar2 select{background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.1);border-radius:5px;color:#d8b4fe;padding:2px 5px;font-size:10px;cursor:pointer;flex-shrink:0;height:24px;font-family:inherit;transition:all .15s}
+.np-bar2 select:hover{border-color:rgba(168,85,247,.25)}
 
 /* ── Color Palette ── */
-.np-palette{position:absolute;bottom:54px;left:50%;transform:translateX(-50%);background:#13111e;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:16px;display:none;z-index:25;box-shadow:0 -12px 40px rgba(0,0,0,.45);min-width:220px}
+.np-palette{position:absolute;bottom:54px;left:50%;transform:translateX(-50%);background:#13111e;border:1px solid rgba(168,85,247,.15);border-radius:14px;padding:16px;display:none;z-index:25;box-shadow:0 -12px 40px rgba(0,0,0,.45),0 0 0 1px rgba(168,85,247,.04);min-width:220px}
 .np-palette.show{display:block;animation:paletteIn .2s cubic-bezier(.16,1,.3,1)}
 @keyframes paletteIn{from{opacity:0;transform:translateX(-50%) translateY(8px) scale(.95)}to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}
 .np-palette-hdr{font-size:10px;color:rgba(200,190,230,.3);font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px}
@@ -801,14 +802,14 @@ function subT(){var s=0;for(var i=0;i<shuf.length;i++){var q=shuf[i];if(q.type==
 .np-palette .cd.on{border-color:rgba(255,255,255,.8);transform:scale(1.18);box-shadow:0 0 10px rgba(255,255,255,.1)}
 .np-palette-row{display:flex;align-items:center;gap:10px}
 .np-palette-row label{font-size:10px;color:rgba(200,190,230,.3);min-width:36px;font-weight:500}
-.np-palette-row input[type=range]{flex:1;accent-color:#c084fc;height:4px}
+.np-palette-row input[type=range]{flex:1;accent-color:#a855f7;height:4px}
 .np-palette-row input[type=color]{width:28px;height:28px;border:none;border-radius:50%;cursor:pointer;background:none;padding:0}
-.np-palette-preview{width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,.08)}
+.np-palette-preview{width:28px;height:28px;border-radius:50%;border:2px solid rgba(168,85,247,.12)}
 
 /* ── Canvas / Paper ── */
 .np-canvas-wrap{flex:1;position:relative;overflow:auto;scroll-behavior:smooth}
 .np-canvas-wrap::-webkit-scrollbar{width:4px}
-.np-canvas-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.06);border-radius:2px}
+.np-canvas-wrap::-webkit-scrollbar-thumb{background:rgba(168,85,247,.1);border-radius:2px}
 
 .np-canvas{position:relative;width:100%;min-height:100%;padding:0;transition:background .3s;touch-action:pan-y}
 .np-canvas.bg-grid{background-image:linear-gradient(rgba(200,180,240,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(200,180,240,.03) 1px,transparent 1px);background-size:24px 24px}
@@ -827,23 +828,23 @@ function subT(){var s=0;for(var i=0;i<shuf.length;i++){var q=shuf[i];if(q.type==
 #npArrowSvg{position:absolute;top:0;left:0;width:100%;height:100%;min-height:inherit;z-index:3;pointer-events:none}
 #npArrowSvg.on{pointer-events:auto;cursor:crosshair;z-index:10}
 #npArrowSvg.sel-on{pointer-events:auto;z-index:1}
-#npArrowSvg line,#npArrowSvg path{stroke:#c084fc;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
-#npArrowSvg marker path{fill:#c084fc;stroke:none}
+#npArrowSvg line,#npArrowSvg path{stroke:#a855f7;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+#npArrowSvg marker path{fill:#a855f7;stroke:none}
 #npArrowSvg .np-arr{cursor:pointer;transition:stroke-width .2s ease,opacity .2s ease}
 #npArrowSvg .np-arr:hover{stroke-width:3;opacity:.8}
 
 /* ── Text Boxes ── */
 .np-tbox{position:absolute;z-index:4;min-width:30px;min-height:20px;padding:4px 8px;color:#e8e0f8;font-size:14px;line-height:1.6;outline:none;border:1.5px solid transparent;border-radius:6px;cursor:default;font-family:'Inter','Segoe UI',sans-serif;background:transparent;transition:all .18s;pointer-events:none;white-space:pre-wrap;word-break:break-word}
 .np-tbox.typable{pointer-events:auto;cursor:text}
-.np-tbox.typable:focus{border-color:rgba(192,132,252,.15);background:rgba(15,13,26,.4)}
-.np-tbox.editing{cursor:text;border-color:rgba(192,132,252,.25);background:rgba(15,13,26,.55);box-shadow:0 0 12px rgba(192,132,252,.05)}
-.np-tbox.selectable{pointer-events:auto;cursor:pointer;border:1.5px dashed rgba(255,255,255,.08)}
-.np-tbox.selectable:hover{border-color:rgba(192,132,252,.2);background:rgba(15,13,26,.2)}
-.np-tbox.selected{pointer-events:auto;border-color:#c084fc!important;background:rgba(15,13,26,.35);cursor:move;border-style:solid!important;box-shadow:0 0 16px rgba(192,132,252,.06)}
+.np-tbox.typable:focus{border-color:rgba(168,85,247,.15);background:rgba(15,13,26,.4)}
+.np-tbox.editing{cursor:text;border-color:rgba(168,85,247,.25);background:rgba(15,13,26,.55);box-shadow:0 0 12px rgba(168,85,247,.05)}
+.np-tbox.selectable{pointer-events:auto;cursor:pointer;border:1.5px dashed rgba(168,85,247,.1)}
+.np-tbox.selectable:hover{border-color:rgba(168,85,247,.2);background:rgba(15,13,26,.2)}
+.np-tbox.selected{pointer-events:auto;border-color:#a855f7!important;background:rgba(15,13,26,.35);cursor:move;border-style:solid!important;box-shadow:0 0 16px rgba(168,85,247,.06)}
 .np-tbox:empty::before{content:attr(data-placeholder);color:rgba(200,180,240,.15);pointer-events:none;font-style:italic}
 
 /* ── Selection Handles ── */
-.sel-handle{position:absolute;width:10px;height:10px;background:#c084fc;border:1.5px solid #fff;border-radius:50%;z-index:6;display:none;cursor:nwse-resize;box-shadow:0 0 4px rgba(192,132,252,.2)}
+.sel-handle{position:absolute;width:10px;height:10px;background:#a855f7;border:1.5px solid #fff;border-radius:50%;z-index:6;display:none;cursor:nwse-resize;box-shadow:0 0 4px rgba(168,85,247,.25)}
 .np-tbox.selected .sel-handle,.np-img.selected .sel-handle{display:block}
 .sel-handle.tl{top:-5px;left:-5px;cursor:nwse-resize}
 .sel-handle.tr{top:-5px;right:-5px;cursor:nesw-resize}
@@ -854,7 +855,7 @@ function subT(){var s=0;for(var i=0;i<shuf.length;i++){var q=shuf[i];if(q.type==
 .np-tbox.selected .sel-del,.np-img.selected .sel-del{display:flex}
 
 /* Stroke selection */
-.stroke-sel-box{position:absolute;border:1.5px dashed rgba(192,132,252,.4);border-radius:6px;pointer-events:none;z-index:6}
+.stroke-sel-box{position:absolute;border:1.5px dashed rgba(168,85,247,.4);border-radius:6px;pointer-events:none;z-index:6}
 .stroke-sel-box .sel-handle{display:block;pointer-events:auto}
 .stroke-sel-box .sel-del{display:flex;pointer-events:auto}
 .stroke-sel-box .sel-conv{position:absolute;bottom:-30px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#34d399,#059669);color:#fff;border:none;border-radius:8px;padding:4px 14px;font-size:10px;font-weight:600;cursor:pointer;pointer-events:auto;white-space:nowrap;box-shadow:0 2px 8px rgba(52,211,153,.2);transition:all .15s}
@@ -862,23 +863,23 @@ function subT(){var s=0;for(var i=0;i<shuf.length;i++){var q=shuf[i];if(q.type==
 
 /* ── Images ── */
 .np-img{position:absolute;z-index:4;cursor:default;border:2px solid transparent;border-radius:8px;transition:all .18s;max-width:300px;pointer-events:none;overflow:hidden}
-.np-img.selectable{pointer-events:auto;cursor:pointer;border:2px dashed rgba(255,255,255,.08)}
-.np-img.selectable:hover{border-color:rgba(192,132,252,.25)}
-.np-img.selected{border-color:#c084fc!important;border-style:solid!important;pointer-events:auto;cursor:move;box-shadow:0 0 16px rgba(192,132,252,.08)}
+.np-img.selectable{pointer-events:auto;cursor:pointer;border:2px dashed rgba(168,85,247,.1)}
+.np-img.selectable:hover{border-color:rgba(168,85,247,.25)}
+.np-img.selected{border-color:#a855f7!important;border-style:solid!important;pointer-events:auto;cursor:move;box-shadow:0 0 16px rgba(168,85,247,.08)}
 
 /* ── Image Context Menu ── */
-.np-ctx-menu{position:fixed;z-index:99999;background:#151220;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:6px 0;min-width:210px;box-shadow:0 12px 40px rgba(0,0,0,.55);animation:ctxPop .15s cubic-bezier(.34,1.56,.64,1)}
+.np-ctx-menu{position:fixed;z-index:99999;background:#151220;border:1px solid rgba(168,85,247,.12);border-radius:12px;padding:6px 0;min-width:210px;box-shadow:0 12px 40px rgba(0,0,0,.55);animation:ctxPop .15s cubic-bezier(.34,1.56,.64,1)}
 @keyframes ctxPop{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
 .np-ctx-menu .ctx-hdr{padding:8px 16px 4px;font-size:10px;color:rgba(200,190,230,.35);text-transform:uppercase;letter-spacing:1.2px;font-weight:700}
 .np-ctx-menu .ctx-item{padding:9px 16px;color:#e2d5f5;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:background .15s;border-radius:0}
-.np-ctx-menu .ctx-item:hover{background:rgba(255,255,255,.05)}
-.np-ctx-menu .ctx-item.active{color:#c084fc;font-weight:600;background:rgba(192,132,252,.06)}
+.np-ctx-menu .ctx-item:hover{background:rgba(168,85,247,.08)}
+.np-ctx-menu .ctx-item.active{color:#a855f7;font-weight:600;background:rgba(168,85,247,.06)}
 .np-ctx-menu .ctx-item .ctx-dot{width:6px;height:6px;border-radius:50%;border:1.5px solid rgba(200,190,230,.3);flex-shrink:0}
-.np-ctx-menu .ctx-item.active .ctx-dot{background:#c084fc;border-color:#c084fc;box-shadow:0 0 4px rgba(192,132,252,.3)}
-.np-ctx-menu .ctx-divider{height:1px;background:rgba(255,255,255,.05);margin:4px 0}
+.np-ctx-menu .ctx-item.active .ctx-dot{background:#a855f7;border-color:#a855f7;box-shadow:0 0 4px rgba(168,85,247,.3)}
+.np-ctx-menu .ctx-divider{height:1px;background:rgba(168,85,247,.08);margin:4px 0}
 
 /* ── Arrow Controls ── */
-.arr-ctrl{position:absolute;width:14px;height:14px;background:#c084fc;border:2px solid #fff;border-radius:50%;cursor:grab;z-index:8;transform:translate(-50%,-50%);box-shadow:0 0 6px rgba(192,132,252,.2);pointer-events:auto;touch-action:none;transition:all .15s}
+.arr-ctrl{position:absolute;width:14px;height:14px;background:#a855f7;border:2px solid #fff;border-radius:50%;cursor:grab;z-index:8;transform:translate(-50%,-50%);box-shadow:0 0 6px rgba(168,85,247,.2);pointer-events:auto;touch-action:none;transition:all .15s}
 .arr-ctrl:hover{transform:translate(-50%,-50%) scale(1.25)}
 .arr-del{position:absolute;width:18px;height:18px;background:#ef4444;border:2px solid #fff;border-radius:50%;cursor:pointer;z-index:9;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:700;pointer-events:auto;box-shadow:0 2px 8px rgba(239,68,68,.3);line-height:1;transition:all .15s}
 .arr-del:hover{transform:translate(-50%,-50%) scale(1.2);background:#dc2626}
@@ -886,7 +887,7 @@ function subT(){var s=0;for(var i=0;i<shuf.length;i++){var q=shuf[i];if(q.type==
 /* ── Sticky Notes ── */
 .np-sticky{position:absolute;z-index:5;width:160px;min-height:80px;border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.25),0 1px 3px rgba(0,0,0,.1);display:flex;flex-direction:column;pointer-events:none;transition:box-shadow .2s;font-family:'Inter','Segoe UI',sans-serif}
 .np-sticky.interact{pointer-events:auto}
-.np-sticky.selected{box-shadow:0 6px 24px rgba(0,0,0,.3),0 0 0 2px #c084fc}
+.np-sticky.selected{box-shadow:0 6px 24px rgba(0,0,0,.3),0 0 0 2px #a855f7}
 .np-sticky-hdr{padding:6px 10px;display:flex;align-items:center;gap:4px;cursor:move;font-size:10px;font-weight:700;border-radius:6px 6px 0 0;user-select:none}
 .np-sticky-hdr .s-min{margin-left:auto;cursor:pointer;opacity:.4;font-size:14px;transition:opacity .15s}
 .np-sticky-hdr .s-min:hover{opacity:.8}
@@ -909,7 +910,7 @@ function subT(){var s=0;for(var i=0;i<shuf.length;i++){var q=shuf[i];if(q.type==
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .np-crop-box{position:relative;max-width:90vw;max-height:70vh}
 .np-crop-box img{max-width:100%;max-height:70vh;display:block;border-radius:8px}
-.np-crop-sel{position:absolute;border:2px solid #c084fc;background:rgba(192,132,252,.06);cursor:crosshair;border-radius:4px}
+.np-crop-sel{position:absolute;border:2px solid #a855f7;background:rgba(168,85,247,.06);cursor:crosshair;border-radius:4px}
 .np-crop-btns{display:flex;gap:10px;margin-top:16px}
 .np-crop-btns button{padding:10px 24px;border-radius:12px;font-size:13px;cursor:pointer;border:none;font-weight:600;transition:all .15s}
 .np-crop-btns button:active{transform:scale(.95)}
@@ -928,17 +929,18 @@ function subT(){var s=0;for(var i=0;i<shuf.length;i++){var q=shuf[i];if(q.type==
 #npDrawC.eraser-on{cursor:none}
 
 /* ── Font Upload ── */
-.np-font-upload{display:inline-flex;align-items:center;gap:2px;padding:2px 6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:6px;color:rgba(200,190,230,.4);font-size:10px;cursor:pointer;flex-shrink:0;transition:all .15s;font-weight:600}
-.np-font-upload:hover{background:rgba(255,255,255,.07);color:#c084fc;border-color:rgba(255,255,255,.1)}
+.np-font-upload{display:inline-flex;align-items:center;gap:2px;padding:2px 5px;background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.1);border-radius:5px;color:rgba(200,190,230,.4);font-size:9px;cursor:pointer;flex-shrink:0;transition:all .15s;font-weight:600}
+.np-font-upload:hover{background:rgba(168,85,247,.12);color:#a855f7;border-color:rgba(168,85,247,.2)}
 
 /* ── Status Bar ── */
-.np-stat{display:flex;align-items:center;gap:6px;padding:5px 10px;background:rgba(0,0,0,.15);border-top:1px solid rgba(255,255,255,.04);font-size:10px;color:rgba(200,190,230,.3);flex-shrink:0}
+.np-stat{display:flex;align-items:center;gap:2px;padding:0 5px;background:rgba(0,0,0,.08);border-top:1px solid rgba(168,85,247,.04);font-size:6px;color:rgba(200,190,230,.2);flex-shrink:0;height:18px;max-height:18px;overflow:hidden;box-sizing:border-box}
 .np-stat .f{flex:1}
-.np-stat button{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:6px;color:rgba(200,190,230,.4);padding:3px 8px;font-size:10px;cursor:pointer;transition:all .15s;font-weight:500}
-.np-stat button:hover{background:rgba(255,255,255,.06);color:#c4b5fd;border-color:rgba(255,255,255,.08)}
+.np-stat button{background:rgba(168,85,247,.03);border:1px solid rgba(168,85,247,.05);border-radius:2px;color:rgba(200,190,230,.3);padding:0 3px;font-size:6px;cursor:pointer;transition:all .15s;font-weight:500;display:inline-flex;align-items:center;justify-content:center;height:12px;box-sizing:border-box}
+.np-stat button svg{display:block;width:7px;height:7px;flex-shrink:0}
+.np-stat button:hover{background:rgba(168,85,247,.08);color:#d8b4fe;border-color:rgba(168,85,247,.15)}
 .np-stat button:active{transform:scale(.95)}
-.np-stat .pri{background:linear-gradient(135deg,#a855f7,#7c3aed);color:#fff;border:none;box-shadow:0 2px 6px rgba(147,51,234,.2)}
-.np-stat .pri:hover{box-shadow:0 3px 10px rgba(147,51,234,.25)}
+.np-stat .pri{background:linear-gradient(135deg,#a855f7,#7c3aed);color:#fff;border:none;padding:0 5px;height:12px;font-size:6px}
+.np-stat .pri:hover{box-shadow:0 1px 4px rgba(124,58,237,.3)}
 
 /* ── Toast ── */
 .np-toast{position:absolute;bottom:50px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#a855f7,#7c3aed);color:#fff;padding:6px 18px;border-radius:16px;font-size:11px;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:20;white-space:nowrap;box-shadow:0 4px 14px rgba(147,51,234,.2);letter-spacing:.2px}
@@ -946,30 +948,31 @@ function subT(){var s=0;for(var i=0;i<shuf.length;i++){var q=shuf[i];if(q.type==
 
 /* ── Overlay ── */
 .np-ov{position:absolute;inset:0;background:rgba(12,10,22,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:20;gap:10px;animation:fadeIn .2s}
-.np-ov .spin{width:32px;height:32px;border:2.5px solid rgba(192,132,252,.12);border-top-color:#c084fc;border-radius:50%;animation:spin .7s linear infinite}
+.np-ov .spin{width:32px;height:32px;border:2.5px solid rgba(168,85,247,.12);border-top-color:#a855f7;border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .np-ov p{color:#c4b5fd;font-size:13px;font-weight:500}
 
 /* ── Key Modal ── */
-#npKeyModal a:hover{color:#c084fc!important}
+#npKeyModal a:hover{color:#a855f7!important}
 
 /* ── Responsive ── */
 @media(max-width:600px){
   #notesPanel{bottom:0!important;left:0!important;width:100vw!important;height:calc(100dvh - 50px)!important;border-radius:14px 14px 0 0;resize:none}
   #notesBub{bottom:12px;left:12px;width:46px;height:46px;border-radius:12px;font-size:19px}
   .np-sb{width:200px}
-  .np-bar{height:36px}
-  .np-bar button{width:30px;height:30px;font-size:13px}
+  .np-bar{height:32px}
+  .np-bar button{width:28px;height:28px}
+  .np-bar svg{width:13px;height:13px}
   .np-hdr{padding:8px 12px}
-  .np-hdr button{padding:3px 6px;font-size:13px}
-  .np-stat{padding:4px 10px;font-size:9px}
-  .np-stat button{padding:3px 8px;font-size:9px}
-  .np-bar2.open{height:30px}
-  .np-bar2 button{height:28px;font-size:11px}
+  .np-hdr button{padding:3px 6px}
+  .np-stat{padding:0 4px;font-size:6px;height:16px;max-height:16px}
+  .np-stat button{padding:0 2px;font-size:6px;height:10px}
+  .np-bar2.open{height:28px}
+  .np-bar2 button{height:26px;font-size:11px}
   .np-canvas{min-height:1500px!important}
 }
 @media(max-width:400px){
-  .np-bar button{width:28px;font-size:13px}
+  .np-bar button{width:26px}
   .np-hdr h4,.np-title-input{font-size:12px}
 }
 
@@ -1047,11 +1050,11 @@ function subT(){var s=0;for(var i=0;i<shuf.length;i++){var q=shuf[i];if(q.type==
 <button id="notesBub" onclick="NP.toggle()" title="Notes">📝</button>
 <div id="notesPanel">
   <div class="np-hdr">
-    <span style="font-size:15px;opacity:.7">📝</span>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:rgba(168,85,247,.5);flex-shrink:0"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
     <input id="npHdrTitle" class="np-title-input" value="Notes" readonly ondblclick="this.removeAttribute('readonly');this.select()" onchange="NP.renameNote(this.value)" onblur="this.setAttribute('readonly','')" onkeydown="if(event.key==='Enter')this.blur()">
-    <button onclick="NP.aiMenu()" title="AI Tools">🤖</button>
-    <button onclick="NP.showKey()" title="Settings">⚙️</button>
-    <button onclick="NP.toggle()" title="Close" style="font-size:13px">✕</button>
+    <button onclick="NP.aiMenu()" title="AI Tools"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg></button>
+    <button onclick="NP.showKey()" title="Settings"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button>
+    <button onclick="NP.toggle()" title="Close"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
   </div>
   <div class="np-body">
     <!-- Sidebar -->
@@ -1095,11 +1098,13 @@ function subT(){var s=0;for(var i=0;i<shuf.length;i++){var q=shuf[i];if(q.type==
         <div class="np-palette-row"><label>Size</label><input type="range" min="1" max="24" value="3" oninput="NP.penSz=+this.value"></div>
       </div>
       <div class="np-bar2" id="npBar2">
-        <button onclick="NP.togglePalette()" title="Colors">🎨</button>
-        <label style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;cursor:pointer;color:rgba(200,190,230,.4);font-size:15px;transition:all .15s" title="Add image">🖼️<input type="file" id="npImgF" accept="image/*,image/heic,image/heif" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none" onchange="NP.handleImg(this)"></label>
-        <button onclick="NP.addBullet()" title="Bullets">•</button><button onclick="NP.addSticky()" title="Sticky note">📌</button><button id="npTTape" onclick="NP.setMode('tape')" title="Tape/Cover">🩹</button>
+        <button onclick="NP.togglePalette()" title="Colors"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="8" r="1.5"/><circle cx="8" cy="12" r="1.5"/><circle cx="16" cy="12" r="1.5"/><circle cx="12" cy="16" r="1.5"/></svg></button>
+        <label style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:28px;cursor:pointer;color:rgba(200,190,230,.45);transition:all .15s" title="Add image"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><input type="file" id="npImgF" accept="image/*,image/heic,image/heif" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none" onchange="NP.handleImg(this)"></label>
+        <button onclick="NP.addBullet()" title="Bullets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="5" cy="6" r="1"/><circle cx="5" cy="12" r="1"/><circle cx="5" cy="18" r="1"/></svg></button>
+        <button onclick="NP.addSticky()" title="Sticky note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V8.5L15.5 3z"/><path d="M14 3v6h6"/></svg></button>
+        <button id="npTTape" onclick="NP.setMode('tape')" title="Tape/Cover"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="8" width="18" height="8" rx="1"/><path d="M7 8V6M17 8V6"/></svg></button>
         <div class="sep"></div>
-        <select id="npFontSel" style="max-width:80px" onchange="NP.setFont(this.value);this.selectedIndex=0"><option value="">Font</option><option value="Segoe UI,sans-serif">Segoe</option><option value="Georgia,serif">Georgia</option><option value="Courier New,monospace">Courier</option><option value="Comic Sans MS,cursive">Comic</option><option value="Arial,sans-serif">Arial</option><option value="Times New Roman,serif">Times</option><option value="Verdana,sans-serif">Verdana</option>
+        <select id="npFontSel" style="max-width:72px" onchange="NP.setFont(this.value);this.selectedIndex=0"><option value="">Font</option><option value="Segoe UI,sans-serif">Segoe</option><option value="Georgia,serif">Georgia</option><option value="Courier New,monospace">Courier</option><option value="Comic Sans MS,cursive">Comic</option><option value="Arial,sans-serif">Arial</option><option value="Times New Roman,serif">Times</option><option value="Verdana,sans-serif">Verdana</option>
 <option value="'Rosemary',cursive">Rosemary</option>
 <option value="'Caveat',cursive">Caveat</option>
 <option value="'Dancing Script',cursive">Dancing Script</option>
@@ -1108,37 +1113,37 @@ function subT(){var s=0;for(var i=0;i<shuf.length;i++){var q=shuf[i];if(q.type==
         <label class="np-font-upload" title="Upload font">+F<input type="file" accept=".ttf,.otf,.woff,.woff2" style="display:none" onchange="NP.uploadFont(this)"></label>
         <div class="sep"></div>
         <button onclick="NP.changeFontSize(-2)" title="Smaller" style="font-size:10px;font-weight:600">A-</button>
-        <button onclick="NP.changeFontSize(2)" title="Bigger" style="font-size:14px;font-weight:600">A+</button>
+        <button onclick="NP.changeFontSize(2)" title="Bigger" style="font-size:13px;font-weight:600">A+</button>
         <div class="sep"></div>
-        <button onclick="NP.undoDraw()" title="Undo">↩</button>
-        <button onclick="NP.clearDraw()" title="Clear">🗑</button>
+        <button onclick="NP.undoDraw()" title="Undo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M3 13a9 9 0 0118 1"/></svg></button>
+        <button onclick="NP.clearDraw()" title="Clear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/></svg></button>
       </div>
       <div class="np-bar">
-        <button onclick="NP.toggleSB()" title="Notes" style="font-size:13px">☰</button><div class="sep"></div>
-        <button id="npTSel" onclick="NP.setMode('select')" title="Select">✥</button>
-        <button id="npTText" onclick="NP.setMode('text')" title="Type" class="on"><b style="font-family:serif;font-size:14px">T</b></button><div class="sep"></div>
-        <button id="npTPen" onclick="NP.setMode('pen')" title="Pen">🖊️</button>
-        <button id="npTPencil" onclick="NP.setMode('pencil')" title="Pencil">✎</button>
-        <button id="npTBrush" onclick="NP.setMode('brush')" title="Brush">🖌️</button>
-        <button id="npTCalli" onclick="NP.setMode('calli')" title="Calli"><i style="font-family:serif;font-size:13px">C</i></button>
-        <button id="npTHl" onclick="NP.setMode('hl')" title="Highlight">🖍️</button>
-        <button id="npTEraser" onclick="NP.setMode('eraser')" title="Eraser"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 20H7L3 16c-.6-.6-.6-1.5 0-2.1l10-10c.6-.6 1.5-.6 2.1 0l7 7c.6.6.6 1.5 0 2.1L16 19"/></svg></button><div class="sep"></div>
-        <button id="npTArrow" onclick="NP.setMode('arrow')" title="Arrow">↗</button>
-        <button id="npTConv" onclick="NP.setMode('convert')" title="Convert to text" style="color:#34d399">✨</button>
+        <button onclick="NP.toggleSB()" title="Notes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button><div class="sep"></div>
+        <button id="npTSel" onclick="NP.setMode('select')" title="Select"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 3l14 9-6 2-3 6z"/></svg></button>
+        <button id="npTText" onclick="NP.setMode('text')" title="Type" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 4h12M12 4v16"/></svg></button><div class="sep"></div>
+        <button id="npTPen" onclick="NP.setMode('pen')" title="Pen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg></button>
+        <button id="npTPencil" onclick="NP.setMode('pencil')" title="Pencil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 014 4L7.5 20.5 2 22l1.5-5.5z"/></svg></button>
+        <button id="npTBrush" onclick="NP.setMode('brush')" title="Brush"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.4 2.6a2 2 0 013 3l-9 9-4 1 1-4zM2 22c2-2 4-4 4-6 0-1.1-.9-2-2-2s-2-.9-2-2c0-2.5 3.5-4 5-2l3 3"/></svg></button>
+        <button id="npTCalli" onclick="NP.setMode('calli')" title="Calli"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 20c3-4 8-16 14-16M4 20h16"/></svg></button>
+        <button id="npTHl" onclick="NP.setMode('hl')" title="Highlight"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l-6 6v3h9l3-3"/><path d="M22 12l-4.6 4.6a2 2 0 01-2.8 0l-5.2-5.2a2 2 0 010-2.8L14 4"/></svg></button>
+        <button id="npTEraser" onclick="NP.setMode('eraser')" title="Eraser"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 20H7L3 16c-.6-.6-.6-1.5 0-2.1l10-10c.6-.6 1.5-.6 2.1 0l7 7c.6.6.6 1.5 0 2.1L16 19"/></svg></button><div class="sep"></div>
+        <button id="npTArrow" onclick="NP.setMode('arrow')" title="Arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></button>
+        <button id="npTConv" onclick="NP.setMode('convert')" title="Convert to text" style="color:#34d399"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v5m4-1l-4 4-4-4M5 15h14M8 19h8"/></svg></button>
         <div class="spacer"></div>
         <button class="xpd" id="npExpand" onclick="NP.toggleBar2()" title="More">▲</button>
       </div>
 
       <!-- Status -->
       <div class="np-stat">
-        <span id="npSyncDot" style="width:6px;height:6px;border-radius:50%;background:#666;display:inline-block;flex-shrink:0;transition:background .3s"></span>
-        <span id="npSyncLbl" style="color:rgba(200,190,230,.35);font-size:9px">—</span>
-        <span id="npStat" style="margin-left:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px">No note</span>
+        <span id="npSyncDot" style="width:3px;height:3px;border-radius:50%;background:#666;display:inline-block;flex-shrink:0;transition:background .3s"></span>
+        <span id="npSyncLbl" style="color:rgba(200,190,230,.2);font-size:6px">—</span>
+        <span id="npStat" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60px">Untitled</span>
         <div class="f"></div>
-        <button onclick="NP.forceSync()" title="Cloud sync">☁️</button>
+        <button onclick="NP.forceSync()" title="Cloud sync"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/></svg></button>
         <button onclick="NP.exportDoc()" title="Export Word">.doc</button>
         <button onclick="NP.exportPDF()" title="Export PDF">PDF</button>
-        <button onclick="NP.emailNote()" title="Email">📧</button>
+        <button onclick="NP.emailNote()" title="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/></svg></button>
         <button class="pri" onclick="NP.saveNote();NP.emailBackup()">Save</button>
       </div>
     </div>
@@ -1515,6 +1520,7 @@ function gk(){return localStorage.getItem("np_gk")}
 function toggle(){
   isOpen=!isOpen;
   document.getElementById("notesPanel").classList.toggle("open",isOpen);
+  document.getElementById("notesBub").style.display=isOpen?"none":"flex";
   if(isOpen){load();renderList();if(!cvReady)setTimeout(initCv,150);else setTimeout(renderStrokes,50);if(!curNote){if(notes.length)openNote(notes[0].id);else{var nn={id:"n"+Date.now(),title:"My Notes",bg:"grid",elements:[],strokes:[],arrows:[],mod:Date.now(),plain:""};notes.unshift(nn);save();openNote(nn.id);renderList()}}}
 }
 
@@ -2738,7 +2744,7 @@ function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").
 load();
 setTimeout(restoreCustomFonts,200);
 // Restore panel state
-try{var ps=JSON.parse(localStorage.getItem("np_state")||"{}");if(ps.open){isOpen=true;document.getElementById("notesPanel").classList.add("open");renderList();setTimeout(function(){initCv();if(ps.noteId){var n=notes.find(function(x){return x.id===ps.noteId});if(n)openNote(n.id);else if(notes.length)openNote(notes[0].id)}else if(notes.length)openNote(notes[0].id);},300)}}catch(e){}
+try{var ps=JSON.parse(localStorage.getItem("np_state")||"{}");if(ps.open){isOpen=true;document.getElementById("notesPanel").classList.add("open");document.getElementById("notesBub").style.display="none";renderList();setTimeout(function(){initCv();if(ps.noteId){var n=notes.find(function(x){return x.id===ps.noteId});if(n)openNote(n.id);else if(notes.length)openNote(notes[0].id)}else if(notes.length)openNote(notes[0].id);},300)}}catch(e){}
 
 /* ─── Font ─── */
 function changeFontSize(delta){
