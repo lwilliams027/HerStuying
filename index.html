@@ -1550,15 +1550,15 @@ function cloudPush(){
   if(!rows.length){_syncing=false;_syncStatus("Synced","#34d399");return}
   sb.from("notes").upsert(rows,{onConflict:"id"}).then(function(res){
     _syncing=false;
-    if(res.error){console.warn("Cloud push error:",res.error.message);_syncStatus("Sync error","#ef4444")}
+    if(res.error){console.warn("Cloud push error:",res.error.message||String(res.error));_syncStatus("Sync error","#ef4444")}
     else{_lastSync=Date.now();_syncStatus("Synced","#34d399")}
-  }).catch(function(e){_syncing=false;_syncStatus("Offline","#ef4444");console.warn("Cloud push failed:",e)});
+  }).catch(function(e){_syncing=false;_syncStatus("Offline","#ef4444");console.warn("Cloud push failed:",e&&e.message?e.message:String(e))});
 }
 function cloudPull(){
   var sb=_supaClient();if(!sb)return;
   _syncStatus("Pulling…","#fbbf24");
   sb.from("notes").select("*").then(function(res){
-    if(res.error){console.warn("Cloud pull error:",res.error.message);_syncStatus("Sync error","#ef4444");return}
+    if(res.error){console.warn("Cloud pull error:",res.error.message||String(res.error));_syncStatus("Sync error","#ef4444");return}
     var cloudNotes=res.data||[];
     if(!cloudNotes.length){
       if(notes.length){cloudPush()}
@@ -1582,12 +1582,12 @@ function cloudPull(){
     _lastSync=Date.now();_syncStatus("Synced","#34d399");
     var newLocal=notes.filter(function(n){return!ids[n.id]});
     if(newLocal.length)cloudPush();
-  }).catch(function(e){_syncStatus("Offline","#ef4444");console.warn("Cloud pull failed:",e)});
+  }).catch(function(e){_syncStatus("Offline","#ef4444");console.warn("Cloud pull failed:",e&&e.message?e.message:String(e))});
 }
 function cloudDelete(noteId){
   var sb=_supaClient();if(!sb)return;
   sb.from("notes").delete().eq("id",noteId).then(function(res){
-    if(res.error)console.warn("Cloud delete error:",res.error.message);
+    if(res.error)console.warn("Cloud delete error:",res.error.message||String(res.error));
   }).catch(function(){});
 }
 function forceSync(){
@@ -2422,7 +2422,12 @@ function canvasClick(e){
     var ae=document.activeElement;
     if(ae&&ae.classList&&ae.classList.contains("np-tbox"))ae.blur();
     e.preventDefault();
-    var cv=document.getElementById("npCanvas"),r=cv.getBoundingClientRect();
+    // Prevent the subsequent mousedown/click from giving focus to the canvas
+    var cv=document.getElementById("npCanvas");
+    function blockFocus(ev){ev.preventDefault()}
+    cv.addEventListener("mousedown",blockFocus,{once:true,capture:true});
+    setTimeout(function(){cv.removeEventListener("mousedown",blockFocus,{capture:true})},100);
+    var r=cv.getBoundingClientRect();
     var x=e.clientX-r.left;
     var y=e.clientY-r.top;
     x=Math.max(4,Math.min(cv.offsetWidth-40,x));
@@ -2469,7 +2474,7 @@ function createTBox(x,y,w,htm,id){
       var sel=window.getSelection();sel.selectAllChildren(box);sel.collapseToEnd()}
   });
   document.getElementById("npCanvas").appendChild(box);
-  if(!htm&&mode==="text"){box.classList.add("editing");setTimeout(function(){box.focus()},0)}
+  if(!htm&&mode==="text"){box.classList.add("editing");setTimeout(function(){box.focus();try{var s=window.getSelection();s.selectAllChildren(box);s.collapseToEnd()}catch(ex){}},10)}
 }
 
 function startResize(el,corner,e){
