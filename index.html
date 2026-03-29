@@ -354,6 +354,26 @@ function doLogin(){
 <style>@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}</style>
 
 <div id="sparkles"></div>
+
+<!-- Hamburger Menu & Sidebar -->
+<button class="ham-btn" id="hamBtn" onclick="toggleSidebar()">
+  <span class="ham-line"></span>
+  <span class="ham-line"></span>
+  <span class="ham-line"></span>
+</button>
+<div class="sb-overlay" id="sbOverlay" onclick="toggleSidebar()"></div>
+<div class="sb-panel" id="sbPanel">
+  <div class="sb-section">
+    <div class="sb-label">📚 My Study Sections</div>
+    <div id="sbList"></div>
+  </div>
+  <div class="sb-divider"></div>
+  <div class="sb-section">
+    <button class="sb-create-btn" onclick="toggleSidebar();showCreateCategory()">
+      <span style="font-size:18px">✨</span> Create New Section
+    </button>
+  </div>
+</div>
 <div style="text-align:center;padding:48px 24px 12px;animation:fadeUp .8s ease;position:relative;z-index:1">
 <div class="badge">From Landon to Anhelina 💜</div>
 <button onclick="localStorage.removeItem('sh_auth');location.reload()" style="position:fixed;top:8px;right:12px;z-index:9990;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:8px;color:#6b3fa0;font-size:10px;padding:4px 10px;cursor:pointer;transition:all .15s" onmouseover="this.style.color='#d946ef';this.style.borderColor='rgba(217,70,239,.3)'" onmouseout="this.style.color='#6b3fa0';this.style.borderColor='rgba(255,255,255,.08)'">Logout</button>
@@ -530,8 +550,17 @@ function levDist(s,t){
 }
 // Custom data helpers (must be in this script block before render() is called)
 var CD_KEY="sh_custom_data";
+var BI_KEY="sh_builtin_mods";
 function getCD(){try{return JSON.parse(localStorage.getItem(CD_KEY)||"{}")}catch(e){return{}}}
 function saveCD(d){localStorage.setItem(CD_KEY,JSON.stringify(d))}
+// Save modifications to built-in sections
+function saveBIMods(){try{var m={};for(var k in D){m[k]={lessons:D[k].lessons,name:D[k].name,sub:D[k].sub}}localStorage.setItem(BI_KEY,JSON.stringify(m))}catch(e){}}
+function loadBIMods(){try{var m=JSON.parse(localStorage.getItem(BI_KEY)||"{}");for(var k in m){if(D[k]){D[k].lessons=m[k].lessons;if(m[k].name)D[k].name=m[k].name;if(m[k].sub)D[k].sub=m[k].sub}}}catch(e){}}
+loadBIMods();
+// Unified section helpers
+function getSection(key){return D[key]||getCD()[key]||null}
+function findLessonIdx(key){var sec=getSection(key);if(!sec||!curL)return -1;for(var i=0;i<sec.lessons.length;i++){if(sec.lessons[i].id===curL.id)return i}return -1}
+function saveSection(key){if(D[key])saveBIMods();else{var cd=getCD();cd[key]=getSection(key);saveCD(cd)}}
 function sf(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=b[i];b[i]=b[j];b[j]=t}return b}
 function rq(){if(!curL)return;var q=curL.quiz,s=50;if(tab==="q1")shuf=sf(q.slice(0,s));else if(tab==="q2")shuf=sf(q.slice(s,s*2));else if(tab==="q3")shuf=sf(q.slice(s*2,s*3));else if(tab==="final"){var all=[];var c=D[curC]||getCD()[curC];if(!c)return;for(var i=0;i<c.lessons.length;i++){var lq=sf(c.lessons[i].quiz.slice());all=all.concat(lq.slice(0,20))}shuf=sf(all)}else shuf=sf(q);pS={i:0,sel:null,sh:false,sc:0,an:0,fibAns:""};tS={a:{},ta:{},done:false,sc:0}}
 function startFinal(cls){curC=cls;var src=D[cls]||getCD()[cls];if(!src)return;curL=src.lessons[0];view="lesson";tab="final";rq();pushURL();render();scrollTo({top:0,behavior:"smooth"})}
@@ -575,7 +604,7 @@ if(view==="home"){
   var h="<div class='class-grid'>";
   for(var k in D){var c=D[k];h+="<div class='cc' onclick=\"go('class','"+k+"')\"><div class='icon'>"+c.icon+"</div><h3>"+c.name+"</h3><p>"+c.sub+"</p><div class='cnt'>"+c.lessons.length+" Lesson"+(c.lessons.length!==1?"s":"")+"</div></div>"}
   var cd=getCD();for(var k in cd){var c=cd[k];h+="<div class='cc' onclick=\"go('class','"+k+"')\" style='border:1px solid rgba(217,70,239,.15)'><div class='icon'>"+c.icon+"</div><h3>"+c.name+"<span class='custom-badge'>CUSTOM</span></h3><p>"+c.sub+"</p><div class='cnt'>"+c.lessons.length+" Lesson"+(c.lessons.length!==1?"s":"")+"</div></div>"}
-  h+="<div class='cc cc-add' onclick='showCreateCategory()'><div class='plus'>+</div><div style='color:var(--txd);font-size:13px;font-weight:600'>Create Study Section</div></div>";
+
   h+="</div>";app.innerHTML=h;if(mpEl)wrap.appendChild(mpEl);return;
 }
 
@@ -587,11 +616,13 @@ if(view==="class"){
   bread.innerHTML="<button class='bbtn' onclick=\"go('home')\">\u2190 Home</button>";nav.innerHTML="";
   if(isCustom){
     nav.innerHTML="<div style='display:flex;gap:8px;justify-content:center;padding:6px 0;flex-wrap:wrap'><button class='cn-edit' onclick=\"showEditCategory('"+curC+"')\" style='padding:8px 16px;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;border:none'>Edit Category</button><button class='cn-del-sm' onclick=\"delCategory('"+curC+"')\" style='padding:8px 16px;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;border:none'>Delete Category</button></div>";
+  } else {
+    nav.innerHTML="<div style='display:flex;gap:8px;justify-content:center;padding:6px 0;flex-wrap:wrap'><button class='cn-edit' onclick=\"requirePasscode(function(){showEditBuiltIn('"+curC+"')})\" style='padding:8px 16px;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;border:none'>🔐 Edit Section</button></div>";
   }
-  if(!c.lessons.length){app.innerHTML="<p style='color:var(--txd);padding:40px 0;text-align:center'>"+(isCustom?"No lessons yet \u2014 tap below to add one! \u2728":"No lessons yet \u2014 Landon is building them for you! \uD83D\uDC9C")+"</p>"+(isCustom?"<div style='text-align:center'><button class='abtn cn-add' style='padding:14px 32px;font-size:15px;border-radius:14px' onclick=\"showCreateLesson('"+curC+"')\">+ Add Lesson</button></div>":"");return}
+  if(!c.lessons.length){app.innerHTML="<p style='color:var(--txd);padding:40px 0;text-align:center'>"+(isCustom?"No lessons yet \u2014 tap below to add one! \u2728":"No lessons yet \uD83D\uDC9C")+"</p><div style='text-align:center'><button class='abtn cn-add' style='padding:14px 32px;font-size:15px;border-radius:14px' onclick=\""+(isCustom?"showCreateLesson('"+curC+"')":"requirePasscode(function(){showCreateLesson('"+curC+"')})")+"\">+ Add Lesson</button></div>";return}
   var h="";for(var i=0;i<c.lessons.length;i++){var l=c.lessons[i];
-    h+="<div class='lc' style='animation:slideIn .3s ease "+(i*.04)+"s both' onclick=\"go('lesson','"+curC+"',"+i+")\"><div><span class='ln'>"+l.ln+"</span></div><div style='flex:1'><h4>"+l.title+"</h4><div class='meta'>"+l.notes.length+" sections \u00B7 "+l.quiz.length+" questions</div></div>"+(isCustom?"<span style='font-size:11px;color:var(--txd);margin-right:4px'>\u270E</span>":"")+"<span class='arr'>\u2192</span></div>"}
-  if(isCustom){h+="<div style='margin-top:20px;text-align:center'><button class='abtn cn-add' style='padding:14px 32px;font-size:15px;border-radius:14px' onclick=\"showCreateLesson('"+curC+"')\">+ Add Lesson</button></div>"}
+    h+="<div class='lc' style='animation:slideIn .3s ease "+(i*.04)+"s both' onclick=\"go('lesson','"+curC+"',"+i+")\"><div><span class='ln'>"+l.ln+"</span></div><div style='flex:1'><h4>"+l.title+"</h4><div class='meta'>"+l.notes.length+" sections \u00B7 "+l.quiz.length+" questions</div></div><span class='arr'>\u2192</span></div>"}
+  h+="<div style='margin-top:20px;text-align:center'><button class='abtn cn-add' style='padding:14px 32px;font-size:15px;border-radius:14px' onclick=\""+(isCustom?"showCreateLesson('"+curC+"')":"requirePasscode(function(){showCreateLesson('"+curC+"')})")+"\">+ Add Lesson</button></div>";
   if(c.lessons.length>0){var finalQ=c.lessons.length*20;for(var i=0;i<c.lessons.length;i++){if(c.lessons[i].quiz.length<20)finalQ-=(20-c.lessons[i].quiz.length)}
   if(finalQ>0)h+="<div style='margin-top:24px;text-align:center'><button class='abtn' style='padding:16px 40px;font-size:17px;border-radius:16px;background:linear-gradient(135deg,#ff6b9d,var(--accent))' onclick=\"startFinal('"+curC+"')\">\uD83C\uDF93 Final Exam Practice ("+finalQ+" questions)</button><p style='font-size:13px;color:var(--txd);margin-top:8px'>20 from each lesson \u2014 randomized every time</p></div>";}
   app.innerHTML=h;return;
@@ -600,17 +631,18 @@ if(view==="class"){
 // LESSON
 if(mpEl)nav.parentNode.insertBefore(mpEl,nav);
 var c=D[curC]||getCD()[curC];if(!c){view="home";render();return}
-var l=curL;var isCustomL=!D[curC];mt.innerHTML=l.title+(isCustomL?"<span class='custom-badge'>CUSTOM</span>":"");ms.textContent=l.ln;
+var l=curL;var isCustomL=!D[curC];var gatePrefix=isCustomL?"":"requirePasscode(function(){";var gateSuffix=isCustomL?"":"})";mt.innerHTML=l.title+(isCustomL?"<span class='custom-badge'>CUSTOM</span>":"");ms.textContent=l.ln;
 bread.innerHTML="<button class='bbtn' onclick=\"go('class','"+curC+"')\">\u2190 "+c.name+"</button>";
 if(tab==="final"){mt.innerHTML="\uD83C\uDF93 "+c.name+" \u2014 Final Exam";ms.textContent="20 per lesson \u2014 randomized";nav.innerHTML="<div style='text-align:center;padding:8px 0;font-size:14px;color:var(--txd)'>"+shuf.length+" questions (20 from each lesson, new every time)</div>"}else{
 var qCount=l.quiz.length;var hasQ1=qCount>0,hasQ2=qCount>50,hasQ3=qCount>100;
-nav.innerHTML="<div class='tabs'><button class='pill "+(tab==="notes"?"pill-a":"pill-i")+"' onclick=\"tab='notes';render();saveState()\">\uD83D\uDCD6 Notes</button>"+(hasQ1?"<button class='pill "+(tab==="q1"?"pill-a":"pill-i")+"' onclick=\"tab='q1';rq();render();saveState()\">\u270F\uFE0F Quiz 1</button>":"")+(hasQ2?"<button class='pill "+(tab==="q2"?"pill-a":"pill-i")+"' onclick=\"tab='q2';rq();render();saveState()\">\u270F\uFE0F Quiz 2</button>":"")+(hasQ3?"<button class='pill "+(tab==="q3"?"pill-a":"pill-i")+"' onclick=\"tab='q3';rq();render();saveState()\">\u270F\uFE0F Quiz 3</button>":"")+(qCount>0?"<button class='pill "+(tab==="test"?"pill-a":"pill-i")+"' onclick=\"tab='test';rq();render()\">\uD83D\uDCDD Full Test</button>":"")+"</div>"+(isCustomL?"<div style='display:flex;gap:8px;justify-content:center;padding:4px 0;flex-wrap:wrap'><button class='cn-edit' onclick=\"showEditLesson('"+curC+"')\" style='padding:6px 14px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;border:none'>\u270E Edit Lesson</button><button class='cn-add' onclick=\"showQuizCreator('"+curC+"')\" style='padding:6px 14px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;border:none'>✍️ Add Questions</button><button class='cn-del-sm' onclick=\"delLesson('"+curC+"')\" style='padding:6px 14px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;border:none'>\u2716 Delete Lesson</button></div>":"");}
+var editBtns="<div style='display:flex;gap:8px;justify-content:center;padding:4px 0;flex-wrap:wrap'>"+(isCustomL?"<button class='cn-edit' onclick=\"showEditLesson('"+curC+"')\" style='padding:6px 14px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;border:none'>\u270E Edit Lesson</button><button class='cn-add' onclick=\"showQuizCreator('"+curC+"')\" style='padding:6px 14px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;border:none'>\u270D\uFE0F Add Questions</button><button class='cn-del-sm' onclick=\"delLesson('"+curC+"')\" style='padding:6px 14px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;border:none'>\u2716 Delete Lesson</button>":"<button class='cn-edit' onclick=\"requirePasscode(function(){showEditLesson('"+curC+"')})\" style='padding:6px 14px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;border:none'>🔐 Edit Lesson</button><button class='cn-add' onclick=\"requirePasscode(function(){showQuizCreator('"+curC+"')})\" style='padding:6px 14px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;border:none'>🔐 Add Questions</button>")+"</div>";
+nav.innerHTML="<div class='tabs'><button class='pill "+(tab==="notes"?"pill-a":"pill-i")+"' onclick=\"tab='notes';render();saveState()\">\uD83D\uDCD6 Notes</button>"+(hasQ1?"<button class='pill "+(tab==="q1"?"pill-a":"pill-i")+"' onclick=\"tab='q1';rq();render();saveState()\">\u270F\uFE0F Quiz 1</button>":"")+(hasQ2?"<button class='pill "+(tab==="q2"?"pill-a":"pill-i")+"' onclick=\"tab='q2';rq();render();saveState()\">\u270F\uFE0F Quiz 2</button>":"")+(hasQ3?"<button class='pill "+(tab==="q3"?"pill-a":"pill-i")+"' onclick=\"tab='q3';rq();render();saveState()\">\u270F\uFE0F Quiz 3</button>":"")+(qCount>0?"<button class='pill "+(tab==="test"?"pill-a":"pill-i")+"' onclick=\"tab='test';rq();render()\">\uD83D\uDCDD Full Test</button>":"")+"</div>"+editBtns;}
 
 if(tab==="notes"){
   var h="";for(var i=0;i<l.notes.length;i++){var n=l.notes[i];
-    h+="<div class='nc' style='animation:slideIn .3s ease "+(i*.03)+"s both'><h3><span class='num'>"+(i+1)+"</span>"+n.heading+"</h3><div class='body'>"+n.body+"</div>"+(isCustomL?"<div class='cn-actions'><button class='cn-edit' onclick=\"showEditNote("+i+")\">Edit</button><button class='cn-del-sm' onclick=\"delNote("+i+")\">Remove</button></div>":"")+"</div>"}
-  if(isCustomL){h+="<div style='text-align:center;padding:20px 0'><button class='abtn cn-add' style='padding:12px 28px;font-size:14px;border-radius:12px' onclick='showAddNote()'>+ Add Notes Section</button><button class='abtn' style='padding:12px 28px;font-size:14px;border-radius:12px;margin-left:10px;background:rgba(168,85,247,.15);color:#c4b5fd' onclick='showUploadNotes()'>📄 Upload Notes</button></div>"}
-  if(isCustomL&&l.quiz.length===0){h+="<div style='text-align:center;padding:10px 0;border-top:1px solid rgba(168,85,247,.1);margin-top:16px'><p style='color:var(--txd);font-size:13px;margin-bottom:12px'>Ready to test your knowledge?</p><button class='abtn' style='padding:12px 28px;font-size:14px;border-radius:12px;background:linear-gradient(135deg,#34d399,#059669);color:#fff' onclick=\"showQuizCreator('"+curC+"')\">✍️ Create Quiz Questions</button></div>"}
+    h+="<div class='nc' style='animation:slideIn .3s ease "+(i*.03)+"s both'><h3><span class='num'>"+(i+1)+"</span>"+n.heading+"</h3><div class='body'>"+n.body+"</div>"+(isCustomL?"<div class='cn-actions'><button class='cn-edit' onclick=\"showEditNote("+i+")\">Edit</button><button class='cn-del-sm' onclick=\"delNote("+i+")\">Remove</button></div>":"<div class='cn-actions'><button class='cn-edit' onclick=\"requirePasscode(function(){showEditNote("+i+")})\">🔐 Edit</button><button class='cn-del-sm' onclick=\"requirePasscode(function(){delNote("+i+")})\">🔐 Remove</button></div>")+"</div>"}
+  h+="<div style='text-align:center;padding:20px 0'><button class='abtn cn-add' style='padding:12px 28px;font-size:14px;border-radius:12px' onclick=\""+(isCustomL?"showAddNote()":"requirePasscode(function(){showAddNote()})")+"\">+ Add Notes Section</button><button class='abtn' style='padding:12px 28px;font-size:14px;border-radius:12px;margin-left:10px;background:rgba(168,85,247,.15);color:#c4b5fd' onclick=\""+(isCustomL?"showUploadNotes()":"requirePasscode(function(){showUploadNotes()})")+"\">📄 Upload Notes</button></div>";
+  if(l.quiz.length===0){h+="<div style='text-align:center;padding:10px 0;border-top:1px solid rgba(168,85,247,.1);margin-top:16px'><p style='color:var(--txd);font-size:13px;margin-bottom:12px'>Ready to test your knowledge?</p><button class='abtn' style='padding:12px 28px;font-size:14px;border-radius:12px;background:linear-gradient(135deg,#34d399,#059669);color:#fff' onclick=\""+(isCustomL?"showQuizCreator('"+curC+"')":"requirePasscode(function(){showQuizCreator('"+curC+"')})")+"\">✍️ Create Quiz Questions</button></div>"}
   app.innerHTML=h;return;
 }
 
@@ -1085,6 +1117,42 @@ function subT(){var s=0;for(var i=0;i<shuf.length;i++){var q=shuf[i];if(q.type==
 .cq-opt-row input[type="text"]{flex:1}
 .cq-opt-row input[type="radio"]{accent-color:#a855f7}
 .custom-badge{display:inline-block;font-size:9px;background:rgba(217,70,239,.15);color:#d946ef;padding:2px 8px;border-radius:6px;margin-left:8px;vertical-align:middle;font-weight:700;letter-spacing:.5px}
+
+/* ===== HAMBURGER MENU & SIDEBAR ===== */
+.ham-btn{position:fixed;top:12px;left:12px;z-index:9995;background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.2);border-radius:10px;width:40px;height:40px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:all .25s;backdrop-filter:blur(12px)}
+.ham-btn:hover{background:rgba(168,85,247,.25);border-color:rgba(168,85,247,.4);transform:scale(1.05)}
+.ham-btn.open{background:rgba(168,85,247,.3);border-color:rgba(168,85,247,.5)}
+.ham-line{width:18px;height:2px;background:#c4b5fd;border-radius:2px;transition:all .3s}
+.ham-btn.open .ham-line:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.ham-btn.open .ham-line:nth-child(2){opacity:0}
+.ham-btn.open .ham-line:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+
+.sb-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9993;opacity:0;pointer-events:none;transition:opacity .3s}
+.sb-overlay.vis{opacity:1;pointer-events:auto}
+
+.sb-panel{position:fixed;top:0;left:0;bottom:0;width:290px;background:linear-gradient(180deg,#1a1230 0%,#0d0b1a 100%);border-right:1px solid rgba(168,85,247,.15);z-index:9994;transform:translateX(-100%);transition:transform .35s cubic-bezier(.4,0,.2,1);overflow-y:auto;padding:70px 0 24px;box-shadow:4px 0 30px rgba(0,0,0,.4)}
+.sb-panel.open{transform:translateX(0)}
+.sb-section{padding:0 18px;margin-bottom:18px}
+.sb-label{font-size:10px;font-weight:700;color:#7c6fa0;text-transform:uppercase;letter-spacing:1.2px;padding:0 4px;margin-bottom:10px}
+.sb-card{display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.1);border-radius:12px;margin-bottom:8px;cursor:pointer;transition:all .2s}
+.sb-card:hover{background:rgba(168,85,247,.12);border-color:rgba(168,85,247,.25);transform:translateX(3px)}
+.sb-card-icon{font-size:22px;flex-shrink:0}
+.sb-card-info{flex:1;min-width:0}
+.sb-card-info h4{margin:0;font-size:13px;color:#e0c6ff;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-card-info small{color:#9b8fbb;font-size:11px}
+.sb-card-actions{display:flex;gap:4px;flex-shrink:0}
+.sb-card-actions button{background:none;border:none;font-size:14px;cursor:pointer;padding:4px 6px;border-radius:6px;transition:all .15s}
+.sb-card-actions button:hover{background:rgba(168,85,247,.2)}
+.sb-card-actions .sb-edit{color:#a78bfa}
+.sb-card-actions .sb-del{color:#f87171}
+.sb-create-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;background:linear-gradient(135deg,rgba(168,85,247,.15),rgba(217,70,239,.1));border:1.5px dashed rgba(168,85,247,.3);border-radius:12px;color:#c4b5fd;font-size:13px;font-weight:600;cursor:pointer;transition:all .25s;font-family:inherit}
+.sb-create-btn:hover{background:linear-gradient(135deg,rgba(168,85,247,.25),rgba(217,70,239,.2));border-color:rgba(168,85,247,.5);transform:scale(1.02)}
+.sb-divider{height:1px;background:rgba(168,85,247,.1);margin:14px 18px}
+.sb-empty{text-align:center;padding:20px 10px;color:#7c6fa0;font-size:12px;line-height:1.6}
+
+/* Passcode modal input */
+#passInput{font-size:18px!important;text-align:center!important;letter-spacing:6px!important}
+#passErr{animation:fadeIn .2s}
 .cn-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
 .cn-actions button{padding:8px 16px;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;border:none;transition:all .2s}
 .cn-edit{background:rgba(168,85,247,.12);color:#c4b5fd}.cn-edit:hover{background:rgba(168,85,247,.2)}
@@ -3245,6 +3313,81 @@ function _modal(html){
 function _closeModal(){var m=document.querySelector(".cmod");if(m)m.remove()}
 
 // === CREATE CATEGORY ===
+// ========== PASSCODE SYSTEM ==========
+var EDIT_PASS="landon";
+var passUnlocked=false;
+function requirePasscode(cb){
+  if(passUnlocked){cb();return}
+  _modal("<div style='text-align:center;padding:10px 0'><div style='font-size:42px;margin-bottom:12px'>🔐</div><h2 style='font-size:20px;margin:0 0 8px;background:linear-gradient(135deg,#ff6b9d,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:800'>Editing Protected Content</h2><p style='color:#9b8fbb;font-size:13px;margin:0 0 22px;line-height:1.5'>This section was built by Landon. Enter the passcode to make changes.</p></div><label style='font-size:13px;font-weight:700;color:#c4b5fd'>Passcode</label><input type='password' id='passInput' placeholder='Enter passcode...' style='font-size:16px;text-align:center;letter-spacing:4px;padding:14px'><div class='cmod-btns' style='margin-top:18px'><button class='cbtn-cancel' onclick='_closeModal()'>Cancel</button><button class='cbtn-save' onclick='checkPass()' style='background:linear-gradient(135deg,#ff6b9d,var(--accent))'>Unlock</button></div><p id='passErr' style='color:#f87171;font-size:12px;text-align:center;margin:10px 0 0;display:none'>Wrong passcode — try again</p>");
+  setTimeout(function(){var el=document.getElementById("passInput");if(el)el.focus()},200);
+  window._passCb=cb;
+}
+function checkPass(){
+  var v=document.getElementById("passInput").value.trim().toLowerCase();
+  if(v===EDIT_PASS){passUnlocked=true;_closeModal();if(window._passCb)window._passCb();window._passCb=null;csToast("🔓 Editing unlocked!")}
+  else{var e=document.getElementById("passErr");if(e){e.style.display="block"}var inp=document.getElementById("passInput");if(inp){inp.value="";inp.style.borderColor="#f87171";inp.focus()}}
+}
+
+// ========== SIDEBAR MENU ==========
+function toggleSidebar(){
+  var btn=document.getElementById("hamBtn"),panel=document.getElementById("sbPanel"),ov=document.getElementById("sbOverlay");
+  var isOpen=panel.classList.contains("open");
+  if(isOpen){panel.classList.remove("open");ov.classList.remove("vis");btn.classList.remove("open")}
+  else{renderSidebarList();panel.classList.add("open");ov.classList.add("vis");btn.classList.add("open")}
+}
+function renderSidebarList(){
+  var el=document.getElementById("sbList");var h="";
+  // Built-in sections first
+  for(var k in D){var c=D[k];
+    h+="<div class='sb-card'>"
+      +"<div class='sb-card-icon' onclick=\"toggleSidebar();go('class','"+k+"')\">"+c.icon+"</div>"
+      +"<div class='sb-card-info' onclick=\"toggleSidebar();go('class','"+k+"')\">"
+      +"<h4>"+c.name+"</h4>"
+      +"<small>"+c.lessons.length+" lesson"+(c.lessons.length!==1?"s":"")+"</small>"
+      +"</div>"
+      +"<div class='sb-card-actions'>"
+      +"<button class='sb-edit' title='Edit (passcode required)' onclick=\"toggleSidebar();requirePasscode(function(){showEditBuiltIn('"+k+"')})\">✏️</button>"
+      +"</div></div>"
+  }
+  // Custom sections
+  var cd=getCD();var keys=Object.keys(cd);
+  if(keys.length>0){
+    h+="<div style='padding:0 4px;margin:14px 0 10px'><div class='sb-label' style='margin:0'>✨ My Custom Sections</div></div>";
+    for(var i=0;i<keys.length;i++){var k=keys[i],c=cd[k];
+      h+="<div class='sb-card'>"
+        +"<div class='sb-card-icon' onclick=\"toggleSidebar();go('class','"+k+"')\">"+c.icon+"</div>"
+        +"<div class='sb-card-info' onclick=\"toggleSidebar();go('class','"+k+"')\">"
+        +"<h4>"+c.name+"</h4>"
+        +"<small>"+c.lessons.length+" lesson"+(c.lessons.length!==1?"s":"")+"</small>"
+        +"</div>"
+        +"<div class='sb-card-actions'>"
+        +"<button class='sb-edit' title='Edit' onclick=\"toggleSidebar();showEditCategory('"+k+"')\">✏️</button>"
+        +"<button class='sb-del' title='Delete' onclick=\"sbDelCategory('"+k+"')\">🗑️</button>"
+        +"</div></div>"
+    }
+  }
+  if(!keys.length&&!Object.keys(D).length){h="<div class='sb-empty'>No sections yet.</div>"}
+  el.innerHTML=h;
+}
+function sbDelCategory(key){
+  var cd=getCD();var c=cd[key];if(!c)return;
+  if(!confirm("Delete \""+c.name+"\" and all its lessons? This cannot be undone."))return;
+  delete cd[key];saveCD(cd);
+  if(curC===key){view="home";curC=null;curL=null;render()}
+  renderSidebarList();csToast("🗑️ Deleted: "+c.name);
+}
+// Edit built-in category name/description (passcode already verified)
+function showEditBuiltIn(key){
+  var c=D[key];if(!c)return;
+  _modal("<h2>✏️ Edit Section Info</h2><label>Name</label><input type='text' id='ebName' value='"+csEsc(c.name)+"'><label>Description</label><input type='text' id='ebSub' value='"+csEsc(c.sub)+"'><div class='cmod-btns'><button class='cbtn-cancel' onclick='_closeModal()'>Cancel</button><button class='cbtn-save' onclick=\"doEditBuiltIn('"+key+"')\">Save</button></div>");
+}
+function doEditBuiltIn(key){
+  var c=D[key];if(!c)return;
+  c.name=document.getElementById("ebName").value.trim()||c.name;
+  c.sub=document.getElementById("ebSub").value.trim()||c.sub;
+  saveBIMods();_closeModal();render();csToast("✅ Updated: "+c.name);
+}
+
 function showCreateCategory(){
   var eh="";for(var i=0;i<EMOJIS.length;i++){eh+="<div class='emoji-pick"+(i===0?" sel":"")+"' onclick=\"pickEmoji(this,'ccEmojiVal')\" data-e='"+EMOJIS[i]+"'>"+EMOJIS[i]+"</div>"}
   _modal("<h2>✨ Create Study Section</h2><label>Name</label><input type='text' id='ccName' placeholder='e.g. Organic Chemistry'><label>Description</label><input type='text' id='ccSub' placeholder='e.g. Reactions & Mechanisms'><label>Icon</label><input type='hidden' id='ccEmojiVal' value='"+EMOJIS[0]+"'><div class='emoji-grid'>"+eh+"</div><div class='cmod-btns'><button class='cbtn-cancel' onclick='_closeModal()'>Cancel</button><button class='cbtn-save' onclick='doCreateCategory()'>Create</button></div>");
@@ -3283,7 +3426,7 @@ function delCategory(key){
 
 // === CREATE LESSON ===
 function showCreateLesson(catKey){
-  var cd=getCD();var c=cd[catKey];if(!c)return;
+  var c=getSection(catKey);if(!c)return;
   var num=c.lessons.length+1;
   _modal("<h2>📖 Add Lesson</h2><label>Lesson Title</label><input type='text' id='clTitle' placeholder='e.g. Chapter 5: Cell Division'><label>Lesson Label</label><input type='text' id='clLabel' placeholder='e.g. L"+num+"' value='Lesson "+num+"'><div class='cmod-btns'><button class='cbtn-cancel' onclick='_closeModal()'>Cancel</button><button class='cbtn-save' onclick=\"doCreateLesson('"+catKey+"')\">Add Lesson</button></div>");
 }
@@ -3291,29 +3434,29 @@ function doCreateLesson(catKey){
   var title=document.getElementById("clTitle").value.trim();
   if(!title){alert("Please enter a title");return}
   var label=document.getElementById("clLabel").value.trim()||"Lesson";
-  var cd=getCD();if(!cd[catKey])return;
-  cd[catKey].lessons.push({id:"cl-"+Date.now(),title:title,ln:cd[catKey].name+" · "+label,notes:[],quiz:[]});
-  saveCD(cd);_closeModal();render();csToast("📖 Lesson added: "+title);
+  var sec=getSection(catKey);if(!sec)return;
+  sec.lessons.push({id:"cl-"+Date.now(),title:title,ln:sec.name+" · "+label,notes:[],quiz:[]});
+  saveSection(catKey);_closeModal();render();csToast("📖 Lesson added: "+title);
 }
 
 // === EDIT LESSON ===
 function showEditLesson(catKey){
-  var cd=getCD();var c=cd[catKey];if(!c||!curL)return;
-  var idx=c.lessons.indexOf(curL);if(idx<0){for(var i=0;i<c.lessons.length;i++){if(c.lessons[i].id===curL.id){idx=i;break}}}
+  var c=getSection(catKey);if(!c||!curL)return;
+  var idx=-1;for(var i=0;i<c.lessons.length;i++){if(c.lessons[i].id===curL.id){idx=i;break}}
   if(idx<0)return;var l=c.lessons[idx];
   _modal("<h2>✏️ Edit Lesson</h2><label>Title</label><input type='text' id='elTitle' value='"+csEsc(l.title)+"'><label>Label</label><input type='text' id='elLabel' value='"+csEsc(l.ln)+"'><div class='cmod-btns'><button class='cbtn-cancel' onclick='_closeModal()'>Cancel</button><button class='cbtn-save' onclick=\"doEditLesson('"+catKey+"',"+idx+")\">Save</button></div>");
 }
 function doEditLesson(catKey,idx){
-  var cd=getCD();if(!cd[catKey]||!cd[catKey].lessons[idx])return;
-  cd[catKey].lessons[idx].title=document.getElementById("elTitle").value.trim()||cd[catKey].lessons[idx].title;
-  cd[catKey].lessons[idx].ln=document.getElementById("elLabel").value.trim()||cd[catKey].lessons[idx].ln;
-  saveCD(cd);curL=cd[catKey].lessons[idx];_closeModal();render();csToast("✅ Lesson updated");
+  var sec=getSection(catKey);if(!sec||!sec.lessons[idx])return;
+  sec.lessons[idx].title=document.getElementById("elTitle").value.trim()||sec.lessons[idx].title;
+  sec.lessons[idx].ln=document.getElementById("elLabel").value.trim()||sec.lessons[idx].ln;
+  saveSection(catKey);curL=sec.lessons[idx];_closeModal();render();csToast("✅ Lesson updated");
 }
 function delLesson(catKey){
   if(!confirm("Delete this lesson and all its notes/quizzes?"))return;
-  var cd=getCD();if(!cd[catKey])return;
-  var idx=-1;for(var i=0;i<cd[catKey].lessons.length;i++){if(cd[catKey].lessons[i].id===curL.id){idx=i;break}}
-  if(idx>=0){cd[catKey].lessons.splice(idx,1);saveCD(cd)}
+  var sec=getSection(catKey);if(!sec)return;
+  var idx=-1;for(var i=0;i<sec.lessons.length;i++){if(sec.lessons[i].id===curL.id){idx=i;break}}
+  if(idx>=0){sec.lessons.splice(idx,1);saveSection(catKey)}
   view="class";curL=null;render();csToast("🗑️ Lesson deleted");
 }
 
@@ -3326,31 +3469,28 @@ function doAddNote(){
   var body=document.getElementById("anBody").value.trim();
   if(!head){alert("Please enter a heading");return}
   if(!body)body="(No content yet)";
-  var cd=getCD();if(!cd[curC])return;
-  var idx=-1;for(var i=0;i<cd[curC].lessons.length;i++){if(cd[curC].lessons[i].id===curL.id){idx=i;break}}
-  if(idx<0)return;
-  cd[curC].lessons[idx].notes.push({heading:head,body:body});
-  saveCD(cd);curL=cd[curC].lessons[idx];_closeModal();render();csToast("📝 Note added");
+  var sec=getSection(curC);if(!sec)return;
+  var idx=findLessonIdx(curC);if(idx<0)return;
+  sec.lessons[idx].notes.push({heading:head,body:body});
+  saveSection(curC);curL=sec.lessons[idx];_closeModal();render();csToast("📝 Note added");
 }
 function showEditNote(ni){
   var n=curL.notes[ni];if(!n)return;
   _modal("<h2>✏️ Edit Note</h2><label>Heading</label><input type='text' id='enHead' value='"+csEsc(n.heading)+"'><label>Content</label><textarea id='enBody'>"+csEsc(n.body)+"</textarea><div class='cmod-btns'><button class='cbtn-cancel' onclick='_closeModal()'>Cancel</button><button class='cbtn-save' onclick='doEditNote("+ni+")'>Save</button></div>");
 }
 function doEditNote(ni){
-  var cd=getCD();if(!cd[curC])return;
-  var idx=-1;for(var i=0;i<cd[curC].lessons.length;i++){if(cd[curC].lessons[i].id===curL.id){idx=i;break}}
-  if(idx<0)return;
-  cd[curC].lessons[idx].notes[ni].heading=document.getElementById("enHead").value.trim()||"Untitled";
-  cd[curC].lessons[idx].notes[ni].body=document.getElementById("enBody").value.trim()||"";
-  saveCD(cd);curL=cd[curC].lessons[idx];_closeModal();render();csToast("✅ Note updated");
+  var sec=getSection(curC);if(!sec)return;
+  var idx=findLessonIdx(curC);if(idx<0)return;
+  sec.lessons[idx].notes[ni].heading=document.getElementById("enHead").value.trim()||"Untitled";
+  sec.lessons[idx].notes[ni].body=document.getElementById("enBody").value.trim()||"";
+  saveSection(curC);curL=sec.lessons[idx];_closeModal();render();csToast("✅ Note updated");
 }
 function delNote(ni){
   if(!confirm("Remove this notes section?"))return;
-  var cd=getCD();if(!cd[curC])return;
-  var idx=-1;for(var i=0;i<cd[curC].lessons.length;i++){if(cd[curC].lessons[i].id===curL.id){idx=i;break}}
-  if(idx<0)return;
-  cd[curC].lessons[idx].notes.splice(ni,1);
-  saveCD(cd);curL=cd[curC].lessons[idx];render();csToast("🗑️ Note removed");
+  var sec=getSection(curC);if(!sec)return;
+  var idx=findLessonIdx(curC);if(idx<0)return;
+  sec.lessons[idx].notes.splice(ni,1);
+  saveSection(curC);curL=sec.lessons[idx];render();csToast("🗑️ Note removed");
 }
 
 // === UPLOAD NOTES ===
@@ -3371,11 +3511,10 @@ function processNoteFile(file){
     var firstLine=lines[0]?lines[0].trim():"";
     if(firstLine&&firstLine.length<100){heading=firstLine;lines.shift()}
     var body=lines.join("<br>").replace(/\*\*(.*?)\*\*/g,"<b>$1</b>");
-    var cd=getCD();if(!cd[curC])return;
-    var idx=-1;for(var i=0;i<cd[curC].lessons.length;i++){if(cd[curC].lessons[i].id===curL.id){idx=i;break}}
-    if(idx<0)return;
-    cd[curC].lessons[idx].notes.push({heading:heading,body:body});
-    saveCD(cd);curL=cd[curC].lessons[idx];_closeModal();render();csToast("📄 Notes uploaded from "+file.name);
+    var sec=getSection(curC);if(!sec)return;
+    var idx=findLessonIdx(curC);if(idx<0)return;
+    sec.lessons[idx].notes.push({heading:heading,body:body});
+    saveSection(curC);curL=sec.lessons[idx];_closeModal();render();csToast("📄 Notes uploaded from "+file.name);
   };
   reader.readAsText(file);
 }
@@ -3405,9 +3544,8 @@ function toggleQType(){
   document.getElementById("cqTF").style.display=t==="tf"?"block":"none";
 }
 function doAddQuestion(catKey){
-  var cd=getCD();if(!cd[catKey])return;
-  var idx=-1;for(var i=0;i<cd[catKey].lessons.length;i++){if(cd[catKey].lessons[i].id===curL.id){idx=i;break}}
-  if(idx<0)return;
+  var sec=getSection(catKey);if(!sec)return;
+  var idx=findLessonIdx(catKey);if(idx<0)return;
   var qText=document.getElementById("cqQuestion").value.trim();
   if(!qText){alert("Please enter a question");return}
   var type=document.getElementById("cqType").value;
@@ -3426,15 +3564,15 @@ function doAddQuestion(catKey){
   }
   var exp=document.getElementById("cqExp").value.trim();
   if(exp)qObj.exp=exp;
-  cd[catKey].lessons[idx].quiz.push(qObj);
-  saveCD(cd);curL=cd[catKey].lessons[idx];
+  sec.lessons[idx].quiz.push(qObj);
+  saveSection(catKey);curL=sec.lessons[idx];
   // Clear form for next question
   document.getElementById("cqQuestion").value="";
   for(var i=0;i<4;i++){var el=document.getElementById("cqOpt"+i);if(el)el.value=""}
   var saEl=document.getElementById("cqSAans");if(saEl)saEl.value="";
   document.getElementById("cqExp").value="";
   updateQCount();
-  csToast("✅ Question added! ("+cd[catKey].lessons[idx].quiz.length+" total)");
+  csToast("✅ Question added! ("+sec.lessons[idx].quiz.length+" total)");
 }
 function updateQCount(){
   var el=document.getElementById("cqCount");
