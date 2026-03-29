@@ -1546,12 +1546,12 @@ function save(){
 function cloudPush(){
   var sb=_supaClient();if(!sb||_syncing)return;
   _syncing=true;_syncStatus("Syncing…","#fbbf24");
-  var rows=notes.map(function(n){return{id:n.id,data:n,updated_at:n.mod||Date.now()}});
+  var rows=notes.map(function(n){return{id:n.id,data:n,updated_at:new Date(n.mod||Date.now()).toISOString()}});
   if(!rows.length){_syncing=false;_syncStatus("Synced","#34d399");return}
-  sb.from("notes").upsert(rows,{onConflict:"id"}).then(function(res){
+  sb.from("notes").upsert(rows,{onConflict:"id"}).select().then(function(res){
     _syncing=false;
     if(res.error){console.warn("Cloud push error:",res.error.message||String(res.error));_syncStatus("Sync error","#ef4444")}
-    else{_lastSync=Date.now();_syncStatus("Synced","#34d399")}
+    else{console.log("Cloud push OK, rows saved:",res.data?res.data.length:0);_lastSync=Date.now();_syncStatus("Synced","#34d399")}
   }).catch(function(e){_syncing=false;_syncStatus("Offline","#ef4444");console.warn("Cloud push failed:",e&&e.message?e.message:String(e))});
 }
 function cloudPull(){
@@ -1560,6 +1560,7 @@ function cloudPull(){
   sb.from("notes").select("*").then(function(res){
     if(res.error){console.warn("Cloud pull error:",res.error.message||String(res.error));_syncStatus("Sync error","#ef4444");return}
     var cloudNotes=res.data||[];
+    console.log("Cloud pull OK, rows received:",cloudNotes.length);
     if(!cloudNotes.length){
       if(notes.length){cloudPush()}
       _syncStatus("Synced","#34d399");return;
@@ -1592,8 +1593,17 @@ function cloudDelete(noteId){
 }
 function forceSync(){
   _syncStatus("Syncing…","#fbbf24");
-  cloudPull();
-  toast("☁️ Syncing…");
+  var sb=_supaClient();
+  if(!sb){toast("☁️ No Supabase client");return}
+  // Test pull first with visible feedback
+  sb.from("notes").select("*").then(function(res){
+    if(res.error){toast("❌ Pull error: "+(res.error.message||"unknown"));_syncStatus("Sync error","#ef4444");return}
+    var count=res.data?res.data.length:0;
+    toast("☁️ Cloud has "+count+" note(s)");
+    console.log("Force sync pull result:",JSON.stringify(res.data&&res.data.map(function(r){return{id:r.id,hasData:!!r.data}})));
+    // Now do normal pull+merge
+    cloudPull();
+  }).catch(function(e){toast("❌ Pull failed: "+(e&&e.message?e.message:String(e)));_syncStatus("Offline","#ef4444")});
 }
 
 function setBg(el){
