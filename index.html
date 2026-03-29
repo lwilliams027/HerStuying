@@ -558,8 +558,9 @@ function levDist(s,t){
 // Custom data helpers (must be in this script block before render() is called)
 var CD_KEY="sh_custom_data";
 var BI_KEY="sh_builtin_mods";
-function getCD(){try{return JSON.parse(localStorage.getItem(CD_KEY)||"{}")}catch(e){return{}}}
-function saveCD(d){localStorage.setItem(CD_KEY,JSON.stringify(d));rebuildMaps()}
+var _cdCache=null;
+function getCD(){if(!_cdCache)try{_cdCache=JSON.parse(localStorage.getItem(CD_KEY)||"{}")}catch(e){_cdCache={}}return _cdCache}
+function saveCD(d){_cdCache=d;localStorage.setItem(CD_KEY,JSON.stringify(d));rebuildMaps()}
 // Save modifications to built-in sections (delta-only to avoid hitting localStorage quota)
 function saveBIMods(){
   try{
