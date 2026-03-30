@@ -1345,18 +1345,16 @@ function subT(){var s=0;for(var i=0;i<shuf.length;i++){var q=shuf[i];if(q.type==
 /* ═══ NOTES POPUP ═══ */
 
 /* ── Floating Action Button ── */
-#notesBub{position:fixed;bottom:24px;left:24px;z-index:9999;width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#a855f7,#9333ea);box-shadow:0 4px 18px rgba(147,51,234,.3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:21px;transition:all .25s cubic-bezier(.34,1.56,.64,1);border:none;color:#fff}
-#notesBub:hover{transform:translateY(-2px) scale(1.05);box-shadow:0 6px 24px rgba(147,51,234,.35)}
-#notesBub:active{transform:scale(.93)}
+
 
 /* ── Main Panel ── */
-#notesPanel{position:fixed;bottom:40px;left:40px;z-index:9998;width:560px;height:680px;min-width:340px;min-height:400px;background:rgba(15,13,26,.8);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(168,85,247,.12);border-radius:18px;display:none;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.55),0 0 0 1px rgba(168,85,247,.06);resize:both;transition:opacity .3s,transform .3s}
+#notesPanel{position:fixed;inset:0;z-index:9998;width:100vw;height:100dvh;background:transparent;border:none;border-radius:0;display:none;flex-direction:column;overflow:hidden;box-shadow:none;transition:opacity .3s,transform .3s}
 #notesPanel.open{display:flex;animation:panelIn .35s cubic-bezier(.16,1,.3,1)}
 @keyframes panelIn{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
-#notesPanel::after{content:'';position:absolute;bottom:3px;right:3px;width:12px;height:12px;border-right:2px solid rgba(168,85,247,.15);border-bottom:2px solid rgba(168,85,247,.15);border-radius:0 0 3px 0;pointer-events:none}
+#notesPanel::after{display:none}
 
 /* ── Header ── */
-.np-hdr{padding:10px 14px;background:rgba(168,85,247,.04);border-bottom:1px solid rgba(168,85,247,.1);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.np-hdr{padding:10px 14px;background:rgba(12,10,26,.65);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(168,85,247,.12);display:flex;align-items:center;gap:8px;flex-shrink:0}
 .np-hdr h4{font-size:13px;font-weight:600;color:#f0ebfa;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.2px}
 .np-hdr button{background:none;border:none;color:rgba(200,190,230,.4);font-size:14px;cursor:pointer;padding:4px 8px;border-radius:6px;transition:all .15s}
 .np-hdr button:hover{background:rgba(168,85,247,.08);color:#d8b4fe}
@@ -1402,8 +1400,8 @@ function subT(){var s=0;for(var i=0;i<shuf.length;i++){var q=shuf[i];if(q.type==
 .np-main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
 
 /* ── Two-row Toolbar ── */
-.np-bar,.np-bar2{display:flex;align-items:center;gap:0;padding:0 3px;background:rgba(168,85,247,.03);flex-shrink:0}
-.np-bar{height:36px;border-top:1px solid rgba(168,85,247,.08)}
+.np-bar,.np-bar2{display:flex;align-items:center;gap:0;padding:0 3px;background:rgba(12,10,26,.6);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);flex-shrink:0}
+.np-bar{height:36px;border-top:1px solid rgba(168,85,247,.1)}
 .np-bar button,.np-bar2 button{background:none;border:none;color:rgba(200,190,230,.45);padding:0;font-size:14px;cursor:pointer;transition:all .15s;width:30px;height:30px;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;border-radius:6px;margin:0 1px}
 .np-bar button:hover,.np-bar2 button:hover{color:#d8b4fe;background:rgba(168,85,247,.08)}
 .np-bar button:active,.np-bar2 button:active{transform:scale(.88)}
@@ -1437,11 +1435,11 @@ function subT(){var s=0;for(var i=0;i<shuf.length;i++){var q=shuf[i];if(q.type==
 .np-palette-preview{width:28px;height:28px;border-radius:50%;border:2px solid rgba(168,85,247,.12)}
 
 /* ── Canvas / Paper ── */
-.np-canvas-wrap{flex:1;position:relative;overflow:auto;scroll-behavior:smooth}
+.np-canvas-wrap{flex:1;position:relative;overflow:auto;scroll-behavior:smooth;background:transparent}
 .np-canvas-wrap::-webkit-scrollbar{width:4px}
 .np-canvas-wrap::-webkit-scrollbar-thumb{background:rgba(168,85,247,.1);border-radius:2px}
 
-.np-canvas{position:relative;width:100%;min-height:100%;padding:0;transition:background .3s;touch-action:pan-y}
+.np-canvas{position:relative;width:100%;min-height:100%;padding:0;transition:background .3s;touch-action:pan-y;background:rgba(10,8,22,.25)}
 .np-canvas.bg-grid{background-image:linear-gradient(rgba(200,180,240,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(200,180,240,.03) 1px,transparent 1px);background-size:24px 24px}
 .np-canvas.bg-dots{background-image:radial-gradient(circle,rgba(200,180,240,.045) 1px,transparent 1px);background-size:20px 20px}
 .np-canvas.bg-lines{background-image:linear-gradient(rgba(200,180,240,.03) 1px,transparent 1px);background-size:100% 28px}
@@ -1587,8 +1585,7 @@ function subT(){var s=0;for(var i=0;i<shuf.length;i++){var q=shuf[i];if(q.type==
 
 /* ── Responsive ── */
 @media(max-width:600px){
-  #notesPanel{bottom:0!important;left:0!important;width:100vw!important;height:calc(100dvh - 50px)!important;border-radius:14px 14px 0 0;resize:none}
-  #notesBub{bottom:12px;left:12px;width:46px;height:46px;border-radius:12px;font-size:19px}
+  #notesPanel{inset:0!important;width:100vw!important;height:100dvh!important;border-radius:0;resize:none}
   .np-sb{width:200px}
   .np-bar{height:32px}
   .np-bar button{width:28px;height:28px}
@@ -1750,7 +1747,7 @@ function subT(){var s=0;for(var i=0;i<shuf.length;i++){var q=shuf[i];if(q.type==
 
 
 
-<button id="notesBub" onclick="NP.toggle()" title="Notes" style="display:none">📝</button>
+
 <div id="notesPanel">
   <div class="np-hdr">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:rgba(168,85,247,.5);flex-shrink:0"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
@@ -2223,7 +2220,9 @@ function gk(){return localStorage.getItem("np_gk")}
 function toggle(){
   isOpen=!isOpen;
   document.getElementById("notesPanel").classList.toggle("open",isOpen);
-  document.getElementById("notesBub").style.display=isOpen?"none":"flex";
+  var bn=document.getElementById("bottomNav");var tb=document.getElementById("topbar");
+  if(bn)bn.style.display=isOpen?"none":"";
+  if(tb)tb.style.display=isOpen?"none":"";
   if(isOpen){load();renderList();if(!cvReady)setTimeout(initCv,150);else setTimeout(renderStrokes,50);if(!curNote){if(notes.length)openNote(notes[0].id);else{var nn={id:"n"+Date.now(),title:"My Notes",bg:"grid",elements:[],strokes:[],arrows:[],mod:Date.now(),plain:""};notes.unshift(nn);save();openNote(nn.id);renderList()}}}
 }
 
@@ -3451,7 +3450,7 @@ function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").
 load();
 setTimeout(restoreCustomFonts,200);
 // Restore panel state
-try{var ps=JSON.parse(localStorage.getItem("np_state")||"{}");if(ps.open){isOpen=true;document.getElementById("notesPanel").classList.add("open");document.getElementById("notesBub").style.display="none";renderList();setTimeout(function(){initCv();if(ps.noteId){var n=notes.find(function(x){return x.id===ps.noteId});if(n)openNote(n.id);else if(notes.length)openNote(notes[0].id)}else if(notes.length)openNote(notes[0].id);},300)}}catch(e){}
+try{var ps=JSON.parse(localStorage.getItem("np_state")||"{}");if(ps.open){isOpen=true;document.getElementById("notesPanel").classList.add("open");renderList();setTimeout(function(){initCv();if(ps.noteId){var n=notes.find(function(x){return x.id===ps.noteId});if(n)openNote(n.id);else if(notes.length)openNote(notes[0].id)}else if(notes.length)openNote(notes[0].id);},300)}}catch(e){}
 
 /* ─── Font ─── */
 function changeFontSize(delta){
