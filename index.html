@@ -618,6 +618,43 @@ img{max-width:100%;height:auto}
 .cr-check input[type="checkbox"]{accent-color:#a855f7;width:16px;height:16px;flex-shrink:0}
 .cr-check-title{flex:1;font-size:13px;color:#ede5ff}
 .cr-check-count{font-size:11px;color:rgba(200,190,230,.3)}
+.cr-builder-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 14px;border-radius:14px;background:rgba(18,10,40,.22);border:0.5px solid rgba(168,85,247,.08);margin:16px 0}
+.cr-builder-stat{font-size:12px;color:rgba(200,190,230,.4);font-weight:500}
+.cr-builder-btn{margin-left:auto;padding:8px 16px;border-radius:10px;border:1px solid rgba(168,85,247,.2);background:rgba(168,85,247,.08);color:#c4b5fd;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .2s}
+.cr-builder-btn:hover{background:rgba(168,85,247,.18);border-color:rgba(168,85,247,.4)}
+.cr-note-card{background:rgba(18,10,40,.22);border:0.5px solid rgba(168,85,247,.08);border-radius:14px;padding:14px;margin-bottom:8px;transition:border-color .2s}
+.cr-note-card:hover{border-color:rgba(168,85,247,.2)}
+.cr-note-head{display:flex;align-items:center;gap:10px}
+.cr-note-num{width:24px;height:24px;border-radius:8px;background:rgba(168,85,247,.12);color:#c4b5fd;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cr-note-title{flex:1;font-size:14px;font-weight:600;color:#ede5ff}
+.cr-note-actions{display:flex;gap:4px}
+.cr-note-btn{background:none;border:none;cursor:pointer;font-size:14px;padding:4px 6px;border-radius:6px;transition:background .2s}
+.cr-note-btn:hover{background:rgba(168,85,247,.12)}
+.cr-note-del:hover{background:rgba(239,68,68,.15)}
+.cr-note-preview{font-size:12px;color:rgba(200,190,230,.3);margin-top:8px;line-height:1.5;max-height:40px;overflow:hidden}
+.cr-empty{text-align:center;padding:30px 0;color:rgba(200,190,230,.2);font-size:13px}
+.cr-textarea{width:100%;padding:12px 14px;background:rgba(13,11,26,.6);border:1.5px solid rgba(168,85,247,.12);border-radius:12px;color:#e0c6ff;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;min-height:140px;resize:vertical;line-height:1.6;transition:border-color .2s}
+.cr-textarea:focus{border-color:rgba(168,85,247,.5)}
+.cr-format-bar{display:flex;gap:4px;margin-bottom:6px}
+.cr-format-bar button{padding:6px 12px;border-radius:8px;border:1px solid rgba(168,85,247,.12);background:rgba(13,11,26,.5);color:rgba(200,190,230,.5);font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .2s}
+.cr-format-bar button:hover{background:rgba(168,85,247,.12);color:#c4b5fd;border-color:rgba(168,85,247,.3)}
+.cr-type-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
+.cr-type-btn{padding:12px 10px;border-radius:12px;border:1.5px solid rgba(168,85,247,.1);background:rgba(13,11,26,.4);color:rgba(200,190,230,.5);font-size:13px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .2s;text-align:center}
+.cr-type-btn.on{border-color:rgba(168,85,247,.5);background:rgba(168,85,247,.1);color:#c4b5fd}
+.cr-type-btn:hover{border-color:rgba(168,85,247,.3)}
+.cr-mc-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.cr-mc-row input[type="radio"]{accent-color:#a855f7;width:16px;height:16px;flex-shrink:0}
+.cr-mc-letter{width:24px;height:24px;border-radius:8px;background:rgba(168,85,247,.08);color:rgba(200,190,230,.4);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cr-mc-row .cr-input{flex:1}
+.cr-tf-row{display:flex;gap:8px}
+.cr-tf-btn{flex:1;padding:14px;border-radius:12px;border:1.5px solid rgba(168,85,247,.1);background:rgba(13,11,26,.4);color:rgba(200,190,230,.5);font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .2s}
+.cr-tf-btn.on{border-color:rgba(52,211,153,.5);background:rgba(52,211,153,.08);color:#34d399}
+.cr-q-card{background:rgba(18,10,40,.18);border:0.5px solid rgba(168,85,247,.06);border-radius:12px;padding:12px 14px;margin-bottom:6px}
+.cr-q-head{display:flex;align-items:center;gap:8px}
+.cr-q-num{width:22px;height:22px;border-radius:7px;background:rgba(168,85,247,.1);color:#c4b5fd;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cr-q-type{padding:2px 8px;border-radius:6px;background:rgba(168,85,247,.08);color:rgba(200,190,230,.4);font-size:10px;font-weight:600;flex-shrink:0}
+.cr-q-text{flex:1;font-size:13px;color:#ede5ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cr-q-answer{font-size:11px;color:rgba(52,211,153,.5);margin-top:6px;padding-left:30px}
 .cr-row{padding:9px 12px;margin-bottom:5px;display:flex;align-items:center;gap:9px;background:rgba(18,10,40,.22);border:0.5px solid rgba(168,85,247,.08);border-radius:16px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:border-color .2s;position:relative;z-index:2}
 .cr-row:hover{border-color:rgba(168,85,247,.18)}
 @media(min-width:768px){.cr-row{padding:20px 24px;margin-bottom:10px;gap:16px;border-radius:20px}}
@@ -637,6 +674,8 @@ img{max-width:100%;height:auto}
 .cr-ib svg{width:13px;height:13px;stroke:rgba(200,190,230,.25);fill:none;stroke-width:1.8;stroke-linecap:round}
 @media(min-width:768px){.cr-ib svg{width:16px;height:16px}}
 .cr-ib:hover svg{stroke:rgba(200,190,230,.5)}
+.cr-ib-del:hover{background:rgba(239,68,68,.12)!important;border-color:rgba(239,68,68,.2)!important}
+.cr-ib-del:hover svg{stroke:#f87171!important}
 .import-drop{border:1.5px dashed rgba(168,85,247,.15);border-radius:14px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:12px;background:rgba(13,11,26,.5)}
 .import-drop:hover,.import-drop.dragover{border-color:rgba(168,85,247,.35);background:rgba(168,85,247,.05)}
 .import-drop.has-file{border-color:rgba(52,211,153,.25);background:rgba(52,211,153,.03)}
@@ -1412,7 +1451,9 @@ function renderNotesList(){
 })();
 
 /* ═══ RENDER CREATE PAGE ═══ */
-var crView="main"; // main | newlesson | newquiz | newtest | import
+var crView="main"; // main | newlesson | newquiz | newtest | import | notemaker | quizmaker
+var crEditKey=null; // section key being edited
+var crEditLes=null; // lesson ref being edited
 
 function renderCreate(){
   var el=document.getElementById("createContent");if(!el)return;
@@ -1420,6 +1461,8 @@ function renderCreate(){
   if(crView==="newquiz")return renderCrQuiz(el);
   if(crView==="newtest")return renderCrTest(el);
   if(crView==="import")return renderCrImport(el);
+  if(crView==="notemaker")return renderCrNoteMaker(el);
+  if(crView==="quizmaker")return renderCrQuizMaker(el);
   renderCrMain(el);
 }
 
@@ -1445,10 +1488,10 @@ function renderCrMain(el){
     var col=secColors[sec]||"#a855f7";
     var sName=secNames[sec]||D2[sec].name||sec;
     if(D2[sec]&&D2[sec].lessons){
-      D2[sec].lessons.forEach(function(les){
+      D2[sec].lessons.forEach(function(les,li){
         var qc=les.quiz?les.quiz.length:0;
         var nc=les.notes?les.notes.length:0;
-        allLessons.push({id:les.id,title:les.title,ln:les.ln||"",sec:sName,color:col,qc:qc,nc:nc,custom:false});
+        allLessons.push({id:les.id,title:les.title,ln:les.ln||"",sec:sName,secKey:sec,lesIdx:li,color:col,qc:qc,nc:nc,custom:false});
       });
     }
   }
@@ -1456,10 +1499,10 @@ function renderCrMain(el){
     var ccat=cd[ck];
     var ccol="#d946ef";
     if(ccat&&ccat.lessons){
-      ccat.lessons.forEach(function(les){
+      ccat.lessons.forEach(function(les,li){
         var qc=les.quiz?les.quiz.length:0;
         var nc=les.notes?les.notes.length:0;
-        allLessons.push({id:les.id,title:les.title,ln:les.ln||"",sec:ccat.name||ck,color:ccol,qc:qc,nc:nc,custom:true});
+        allLessons.push({id:les.id,title:les.title,ln:les.ln||"",sec:ccat.name||ck,secKey:ck,lesIdx:li,color:ccol,qc:qc,nc:nc,custom:true});
       });
     }
   }
@@ -1480,6 +1523,26 @@ function renderCrMain(el){
   h+="<button class='cr-card' data-action='newtest'><svg viewBox='0 0 24 24'><path d='M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z'/><path d='M14 2v6h6'/></svg><div class='cv'>Full Test</div><div class='cl'>Combine quizzes</div></button>";
   h+="<button class='cr-card' data-action='import'><svg viewBox='0 0 24 24'><path d='M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4'/><path d='M17 8l-5-5-5 5M12 3v12'/></svg><div class='cv'>Import</div><div class='cl'>Upload slides</div></button>";
   h+="</div>";
+
+  // Sections list with delete
+  var secList=[];
+  for(var sk in D2){secList.push({key:sk,name:D2[sk].name,icon:D2[sk].icon,count:D2[sk].lessons.length,custom:false,color:secColors[sk]||"#a855f7"})}
+  for(var ck2 in cd){secList.push({key:ck2,name:cd[ck2].name,icon:cd[ck2].icon,count:cd[ck2].lessons.length,custom:true,color:"#d946ef"})}
+  if(secList.length){
+    h+="<div class='sec-label'>Sections</div>";
+    secList.forEach(function(s){
+      h+="<div class='cr-row'>";
+      h+="<div style='font-size:18px;flex-shrink:0'>"+s.icon+"</div>";
+      h+="<div class='cr-info'><h4>"+esc(s.name)+(s.custom?"<span class='custom-badge' style='margin-left:6px'>CUSTOM</span>":"")+"</h4><span>"+s.count+" lesson"+(s.count!==1?"s":"")+"</span></div>";
+      h+="<div class='cr-btns'>";
+      if(s.custom){
+        h+="<div class='cr-ib' title='Edit' onclick=\"event.stopPropagation();showEditCategory('"+s.key+"')\"><svg viewBox='0 0 24 24'><path d='M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7'/><path d='M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z'/></svg></div>";
+        h+="<div class='cr-ib cr-ib-del' title='Delete' onclick=\"event.stopPropagation();crDelSection('"+s.key+"')\"><svg viewBox='0 0 24 24'><path d='M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2'/></svg></div>";
+      }
+      h+="</div></div>";
+    });
+  }
+
   h+="<div class='sec-label'>All content</div>";
   h+="<div id='crList'>";
   allLessons.forEach(function(l){
@@ -1492,8 +1555,9 @@ function renderCrMain(el){
     h+="<div class='cr-info'><h4>"+esc(l.title)+"</h4><span>"+esc(l.sec)+" · "+l.qc+" Q · "+l.nc+" notes</span></div>";
     h+="<div class='cr-badge' style='background:"+badgeBg+";color:"+badgeCol+"'>"+l.qc+" Q</div>";
     h+="<div class='cr-btns'>";
-    h+="<div class='cr-ib' title='Edit' onclick=\"event.stopPropagation();go('class','"+esc(l.id)+"');goPage('study')\"><svg viewBox='0 0 24 24'><path d='M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7'/><path d='M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z'/></svg></div>";
-    h+="<div class='cr-ib' title='Quiz'><svg viewBox='0 0 24 24'><path d='M9 11l3 3L22 4'/></svg></div>";
+    h+="<div class='cr-ib' title='Edit Notes' onclick=\"event.stopPropagation();crOpenBuilder('"+l.secKey+"',"+l.lesIdx+",'notemaker')\"><svg viewBox='0 0 24 24'><path d='M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7'/><path d='M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z'/></svg></div>";
+    h+="<div class='cr-ib' title='Quiz Maker' onclick=\"event.stopPropagation();crOpenBuilder('"+l.secKey+"',"+l.lesIdx+",'quizmaker')\"><svg viewBox='0 0 24 24'><path d='M9 11l3 3L22 4'/></svg></div>";
+    if(l.custom){h+="<div class='cr-ib cr-ib-del' title='Delete Lesson' onclick=\"event.stopPropagation();crDelLesson('"+l.secKey+"',"+l.lesIdx+")\"><svg viewBox='0 0 24 24'><path d='M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2'/></svg></div>";}
     h+="</div></div>";
   });
   h+="</div>";
@@ -1603,6 +1667,145 @@ function renderCrImport(el){
   h+="</div>";
   el.innerHTML=h;
   window._importFiles=window._importFiles||[];
+}
+
+/* ── NOTES MAKER PAGE ── */
+function renderCrNoteMaker(el){
+  var sec=getSection(crEditKey);
+  if(!sec||!crEditLes){crView="main";renderCreate();return}
+  // find fresh lesson ref
+  var les=null;for(var i=0;i<sec.lessons.length;i++){if(sec.lessons[i].id===crEditLes.id){les=sec.lessons[i];break}}
+  if(!les){crView="main";renderCreate();return}
+  crEditLes=les;
+
+  var h="<button class='cr-back' onclick='crView=\"main\";renderCreate()'><svg viewBox='0 0 24 24' width='18' height='18'><path d='M19 12H5M12 19l-7-7 7-7'/></svg> Back to Create</button>";
+  h+="<div class='stats-greeting'>📝 "+esc(les.title)+"</div>";
+  h+="<div class='stats-sub'>Build notes for this lesson. Add sections with headings and content.</div>";
+
+  // Action bar
+  h+="<div class='cr-builder-bar'>";
+  h+="<span class='cr-builder-stat'>"+les.notes.length+" note section"+(les.notes.length!==1?"s":"")+"</span>";
+  h+="<span class='cr-builder-stat'>"+les.quiz.length+" question"+(les.quiz.length!==1?"s":"")+"</span>";
+  h+="<button class='cr-builder-btn' onclick='crView=\"quizmaker\";renderCreate()'>✍️ Quiz Maker</button>";
+  h+="</div>";
+
+  // Existing notes
+  if(les.notes.length){
+    h+="<div class='sec-label'>Existing Notes</div>";
+    for(var i=0;i<les.notes.length;i++){
+      var n=les.notes[i];
+      h+="<div class='cr-note-card'>";
+      h+="<div class='cr-note-head'><span class='cr-note-num'>"+(i+1)+"</span><span class='cr-note-title'>"+esc(n.heading)+"</span>";
+      h+="<div class='cr-note-actions'><button class='cr-note-btn' onclick='editNoteSection("+i+")' title='Edit'>✏️</button><button class='cr-note-btn cr-note-del' onclick='deleteNoteSection("+i+")' title='Delete'>🗑️</button></div></div>";
+      h+="<div class='cr-note-preview'>"+n.body.substring(0,200)+(n.body.length>200?"...":"")+"</div>";
+      h+="</div>";
+    }
+  }else{
+    h+="<div class='cr-empty'>No notes yet — add your first section below!</div>";
+  }
+
+  // Add note form
+  h+="<div class='sec-label'>Add Note Section</div>";
+  h+="<div class='cr-form'>";
+  h+="<label>Section Heading</label>";
+  h+="<input type='text' id='nmHeading' class='cr-input' placeholder='e.g. Key Definitions, Important Concepts...'>";
+  h+="<label>Content</label>";
+  h+="<div class='cr-format-bar'><button onclick='nmFormat(\"b\")' title='Bold'>B</button><button onclick='nmFormat(\"i\")' title='Italic'><i>I</i></button><button onclick='nmFormat(\"ul\")' title='Bullet List'>• List</button><button onclick='nmFormat(\"h\")' title='Subheading'>H</button></div>";
+  h+="<textarea id='nmBody' class='cr-textarea' placeholder='Type your notes here...\n\nTip: Use the format buttons above or write plain text.'></textarea>";
+  h+="<button class='cr-submit' onclick='addNoteSection()'>+ Add Section</button>";
+  h+="</div>";
+
+  el.innerHTML=h;
+}
+
+/* ── QUIZ MAKER PAGE ── */
+function renderCrQuizMaker(el){
+  var sec=getSection(crEditKey);
+  if(!sec||!crEditLes){crView="main";renderCreate();return}
+  var les=null;for(var i=0;i<sec.lessons.length;i++){if(sec.lessons[i].id===crEditLes.id){les=sec.lessons[i];break}}
+  if(!les){crView="main";renderCreate();return}
+  crEditLes=les;
+
+  var h="<button class='cr-back' onclick='crView=\"notemaker\";renderCreate()'><svg viewBox='0 0 24 24' width='18' height='18'><path d='M19 12H5M12 19l-7-7 7-7'/></svg> Back to Notes</button>";
+  h+="<div class='stats-greeting'>✍️ Quiz Maker</div>";
+  h+="<div class='stats-sub'>"+esc(les.title)+" — "+les.quiz.length+" question"+(les.quiz.length!==1?"s":"")+" so far</div>";
+
+  // Action bar
+  h+="<div class='cr-builder-bar'>";
+  h+="<span class='cr-builder-stat'>"+les.quiz.length+" question"+(les.quiz.length!==1?"s":"")+"</span>";
+  h+="<button class='cr-builder-btn' onclick='crView=\"notemaker\";renderCreate()'>📝 Notes Maker</button>";
+  h+="</div>";
+
+  // Add question form
+  h+="<div class='sec-label'>Add Question</div>";
+  h+="<div class='cr-form'>";
+
+  // Type selector
+  h+="<label>Question Type</label>";
+  h+="<div class='cr-type-grid'>";
+  h+="<button class='cr-type-btn on' data-type='mc' onclick='switchQType(this,\"mc\")'>🔘 Multiple Choice</button>";
+  h+="<button class='cr-type-btn' data-type='tf' onclick='switchQType(this,\"tf\")'>✅ True / False</button>";
+  h+="<button class='cr-type-btn' data-type='sa' onclick='switchQType(this,\"sa\")'>✏️ Short Answer</button>";
+  h+="<button class='cr-type-btn' data-type='fib' onclick='switchQType(this,\"fib\")'>📝 Fill in Blank</button>";
+  h+="</div>";
+
+  // Question text
+  h+="<label>Question</label>";
+  h+="<textarea id='qmQuestion' class='cr-textarea' style='min-height:70px' placeholder='Type your question here...'></textarea>";
+
+  // MC options (default visible)
+  h+="<div id='qmMC'>";
+  h+="<label>Answer Options <span style='font-weight:400;opacity:.5'>(select the correct one)</span></label>";
+  for(var j=0;j<4;j++){
+    h+="<div class='cr-mc-row'><input type='radio' name='qmCorrect' value='"+j+"'"+(j===0?" checked":"")+"><span class='cr-mc-letter'>"+String.fromCharCode(65+j)+"</span><input type='text' id='qmOpt"+j+"' class='cr-input' placeholder='Option "+(j+1)+"'></div>";
+  }
+  h+="</div>";
+
+  // TF options
+  h+="<div id='qmTF' style='display:none'>";
+  h+="<label>Correct Answer</label>";
+  h+="<div class='cr-tf-row'><button class='cr-tf-btn on' onclick='pickTF(this,0)'>True</button><button class='cr-tf-btn' onclick='pickTF(this,1)'>False</button></div>";
+  h+="<input type='hidden' id='qmTFans' value='0'>";
+  h+="</div>";
+
+  // SA answer
+  h+="<div id='qmSA' style='display:none'>";
+  h+="<label>Correct Answer</label>";
+  h+="<input type='text' id='qmSAans' class='cr-input' placeholder='The correct answer...'>";
+  h+="</div>";
+
+  // FIB answer
+  h+="<div id='qmFIB' style='display:none'>";
+  h+="<label>Correct Answer</label>";
+  h+="<input type='text' id='qmFIBans' class='cr-input' placeholder='The word or phrase to fill in...'>";
+  h+="</div>";
+
+  // Explanation
+  h+="<label>Explanation <span style='font-weight:400;opacity:.5'>(optional)</span></label>";
+  h+="<input type='text' id='qmExp' class='cr-input' placeholder='Why is this the correct answer?'>";
+
+  h+="<button class='cr-submit' onclick='addQuizQuestion()'>+ Add Question</button>";
+  h+="</div>";
+
+  // Existing questions list
+  if(les.quiz.length){
+    h+="<div class='sec-label'>Questions ("+les.quiz.length+")</div>";
+    for(var i=0;i<les.quiz.length;i++){
+      var q=les.quiz[i];
+      var tl=q.type==="tf"?"T/F":q.type==="sa"?"Short":q.type==="fib"?"Fill":"MC";
+      h+="<div class='cr-q-card'>";
+      h+="<div class='cr-q-head'><span class='cr-q-num'>"+(i+1)+"</span><span class='cr-q-type'>"+tl+"</span><span class='cr-q-text'>"+esc(q.q).substring(0,80)+(q.q.length>80?"...":"")+"</span>";
+      h+="<button class='cr-note-btn cr-note-del' onclick='deleteQuestion("+i+")' title='Delete'>🗑️</button></div>";
+      if(q.a){h+="<div class='cr-q-answer'>✓ "+esc(q.a[q.c])+"</div>"}
+      else if(q.ans){h+="<div class='cr-q-answer'>✓ "+esc(q.ans)+"</div>"}
+      h+="</div>";
+    }
+  }
+
+  // Done button
+  h+="<div style='text-align:center;padding:20px 0 40px'><button class='cr-submit' style='max-width:280px;background:linear-gradient(135deg,#34d399,#059669)' onclick='finishBuilder()'>✅ Done — View Lesson</button></div>";
+
+  el.innerHTML=h;
 }
 
 function filterCreateList(){
@@ -4638,9 +4841,9 @@ function doNewLesson(){
   var sec=getSection(secKey);if(!sec)return;
   var les={id:"cl-"+Date.now(),title:title,ln:(sec.name||"")+" · "+label,notes:[],quiz:[]};
   sec.lessons.push(les);saveSection(secKey);
-  crView="main";
-  curC=secKey;curL=les;view="lesson";tab="notes";
-  rq();goPage("study");pushURL();render();scrollTo({top:0,behavior:"smooth"});
+  crEditKey=secKey;crEditLes=les;
+  crView="notemaker";
+  renderCreate();scrollTo({top:0,behavior:"smooth"});
   csToast("📖 Created: "+title);
 }
 
@@ -4668,9 +4871,9 @@ function doNewQuiz(){
   if(!sec||!sec.lessons||!sec.lessons.length){alert("No lessons in this section. Create a lesson first.");return}
   var idx=parseInt(lesIdx)||0;
   if(!sec.lessons[idx]){alert("Please select a lesson");return}
-  curC=secKey;curL=sec.lessons[idx];
-  crView="main";
-  showQuizCreator(secKey);
+  crEditKey=secKey;crEditLes=sec.lessons[idx];
+  crView="quizmaker";
+  renderCreate();scrollTo({top:0,behavior:"smooth"});
 }
 
 function doNewTest(){
@@ -4697,6 +4900,171 @@ function doNewTest(){
   crView="main";
   view="lesson";tab="final";
   goPage("study");pushURL();render();scrollTo({top:0,behavior:"smooth"});
+}
+
+// === BUILDER PAGE ACTIONS ===
+
+function crOpenBuilder(secKey,lesIdx,mode){
+  var sec=getSection(secKey);if(!sec||!sec.lessons[lesIdx])return;
+  crEditKey=secKey;crEditLes=sec.lessons[lesIdx];
+  crView=mode;
+  renderCreate();scrollTo({top:0,behavior:"smooth"});
+}
+
+function crDelSection(key){
+  var sec=getSection(key);if(!sec)return;
+  if(!confirm("Delete \""+sec.name+"\" and all its lessons? This cannot be undone."))return;
+  var cd=getCD();delete cd[key];saveCD(cd);
+  if(curC===key){view="home";curC=null;curL=null}
+  renderCreate();csToast("🗑️ Section deleted");
+}
+
+function crDelLesson(secKey,lesIdx){
+  var sec=getSection(secKey);if(!sec||!sec.lessons[lesIdx])return;
+  if(!confirm("Delete \""+sec.lessons[lesIdx].title+"\"? This cannot be undone."))return;
+  sec.lessons.splice(lesIdx,1);saveSection(secKey);
+  if(curL&&curL.id&&!sec.lessons.some(function(l){return l.id===curL.id})){curL=null;view="class"}
+  renderCreate();csToast("🗑️ Lesson deleted");
+}
+
+// Notes Maker
+function nmFormat(type){
+  var ta=document.getElementById("nmBody");if(!ta)return;
+  var start=ta.selectionStart,end=ta.selectionEnd;
+  var sel=ta.value.substring(start,end);
+  var ins="";
+  if(type==="b") ins="<b>"+sel+"</b>";
+  else if(type==="i") ins="<em>"+sel+"</em>";
+  else if(type==="h") ins="<h4>"+sel+"</h4>";
+  else if(type==="ul") ins="<ul><li>"+(sel||"Item 1")+"</li><li>Item 2</li></ul>";
+  ta.value=ta.value.substring(0,start)+ins+ta.value.substring(end);
+  ta.focus();
+}
+
+function addNoteSection(){
+  var heading=document.getElementById("nmHeading").value.trim();
+  if(!heading){alert("Please enter a heading");return}
+  var body=document.getElementById("nmBody").value.trim();
+  if(!body){alert("Please enter some content");return}
+  // convert newlines to <br> if no HTML tags
+  if(body.indexOf("<")<0) body=body.replace(/\n/g,"<br>");
+  var sec=getSection(crEditKey);if(!sec)return;
+  var les=null;for(var i=0;i<sec.lessons.length;i++){if(sec.lessons[i].id===crEditLes.id){les=sec.lessons[i];break}}
+  if(!les)return;
+  les.notes.push({heading:heading,body:body});
+  les._touched=true;
+  saveSection(crEditKey);crEditLes=les;
+  renderCreate();scrollTo({top:0,behavior:"smooth"});
+  csToast("📝 Note added");
+}
+
+function editNoteSection(idx){
+  var sec=getSection(crEditKey);if(!sec)return;
+  var les=null;for(var i=0;i<sec.lessons.length;i++){if(sec.lessons[i].id===crEditLes.id){les=sec.lessons[i];break}}
+  if(!les||!les.notes[idx])return;
+  var n=les.notes[idx];
+  _modal("<h2>✏️ Edit Note Section</h2>"+
+    "<label>Heading</label><input type='text' id='enHeading' value='"+esc(n.heading)+"'>"+
+    "<label>Content</label><textarea id='enBody' style='min-height:140px'>"+n.body.replace(/</g,"&lt;").replace(/>/g,"&gt;")+"</textarea>"+
+    "<div class='cmod-btns'><button class='cbtn-cancel' onclick='_closeModal()'>Cancel</button><button class='cbtn-save' onclick='saveEditNote("+idx+")'>Save</button></div>");
+}
+function saveEditNote(idx){
+  var heading=document.getElementById("enHeading").value.trim();
+  var body=document.getElementById("enBody").value.trim();
+  if(!heading||!body)return;
+  if(body.indexOf("<")<0) body=body.replace(/\n/g,"<br>");
+  var sec=getSection(crEditKey);if(!sec)return;
+  var les=null;for(var i=0;i<sec.lessons.length;i++){if(sec.lessons[i].id===crEditLes.id){les=sec.lessons[i];break}}
+  if(!les||!les.notes[idx])return;
+  les.notes[idx]={heading:heading,body:body};
+  les._touched=true;
+  saveSection(crEditKey);crEditLes=les;
+  _closeModal();renderCreate();csToast("✅ Note updated");
+}
+
+function deleteNoteSection(idx){
+  if(!confirm("Delete this note section?"))return;
+  var sec=getSection(crEditKey);if(!sec)return;
+  var les=null;for(var i=0;i<sec.lessons.length;i++){if(sec.lessons[i].id===crEditLes.id){les=sec.lessons[i];break}}
+  if(!les||!les.notes[idx])return;
+  les.notes.splice(idx,1);
+  les._touched=true;
+  saveSection(crEditKey);crEditLes=les;
+  renderCreate();csToast("🗑️ Note deleted");
+}
+
+// Quiz Maker
+function switchQType(btn,type){
+  document.querySelectorAll(".cr-type-btn").forEach(function(b){b.classList.remove("on")});
+  btn.classList.add("on");
+  var mc=document.getElementById("qmMC"),tf=document.getElementById("qmTF"),sa=document.getElementById("qmSA"),fib=document.getElementById("qmFIB");
+  if(mc)mc.style.display=type==="mc"?"block":"none";
+  if(tf)tf.style.display=type==="tf"?"block":"none";
+  if(sa)sa.style.display=type==="sa"?"block":"none";
+  if(fib)fib.style.display=type==="fib"?"block":"none";
+}
+
+function pickTF(btn,val){
+  document.querySelectorAll(".cr-tf-btn").forEach(function(b){b.classList.remove("on")});
+  btn.classList.add("on");
+  document.getElementById("qmTFans").value=val;
+}
+
+function addQuizQuestion(){
+  var qText=document.getElementById("qmQuestion").value.trim();
+  if(!qText){alert("Please enter a question");return}
+  var typeBtn=document.querySelector(".cr-type-btn.on");
+  var type=typeBtn?typeBtn.getAttribute("data-type"):"mc";
+  var qObj={q:qText};
+
+  if(type==="mc"){
+    var opts=[];for(var i=0;i<4;i++){var v=(document.getElementById("qmOpt"+i)||{}).value||"";v=v.trim();if(v)opts.push(v)}
+    if(opts.length<2){alert("Please enter at least 2 options");return}
+    var correct=parseInt(document.querySelector("input[name='qmCorrect']:checked").value);
+    qObj.a=opts;qObj.c=correct;
+  }else if(type==="tf"){
+    qObj.a=["True","False"];qObj.c=parseInt(document.getElementById("qmTFans").value);qObj.type="tf";
+  }else if(type==="sa"){
+    var ans=(document.getElementById("qmSAans")||{}).value||"";ans=ans.trim();
+    if(!ans){alert("Please enter the correct answer");return}
+    qObj.type="sa";qObj.ans=ans;
+  }else if(type==="fib"){
+    var ans=(document.getElementById("qmFIBans")||{}).value||"";ans=ans.trim();
+    if(!ans){alert("Please enter the correct answer");return}
+    qObj.type="fib";qObj.ans=ans;
+  }
+
+  var exp=(document.getElementById("qmExp")||{}).value||"";exp=exp.trim();
+  if(exp)qObj.exp=exp;
+
+  var sec=getSection(crEditKey);if(!sec)return;
+  var les=null;for(var i=0;i<sec.lessons.length;i++){if(sec.lessons[i].id===crEditLes.id){les=sec.lessons[i];break}}
+  if(!les)return;
+  les.quiz.push(qObj);
+  les._touched=true;
+  saveSection(crEditKey);crEditLes=les;
+  renderCreate();
+  // scroll to bottom to show added question
+  setTimeout(function(){scrollTo({top:document.body.scrollHeight,behavior:"smooth"})},100);
+  csToast("✍️ Question "+(les.quiz.length)+" added");
+}
+
+function deleteQuestion(idx){
+  if(!confirm("Delete question "+(idx+1)+"?"))return;
+  var sec=getSection(crEditKey);if(!sec)return;
+  var les=null;for(var i=0;i<sec.lessons.length;i++){if(sec.lessons[i].id===crEditLes.id){les=sec.lessons[i];break}}
+  if(!les||!les.quiz[idx])return;
+  les.quiz.splice(idx,1);
+  les._touched=true;
+  saveSection(crEditKey);crEditLes=les;
+  renderCreate();csToast("🗑️ Question deleted");
+}
+
+function finishBuilder(){
+  if(!crEditKey||!crEditLes){crView="main";renderCreate();return}
+  curC=crEditKey;curL=crEditLes;view="lesson";tab="notes";
+  crView="main";
+  rq();goPage("study");pushURL();render();scrollTo({top:0,behavior:"smooth"});
 }
 
 // === SLIDE IMPORT / AUTO-GENERATE ===
