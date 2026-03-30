@@ -603,6 +603,21 @@ img{max-width:100%;height:auto}
 @media(min-width:768px){.cr-card .cv{font-size:18px}}
 .cr-card .cl{font-size:10px;color:rgba(200,190,230,.22);margin-top:2px;pointer-events:none}
 @media(min-width:768px){.cr-card .cl{font-size:14px;margin-top:6px}}
+.cr-back{display:inline-flex;align-items:center;gap:6px;background:none;border:none;color:rgba(200,190,230,.4);font-size:13px;font-family:inherit;cursor:pointer;padding:4px 0;margin-bottom:8px;transition:color .2s}
+.cr-back:hover{color:#c4b5fd}
+.cr-back svg{stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.cr-form{max-width:480px;margin:0 auto;padding:8px 0 40px}
+.cr-form label{display:block;color:#c4b5fd;font-size:11px;font-weight:600;margin:18px 0 6px;text-transform:uppercase;letter-spacing:.5px}
+.cr-input{width:100%;padding:12px 14px;background:rgba(13,11,26,.6);border:1.5px solid rgba(168,85,247,.12);border-radius:12px;color:#e0c6ff;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;transition:border-color .2s;-webkit-appearance:none;appearance:none}
+.cr-input:focus{border-color:rgba(168,85,247,.5)}
+.cr-input option{background:#1a1030;color:#ede5ff}
+.cr-submit{width:100%;margin-top:24px;padding:14px;background:linear-gradient(135deg,#a855f7,#7c3aed);border:none;border-radius:14px;color:#fff;font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;transition:opacity .2s}
+.cr-submit:hover{opacity:.85}
+.cr-check{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;margin-bottom:5px;background:rgba(18,10,40,.22);cursor:pointer;border:0.5px solid rgba(168,85,247,.06);transition:border-color .2s}
+.cr-check:hover{border-color:rgba(168,85,247,.2)}
+.cr-check input[type="checkbox"]{accent-color:#a855f7;width:16px;height:16px;flex-shrink:0}
+.cr-check-title{flex:1;font-size:13px;color:#ede5ff}
+.cr-check-count{font-size:11px;color:rgba(200,190,230,.3)}
 .cr-row{padding:9px 12px;margin-bottom:5px;display:flex;align-items:center;gap:9px;background:rgba(18,10,40,.22);border:0.5px solid rgba(168,85,247,.08);border-radius:16px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:border-color .2s;position:relative;z-index:2}
 .cr-row:hover{border-color:rgba(168,85,247,.18)}
 @media(min-width:768px){.cr-row{padding:20px 24px;margin-bottom:10px;gap:16px;border-radius:20px}}
@@ -1397,11 +1412,33 @@ function renderNotesList(){
 })();
 
 /* ═══ RENDER CREATE PAGE ═══ */
+var crView="main"; // main | newlesson | newquiz | newtest | import
+
 function renderCreate(){
   var el=document.getElementById("createContent");if(!el)return;
+  if(crView==="newlesson")return renderCrLesson(el);
+  if(crView==="newquiz")return renderCrQuiz(el);
+  if(crView==="newtest")return renderCrTest(el);
+  if(crView==="import")return renderCrImport(el);
+  renderCrMain(el);
+}
+
+function _crBack(){
+  var h="<button class='cr-back' onclick='crView=\"main\";renderCreate()'><svg viewBox='0 0 24 24' width='18' height='18'><path d='M19 12H5M12 19l-7-7 7-7'/></svg> Back</button>";
+  return h;
+}
+
+function _secOpts2(includeBuiltIn){
+  var opts="<option value='__new__'>+ Create new section</option>";
+  var cd=getCD();for(var k in cd)opts+="<option value='"+k+"'>"+esc(cd[k].name)+"</option>";
+  if(includeBuiltIn!==false){for(var k in D)opts+="<option value='"+k+"'>"+esc(D[k].name)+"</option>"}
+  return opts;
+}
+
+/* ── MAIN LISTING ── */
+function renderCrMain(el){
   var D2=window.D||{};var cd=getCD();
   var allLessons=[];
-  // Gather built-in lessons
   var secColors={chemistry:"#7dd3fc",biology:"#34d399",psychology:"#d946ef"};
   var secNames={chemistry:"CHEM 260",biology:"BIO 113",psychology:"PSY 309"};
   for(var sec in D2){
@@ -1415,7 +1452,6 @@ function renderCreate(){
       });
     }
   }
-  // Gather custom lessons
   for(var ck in cd){
     var ccat=cd[ck];
     var ccol="#d946ef";
@@ -1430,28 +1466,20 @@ function renderCreate(){
 
   var h="<div class='stats-greeting'>Create</div>";
   h+="<div class='stats-sub'>Edit lessons, build quizzes, and manage content.</div>";
-
-  // Search bar
   h+="<div class='cr-search'><svg viewBox='0 0 24 24'><circle cx='11' cy='11' r='8'/><path d='M21 21l-4.35-4.35'/></svg><input id='crSearchInput' placeholder='Search lessons, quizzes...' oninput='filterCreateList()'></div>";
-
-  // Filter tabs
   var tabs=["All","Lessons","Quizzes","CHEM","BIO","PSY"];
   h+="<div class='cr-filters'>";
   tabs.forEach(function(t){
     h+="<button class='cr-ft"+(t==="All"?" on":"")+"' onclick='crFilter(this,\""+t+"\")'>"+t+"</button>";
   });
   h+="</div>";
-
-  // Quick create cards
   h+="<div class='sec-label'>Create new</div>";
   h+="<div class='stat-grid'>";
-  h+="<button class='cr-card' onclick='showNewLesson()'><svg viewBox='0 0 24 24'><path d='M4 19.5A2.5 2.5 0 016.5 17H20'/><path d='M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z'/><path d='M12 7v6M9 10h6'/></svg><div class='cv'>New Lesson</div><div class='cl'>Add notes & content</div></button>";
-  h+="<button class='cr-card' onclick='showNewQuiz()'><svg viewBox='0 0 24 24'><path d='M9 11l3 3L22 4'/><path d='M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11'/></svg><div class='cv'>New Quiz</div><div class='cl'>Build questions</div></button>";
-  h+="<button class='cr-card' onclick='showNewTest()'><svg viewBox='0 0 24 24'><path d='M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z'/><path d='M14 2v6h6'/></svg><div class='cv'>Full Test</div><div class='cl'>Combine quizzes</div></button>";
-  h+="<button class='cr-card' onclick='showSlideImport()'><svg viewBox='0 0 24 24'><path d='M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4'/><path d='M17 8l-5-5-5 5M12 3v12'/></svg><div class='cv'>Import</div><div class='cl'>Upload slides</div></button>";
+  h+="<button class='cr-card' data-action='newlesson'><svg viewBox='0 0 24 24'><path d='M4 19.5A2.5 2.5 0 016.5 17H20'/><path d='M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z'/><path d='M12 7v6M9 10h6'/></svg><div class='cv'>New Lesson</div><div class='cl'>Add notes & content</div></button>";
+  h+="<button class='cr-card' data-action='newquiz'><svg viewBox='0 0 24 24'><path d='M9 11l3 3L22 4'/><path d='M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11'/></svg><div class='cv'>New Quiz</div><div class='cl'>Build questions</div></button>";
+  h+="<button class='cr-card' data-action='newtest'><svg viewBox='0 0 24 24'><path d='M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z'/><path d='M14 2v6h6'/></svg><div class='cv'>Full Test</div><div class='cl'>Combine quizzes</div></button>";
+  h+="<button class='cr-card' data-action='import'><svg viewBox='0 0 24 24'><path d='M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4'/><path d='M17 8l-5-5-5 5M12 3v12'/></svg><div class='cv'>Import</div><div class='cl'>Upload slides</div></button>";
   h+="</div>";
-
-  // All content list
   h+="<div class='sec-label'>All content</div>";
   h+="<div id='crList'>";
   allLessons.forEach(function(l){
@@ -1471,6 +1499,110 @@ function renderCreate(){
   h+="</div>";
 
   el.innerHTML=h;
+  el.onclick=function(e){
+    var btn=e.target.closest("[data-action]");
+    if(!btn)return;
+    var a=btn.getAttribute("data-action");
+    if(a==="newlesson")crView="newlesson";
+    else if(a==="newquiz")crView="newquiz";
+    else if(a==="newtest")crView="newtest";
+    else if(a==="import")crView="import";
+    renderCreate();
+    scrollTo({top:0,behavior:"smooth"});
+  };
+}
+
+/* ── LESSON BUILDER PAGE ── */
+function renderCrLesson(el){
+  var h=_crBack();
+  h+="<div class='stats-greeting'>📖 New Lesson</div>";
+  h+="<div class='stats-sub'>Create a lesson, then add notes and content.</div>";
+  h+="<div class='cr-form'>";
+  h+="<label>Add to section</label>";
+  h+="<select id='nlSec' class='cr-input'>"+_secOpts2()+"</select>";
+  h+="<label>Lesson Title</label>";
+  h+="<input type='text' id='nlTitle' class='cr-input' placeholder='e.g. Chapter 5: Cell Division'>";
+  h+="<label>Short Label</label>";
+  h+="<input type='text' id='nlLabel' class='cr-input' placeholder='e.g. L1 or Ch 5'>";
+  h+="<button class='cr-submit' onclick='doNewLesson()'>Create Lesson</button>";
+  h+="</div>";
+  el.innerHTML=h;
+}
+
+/* ── QUIZ BUILDER PAGE ── */
+function renderCrQuiz(el){
+  var h=_crBack();
+  h+="<div class='stats-greeting'>✍️ New Quiz</div>";
+  h+="<div class='stats-sub'>Pick a lesson and start adding questions.</div>";
+  h+="<div class='cr-form'>";
+  h+="<label>Section</label>";
+  h+="<select id='nqSec' class='cr-input' onchange='_nqSecChange()'>"+_secOpts2()+"</select>";
+  h+="<label>Lesson</label>";
+  h+="<select id='nqLes' class='cr-input'><option value=''>— pick a section first —</option></select>";
+  h+="<button class='cr-submit' onclick='doNewQuiz()'>Open Quiz Builder</button>";
+  h+="</div>";
+  el.innerHTML=h;
+  _nqSecChange();
+}
+
+/* ── TEST BUILDER PAGE ── */
+function renderCrTest(el){
+  var D2=window.D||{};var cd=getCD();
+  var h=_crBack();
+  h+="<div class='stats-greeting'>📝 Full Test</div>";
+  h+="<div class='stats-sub'>Pick lessons to combine into one big test (up to 20 questions each).</div>";
+  h+="<div class='cr-form'>";
+  var count=0;
+  for(var sk in D2){
+    if(!D2[sk].lessons)continue;
+    D2[sk].lessons.forEach(function(l,i){
+      if(!l.quiz||!l.quiz.length)return;
+      count++;
+      h+="<label class='cr-check'><input type='checkbox' value='"+sk+":"+i+"' class='nt-cb' checked><span class='cr-check-title'>"+esc(l.title)+"</span><span class='cr-check-count'>"+l.quiz.length+" Q</span></label>";
+    });
+  }
+  for(var ck in cd){
+    if(!cd[ck].lessons)continue;
+    cd[ck].lessons.forEach(function(l,i){
+      if(!l.quiz||!l.quiz.length)return;
+      count++;
+      h+="<label class='cr-check'><input type='checkbox' value='"+ck+":"+i+"' class='nt-cb' checked><span class='cr-check-title'>"+esc(l.title)+"</span><span class='cr-check-count'>"+l.quiz.length+" Q</span></label>";
+    });
+  }
+  if(!count) h+="<p style='color:rgba(200,190,230,.3);text-align:center;padding:30px 0'>No lessons with quiz questions found.</p>";
+  if(count) h+="<button class='cr-submit' onclick='doNewTest()'>Start Test</button>";
+  h+="</div>";
+  el.innerHTML=h;
+}
+
+/* ── IMPORT PAGE ── */
+function renderCrImport(el){
+  var h=_crBack();
+  h+="<div class='stats-greeting'>📤 Import Slides</div>";
+  h+="<div class='stats-sub'>Upload slides and AI will auto-generate notes, quizzes &amp; test.</div>";
+  var key=gk();
+  if(!key){
+    h+="<div class='cr-form'><p style='color:rgba(200,190,230,.5);text-align:center;padding:20px 0'>To auto-generate lessons from slides, you need a Gemini API key.<br><br>Go to <b>More → Theodore AI</b> and set your key first.</p></div>";
+    el.innerHTML=h;return;
+  }
+  var opts="<option value='__new__'>+ Create new section</option>";
+  var cd=getCD();for(var k in cd)opts+="<option value='"+k+"'>"+esc(cd[k].name)+"</option>";
+  for(var k in D)opts+="<option value='"+k+"'>"+esc(D[k].name)+"</option>";
+  h+="<div class='cr-form'>";
+  h+="<label>File</label>";
+  h+="<div id='importDropZone' class='import-drop' onclick='document.getElementById(\"importFileInput\").click()' ondrop='handleImportDrop(event)' ondragover='event.preventDefault();this.classList.add(\"dragover\")' ondragleave='this.classList.remove(\"dragover\")'>";
+  h+="<svg viewBox='0 0 24 24' width='40' height='40' stroke='rgba(200,190,230,.2)' fill='none' stroke-width='1.5'><path d='M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4'/><path d='M17 8l-5-5-5 5M12 3v12'/></svg>";
+  h+="<div id='importFileName' style='margin-top:8px'>Drop file or click to browse</div>";
+  h+="<div style='font-size:11px;color:rgba(200,190,230,.2);margin-top:4px'>PDF, PPTX, or Images</div></div>";
+  h+="<input type='file' id='importFileInput' accept='.pdf,.pptx,.ppt,.png,.jpg,.jpeg,.webp' multiple style='display:none' onchange='handleImportSelect(this)'>";
+  h+="<label>Add to section</label>";
+  h+="<select id='importSection' class='cr-input'>"+opts+"</select>";
+  h+="<label>Lesson title</label>";
+  h+="<input type='text' id='importTitle' class='cr-input' placeholder='e.g. Chapter 5: Cell Division'>";
+  h+="<button class='cr-submit' onclick='doSlideImport()'>Generate ✨</button>";
+  h+="</div>";
+  el.innerHTML=h;
+  window._importFiles=window._importFiles||[];
 }
 
 function filterCreateList(){
@@ -4491,22 +4623,7 @@ function delLesson(catKey){
   view="class";curL=null;render();csToast("🗑️ Lesson deleted");
 }
 
-// === NEW LESSON (from Create tab) ===
-function _secOpts(includeBuiltIn){
-  var opts="<option value='__new__'>+ Create new section</option>";
-  var cd=getCD();for(var k in cd)opts+="<option value='"+k+"'>"+esc(cd[k].name)+"</option>";
-  if(includeBuiltIn!==false){for(var k in D)opts+="<option value='"+k+"'>"+esc(D[k].name)+"</option>"}
-  return opts;
-}
-function showNewLesson(){
-  try{
-  _modal("<h2>📖 New Lesson</h2>"+
-    "<label>Section</label><select id='nlSec' class='import-select'>"+_secOpts()+"</select>"+
-    "<label>Lesson Title</label><input type='text' id='nlTitle' placeholder='e.g. Chapter 5: Cell Division'>"+
-    "<label>Short Label</label><input type='text' id='nlLabel' placeholder='e.g. L1 or Ch 5'>"+
-    "<div class='cmod-btns'><button class='cbtn-cancel' onclick='_closeModal()'>Cancel</button><button class='cbtn-save' onclick='doNewLesson()'>Create</button></div>");
-  }catch(e){alert("Error: "+e.message);console.error(e)}
-}
+// === CREATE PAGE ACTIONS ===
 function doNewLesson(){
   var title=document.getElementById("nlTitle").value.trim();
   if(!title){alert("Please enter a title");return}
@@ -4521,21 +4638,12 @@ function doNewLesson(){
   var sec=getSection(secKey);if(!sec)return;
   var les={id:"cl-"+Date.now(),title:title,ln:(sec.name||"")+" · "+label,notes:[],quiz:[]};
   sec.lessons.push(les);saveSection(secKey);
-  _closeModal();
+  crView="main";
   curC=secKey;curL=les;view="lesson";tab="notes";
-  pushURL();render();scrollTo({top:0,behavior:"smooth"});
+  goPage("study");pushURL();render();scrollTo({top:0,behavior:"smooth"});
   csToast("📖 Created: "+title);
 }
 
-// === NEW QUIZ (from Create tab) ===
-function showNewQuiz(){
-  var sh="<h2>✍️ New Quiz</h2>";
-  sh+="<label>Section</label><select id='nqSec' class='import-select' onchange='_nqSecChange()'>"+_secOpts()+"</select>";
-  sh+="<label>Lesson</label><select id='nqLes' class='import-select'><option value=''>— pick a section first —</option></select>";
-  sh+="<div class='cmod-btns'><button class='cbtn-cancel' onclick='_closeModal()'>Cancel</button><button class='cbtn-save' onclick='doNewQuiz()'>Open Quiz Builder</button></div>";
-  _modal(sh);
-  _nqSecChange();
-}
 function _nqSecChange(){
   var secKey=document.getElementById("nqSec").value;
   var sel=document.getElementById("nqLes");if(!sel)return;
@@ -4547,6 +4655,7 @@ function _nqSecChange(){
     sel.innerHTML+="<option value='"+i+"'>"+esc(sec.lessons[i].title)+"</option>";
   }
 }
+
 function doNewQuiz(){
   var secKey=document.getElementById("nqSec").value;
   var lesIdx=document.getElementById("nqLes").value;
@@ -4560,45 +4669,10 @@ function doNewQuiz(){
   var idx=parseInt(lesIdx)||0;
   if(!sec.lessons[idx]){alert("Please select a lesson");return}
   curC=secKey;curL=sec.lessons[idx];
-  _closeModal();showQuizCreator(secKey);
+  crView="main";
+  showQuizCreator(secKey);
 }
 
-// === NEW FULL TEST (from Create tab) ===
-function showNewTest(){
-  var D2=window.D||{};var cd=getCD();
-  var sh="<h2>📝 Create Full Test</h2>";
-  sh+="<p style='color:rgba(200,190,230,.4);font-size:13px;margin-bottom:14px'>Pick lessons to combine into one big test (up to 20 questions per lesson).</p>";
-  sh+="<div style='max-height:340px;overflow-y:auto;margin-bottom:14px'>";
-  var count=0;
-  var secColors={chemistry:"#7dd3fc",biology:"#34d399",psychology:"#d946ef"};
-  for(var sk in D2){
-    if(!D2[sk].lessons)continue;
-    var col=secColors[sk]||"#a855f7";
-    D2[sk].lessons.forEach(function(l,i){
-      if(!l.quiz||!l.quiz.length)return;
-      count++;
-      sh+="<label style='display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;margin-bottom:4px;background:rgba(18,10,40,.22);cursor:pointer;border:0.5px solid rgba(168,85,247,.06)'>";
-      sh+="<input type='checkbox' value='"+sk+":"+i+"' class='nt-cb' checked>";
-      sh+="<span style='flex:1;font-size:13px;color:#ede5ff'>"+esc(l.title)+"</span>";
-      sh+="<span style='font-size:11px;color:rgba(200,190,230,.3)'>"+l.quiz.length+"q</span></label>";
-    });
-  }
-  for(var ck in cd){
-    if(!cd[ck].lessons)continue;
-    cd[ck].lessons.forEach(function(l,i){
-      if(!l.quiz||!l.quiz.length)return;
-      count++;
-      sh+="<label style='display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;margin-bottom:4px;background:rgba(18,10,40,.22);cursor:pointer;border:0.5px solid rgba(168,85,247,.06)'>";
-      sh+="<input type='checkbox' value='"+ck+":"+i+"' class='nt-cb' checked>";
-      sh+="<span style='flex:1;font-size:13px;color:#ede5ff'>"+esc(l.title)+"</span>";
-      sh+="<span style='font-size:11px;color:rgba(200,190,230,.3)'>"+l.quiz.length+"q</span></label>";
-    });
-  }
-  sh+="</div>";
-  if(!count){sh+="<p style='color:rgba(200,190,230,.3);text-align:center;padding:20px 0'>No lessons with quiz questions found.</p>";}
-  sh+="<div class='cmod-btns'><button class='cbtn-cancel' onclick='_closeModal()'>Cancel</button>"+(count?"<button class='cbtn-save' onclick='doNewTest()'>Start Test</button>":"")+"</div>";
-  _modal(sh);
-}
 function doNewTest(){
   var cbs=document.querySelectorAll(".nt-cb:checked");
   if(!cbs.length){alert("Select at least one lesson");return}
@@ -4609,23 +4683,20 @@ function doNewTest(){
     var sec=getSection(sk);
     if(sec&&sec.lessons[idx]&&sec.lessons[idx].quiz){
       var lq=sec.lessons[idx].quiz.slice();
-      // shuffle and take up to 20
       for(var i=lq.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=lq[i];lq[i]=lq[j];lq[j]=tmp}
       allQ=allQ.concat(lq.slice(0,20));
     }
   });
   if(!allQ.length){alert("No questions found");return}
-  _closeModal();
-  // Shuffle all combined questions
   for(var i=allQ.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=allQ[i];allQ[i]=allQ[j];allQ[j]=tmp}
   shuf=shuffleOpts(allQ);
   tS={a:{},ta:{},done:false,sc:0,pg:0};
-  // Use first checked section as curC for display
   var fp=cbs[0].value.split(":");
   curC=fp[0];var sec0=getSection(fp[0]);
   if(sec0)curL=sec0.lessons[parseInt(fp[1])];
+  crView="main";
   view="lesson";tab="final";
-  pushURL();render();scrollTo({top:0,behavior:"smooth"});
+  goPage("study");pushURL();render();scrollTo({top:0,behavior:"smooth"});
 }
 
 // === SLIDE IMPORT / AUTO-GENERATE ===
