@@ -592,16 +592,16 @@ img{max-width:100%;height:auto}
 @media(min-width:768px){.cr-ft{padding:10px 22px;font-size:13px;border-radius:14px}}
 .cr-ft.on{background:rgba(168,85,247,.06);border-color:rgba(168,85,247,.12);color:rgba(200,190,230,.5)}
 .cr-ft:hover{border-color:rgba(168,85,247,.18)}
-.cr-card{padding:13px;text-align:center;background:rgba(18,10,40,.22);border:0.5px solid rgba(168,85,247,.08);border-radius:16px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);cursor:pointer;transition:border-color .2s;position:relative;z-index:2}
+.cr-card{padding:13px;text-align:center;background:rgba(18,10,40,.22);border:0.5px solid rgba(168,85,247,.08);border-radius:16px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);cursor:pointer;transition:border-color .2s;position:relative;z-index:2;font-family:inherit;color:inherit;-webkit-appearance:none;appearance:none}
 #page-create{z-index:3}
 #page-create .page-inner{position:relative;z-index:2}
 .cr-card:hover{border-color:rgba(168,85,247,.22)}
 @media(min-width:768px){.cr-card{padding:32px 20px;border-radius:22px}}
-.cr-card svg{width:20px;height:20px;stroke:rgba(200,190,230,.3);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;margin-bottom:6px}
+.cr-card svg{width:20px;height:20px;stroke:rgba(200,190,230,.3);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;margin-bottom:6px;pointer-events:none}
 @media(min-width:768px){.cr-card svg{width:28px;height:28px;margin-bottom:10px}}
-.cr-card .cv{font-size:13px;font-weight:500;color:#ede5ff}
+.cr-card .cv{font-size:13px;font-weight:500;color:#ede5ff;pointer-events:none}
 @media(min-width:768px){.cr-card .cv{font-size:18px}}
-.cr-card .cl{font-size:10px;color:rgba(200,190,230,.22);margin-top:2px}
+.cr-card .cl{font-size:10px;color:rgba(200,190,230,.22);margin-top:2px;pointer-events:none}
 @media(min-width:768px){.cr-card .cl{font-size:14px;margin-top:6px}}
 .cr-row{padding:9px 12px;margin-bottom:5px;display:flex;align-items:center;gap:9px;background:rgba(18,10,40,.22);border:0.5px solid rgba(168,85,247,.08);border-radius:16px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:border-color .2s;position:relative;z-index:2}
 .cr-row:hover{border-color:rgba(168,85,247,.18)}
@@ -1445,10 +1445,10 @@ function renderCreate(){
   // Quick create cards
   h+="<div class='sec-label'>Create new</div>";
   h+="<div class='stat-grid'>";
-  h+="<div class='cr-card' onclick='showNewLesson()'><svg viewBox='0 0 24 24'><path d='M4 19.5A2.5 2.5 0 016.5 17H20'/><path d='M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z'/><path d='M12 7v6M9 10h6'/></svg><div class='cv'>New Lesson</div><div class='cl'>Add notes & content</div></div>";
-  h+="<div class='cr-card' onclick='showNewQuiz()'><svg viewBox='0 0 24 24'><path d='M9 11l3 3L22 4'/><path d='M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11'/></svg><div class='cv'>New Quiz</div><div class='cl'>Build questions</div></div>";
-  h+="<div class='cr-card' onclick='showNewTest()'><svg viewBox='0 0 24 24'><path d='M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z'/><path d='M14 2v6h6'/></svg><div class='cv'>Full Test</div><div class='cl'>Combine quizzes</div></div>";
-  h+="<div class='cr-card' onclick='showSlideImport()'><svg viewBox='0 0 24 24'><path d='M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4'/><path d='M17 8l-5-5-5 5M12 3v12'/></svg><div class='cv'>Import</div><div class='cl'>Upload slides</div></div>";
+  h+="<button class='cr-card' onclick='showNewLesson()'><svg viewBox='0 0 24 24'><path d='M4 19.5A2.5 2.5 0 016.5 17H20'/><path d='M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z'/><path d='M12 7v6M9 10h6'/></svg><div class='cv'>New Lesson</div><div class='cl'>Add notes & content</div></button>";
+  h+="<button class='cr-card' onclick='showNewQuiz()'><svg viewBox='0 0 24 24'><path d='M9 11l3 3L22 4'/><path d='M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11'/></svg><div class='cv'>New Quiz</div><div class='cl'>Build questions</div></button>";
+  h+="<button class='cr-card' onclick='showNewTest()'><svg viewBox='0 0 24 24'><path d='M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z'/><path d='M14 2v6h6'/></svg><div class='cv'>Full Test</div><div class='cl'>Combine quizzes</div></button>";
+  h+="<button class='cr-card' onclick='showSlideImport()'><svg viewBox='0 0 24 24'><path d='M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4'/><path d='M17 8l-5-5-5 5M12 3v12'/></svg><div class='cv'>Import</div><div class='cl'>Upload slides</div></button>";
   h+="</div>";
 
   // All content list
@@ -4499,11 +4499,13 @@ function _secOpts(includeBuiltIn){
   return opts;
 }
 function showNewLesson(){
+  try{
   _modal("<h2>📖 New Lesson</h2>"+
     "<label>Section</label><select id='nlSec' class='import-select'>"+_secOpts()+"</select>"+
     "<label>Lesson Title</label><input type='text' id='nlTitle' placeholder='e.g. Chapter 5: Cell Division'>"+
     "<label>Short Label</label><input type='text' id='nlLabel' placeholder='e.g. L1 or Ch 5'>"+
     "<div class='cmod-btns'><button class='cbtn-cancel' onclick='_closeModal()'>Cancel</button><button class='cbtn-save' onclick='doNewLesson()'>Create</button></div>");
+  }catch(e){alert("Error: "+e.message);console.error(e)}
 }
 function doNewLesson(){
   var title=document.getElementById("nlTitle").value.trim();
