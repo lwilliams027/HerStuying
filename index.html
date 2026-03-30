@@ -2223,6 +2223,7 @@ function toggle(){
   var bn=document.getElementById("bottomNav");var tb=document.getElementById("topbar");
   if(bn)bn.style.display=isOpen?"none":"";
   if(tb)tb.style.display=isOpen?"none":"";
+  document.querySelectorAll(".page-view").forEach(function(p){p.style.visibility=isOpen?"hidden":""});
   if(isOpen){load();renderList();if(!cvReady)setTimeout(initCv,150);else setTimeout(renderStrokes,50);if(!curNote){if(notes.length)openNote(notes[0].id);else{var nn={id:"n"+Date.now(),title:"My Notes",bg:"grid",elements:[],strokes:[],arrows:[],mod:Date.now(),plain:""};notes.unshift(nn);save();openNote(nn.id);renderList()}}}
 }
 
