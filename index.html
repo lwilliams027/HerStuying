@@ -4640,7 +4640,7 @@ function doNewLesson(){
   sec.lessons.push(les);saveSection(secKey);
   crView="main";
   curC=secKey;curL=les;view="lesson";tab="notes";
-  goPage("study");pushURL();render();scrollTo({top:0,behavior:"smooth"});
+  rq();goPage("study");pushURL();render();scrollTo({top:0,behavior:"smooth"});
   csToast("📖 Created: "+title);
 }
 
