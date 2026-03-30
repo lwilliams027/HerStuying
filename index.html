@@ -172,20 +172,18 @@ h1{font-size:clamp(28px,5vw,44px);font-weight:800;background:linear-gradient(135
 .test-dot{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:1.5px solid var(--bdr);background:rgba(26,18,48,.4);color:var(--txd);cursor:pointer;transition:all .2s}
 .test-dot.filled{border-color:rgba(155,89,255,.4);background:rgba(155,89,255,.12);color:var(--accent)}
 .test-dot:hover{border-color:var(--accent);transform:scale(1.1)}
-.test-tabs{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;padding:12px 0}
-.test-tab{padding:8px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--bdr);background:rgba(26,18,48,.4);color:var(--txd);transition:all .25s;position:relative;display:flex;align-items:center;gap:6px}
+.test-tabs{display:flex;gap:4px;justify-content:center;padding:12px 0;flex-wrap:nowrap}
+.test-tab{padding:6px 0;width:32px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--bdr);background:rgba(26,18,48,.4);color:var(--txd);transition:all .25s;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .test-tab:hover{border-color:rgba(155,89,255,.4);background:rgba(155,89,255,.06)}
 .test-tab.active{border-color:var(--accent);background:rgba(155,89,255,.15);color:#fff;box-shadow:0 2px 12px rgba(155,89,255,.2)}
-.test-tab .tab-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-.test-tab .tab-dot.empty{background:rgba(155,89,255,.2)}
-.test-tab .tab-dot.partial{background:#FFD700}
-.test-tab .tab-dot.full{background:var(--ok)}
-.test-pg-info{text-align:center;padding:6px 0;font-size:12px;color:var(--txd);font-weight:600}
+.test-tab.pg-partial{border-color:rgba(255,215,0,.4);color:#FFD700}
+.test-tab.pg-full{border-color:rgba(76,175,80,.4);color:var(--ok)}
+.test-tab .tab-dot{display:none}
+@media(max-width:600px){.test-tab{width:28px;padding:5px 0;font-size:11px}.test-tabs{gap:3px}}
 .test-pg-nav{display:flex;justify-content:space-between;align-items:center;padding:16px 0;gap:12px}
 .test-pg-btn{padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--bdr);background:rgba(26,18,48,.4);color:var(--txd);transition:all .2s;font-family:inherit}
 .test-pg-btn:hover{border-color:var(--accent);color:var(--accent)}
 .test-pg-btn:disabled{opacity:.3;cursor:default}
-@media(max-width:600px){.test-tab{padding:6px 10px;font-size:11px}.test-tabs{gap:4px}}
 .tq2{background:var(--card);backdrop-filter:blur(14px);border:1px solid var(--bdr);border-radius:16px;padding:22px;margin-bottom:14px;transition:border-color .3s}
 .tq2.ans{border-color:rgba(155,89,255,.3)}
 .tq2-num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:8px;background:rgba(155,89,255,.1);color:var(--accent);font-size:11px;font-weight:800;margin-bottom:10px}
@@ -1440,20 +1438,18 @@ var progPct=shuf.length?Math.round(ac/shuf.length*100):0;
 function pgAnswered(pg){var s=pg*PG_SIZE,e=Math.min(s+PG_SIZE,shuf.length),cnt=0;for(var i=s;i<e;i++){var qq=shuf[i];if((qq.type==="fib"||qq.type==="sa")&&tS.ta&&tS.ta[i]&&tS.ta[i].trim())cnt++;else if(tS.a[i]!=null&&tS.a[i]>=0)cnt++}return cnt}
 // Header
 var h="<div class='test-header'><h4>\uD83D\uDCDD Full Test \u2014 "+shuf.length+" Questions</h4><div class='test-prog-text'>"+ac+" of "+shuf.length+" answered ("+progPct+"%)</div><div class='pbar2' style='margin:10px 0 0'><div class='pfill2' style='width:"+progPct+"%'></div></div></div>";
-// Tab bar
-h+="<div class='test-tabs'>";
-for(var pg=0;pg<totalPages;pg++){var pgA=pgAnswered(pg);var pgSize=Math.min(PG_SIZE,shuf.length-pg*PG_SIZE);var dotCls=pgA===0?"empty":pgA>=pgSize?"full":"partial";
-  h+="<button class='test-tab"+(pg===tS.pg?" active":"")+"' onclick='tPg("+pg+")'><span class='tab-dot "+dotCls+"'></span>Test "+(pg+1)+"</button>"}
-h+="</div>";
-// Page info
-var pgAns=pgAnswered(tS.pg);var pgSize=pgEnd-pgStart;
-h+="<div class='test-pg-info'>Section "+(tS.pg+1)+" of "+totalPages+" \u2014 "+pgAns+"/"+pgSize+" answered</div>";
 // Questions for this page
+var pgAns=pgAnswered(tS.pg);var pgSize=pgEnd-pgStart;
 for(var i=pgStart;i<pgEnd;i++){var q=shuf[i];
   h+="<div class='tq2 "+(tS.a[i]!=null?"ans":"")+"' id='tq"+i+"'><div class='tq2-num'>"+(i+1)+"</div><div class='tq2-q'>"+q.q+"</div>";
   if(q.type==="fib"||q.type==="sa"){h+="<div style='margin:8px 0'><input type='text' id='tin"+i+"' placeholder='Type your answer...' value='"+(tS.ta&&tS.ta[i]||"")+"' oninput='tTa("+i+",this.value)' style='width:100%;padding:12px;border-radius:10px;border:2px solid var(--bdr);background:rgba(26,18,48,.6);color:var(--tx);font-size:16px;font-family:inherit;outline:none;box-sizing:border-box'></div>"}else{for(var j=0;j<q.a.length;j++){h+="<button class='topt "+(tS.a[i]===j?"sel":"")+"' onclick='tA("+i+","+j+")'><span class='tl'>"+String.fromCharCode(65+j)+"</span>"+q.a[j]+"</button>"}}h+="</div>"}
 // Prev / Next navigation
-h+="<div class='test-pg-nav'><button class='test-pg-btn' "+(tS.pg<=0?"disabled":"")+" onclick='tPg("+(tS.pg-1)+")'>\u2190 Prev</button><span style='font-size:13px;color:var(--txd);font-weight:600'>"+pgAns+"/"+pgSize+" done</span><button class='test-pg-btn' "+(tS.pg>=totalPages-1?"disabled":"")+" onclick='tPg("+(tS.pg+1)+")'> Next \u2192</button></div>";
+h+="<div class='test-pg-nav'><button class='test-pg-btn' "+(tS.pg<=0?"disabled":"")+" onclick='tPg("+(tS.pg-1)+")'>\u2190 Prev</button><span style='font-size:13px;color:var(--txd);font-weight:600'>Section "+(tS.pg+1)+" \u2014 "+pgAns+"/"+pgSize+" done</span><button class='test-pg-btn' "+(tS.pg>=totalPages-1?"disabled":"")+" onclick='tPg("+(tS.pg+1)+")'> Next \u2192</button></div>";
+// Tab bar at bottom
+h+="<div class='test-tabs'>";
+for(var pg=0;pg<totalPages;pg++){var pgA=pgAnswered(pg);var pgSz=Math.min(PG_SIZE,shuf.length-pg*PG_SIZE);var stCls=pgA===0?"":pgA>=pgSz?" pg-full":" pg-partial";
+  h+="<button class='test-tab"+(pg===tS.pg?" active":"")+stCls+"' onclick='tPg("+pg+")'>"+(pg+1)+"</button>"}
+h+="</div>";
 // Submit (always visible at bottom)
 h+="<div style='text-align:center;padding:10px 0 20px'><button id='tSubBtn' class='abtn' style='padding:14px 48px;font-size:16px;border-radius:14px' "+(ac<shuf.length?"disabled":"")+" onclick='subT()'>Submit Test</button>"+(ac<shuf.length?"<p style='font-size:12px;color:var(--txd);margin-top:8px;opacity:.6'>"+(shuf.length-ac)+" question"+(shuf.length-ac!==1?"s":"")+" remaining</p>":"")+"</div>";
 app.innerHTML=h;
