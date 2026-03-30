@@ -620,6 +620,15 @@ img{max-width:100%;height:auto}
 .cr-ib svg{width:13px;height:13px;stroke:rgba(200,190,230,.25);fill:none;stroke-width:1.8;stroke-linecap:round}
 @media(min-width:768px){.cr-ib svg{width:16px;height:16px}}
 .cr-ib:hover svg{stroke:rgba(200,190,230,.5)}
+.import-drop{border:1.5px dashed rgba(168,85,247,.15);border-radius:14px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:12px;background:rgba(13,11,26,.5)}
+.import-drop:hover,.import-drop.dragover{border-color:rgba(168,85,247,.35);background:rgba(168,85,247,.05)}
+.import-drop.has-file{border-color:rgba(52,211,153,.25);background:rgba(52,211,153,.03)}
+.import-drop.has-file #importFileName{color:rgba(52,211,153,.6)}
+.import-drop svg{margin:0 auto 8px;display:block}
+.import-drop div{color:rgba(200,190,230,.35);font-size:13px}
+.import-select{width:100%;padding:10px 14px;background:rgba(13,11,26,.8);border:1.5px solid rgba(168,85,247,.15);border-radius:10px;color:#e0c6ff;font-size:14px;font-family:inherit;margin-bottom:10px;outline:none;appearance:none;-webkit-appearance:none;transition:border-color .2s}
+.import-select:focus{border-color:rgba(168,85,247,.5)}
+.import-select option{background:#1a1030;color:#ede5ff}
 
 /* ═══ MORE PAGE ═══ */
 .more-grid{display:grid;grid-template-columns:1fr;gap:6px}
@@ -665,6 +674,7 @@ img{max-width:100%;height:auto}
     <div class="lb-footer">mykrasivaya.com</div>
   </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
 function doLogin(){
   var u=document.getElementById("loginUser").value.trim().toLowerCase();
@@ -1436,7 +1446,7 @@ function renderCreate(){
   h+="<div class='cr-card' onclick='showCreateCategory()'><svg viewBox='0 0 24 24'><path d='M4 19.5A2.5 2.5 0 016.5 17H20'/><path d='M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z'/><path d='M12 7v6M9 10h6'/></svg><div class='cv'>New Lesson</div><div class='cl'>Add notes & content</div></div>";
   h+="<div class='cr-card' onclick='showCreateCategory()'><svg viewBox='0 0 24 24'><path d='M9 11l3 3L22 4'/><path d='M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11'/></svg><div class='cv'>New Quiz</div><div class='cl'>Build questions</div></div>";
   h+="<div class='cr-card'><svg viewBox='0 0 24 24'><path d='M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z'/><path d='M14 2v6h6'/></svg><div class='cv'>Full Test</div><div class='cl'>Combine quizzes</div></div>";
-  h+="<div class='cr-card' onclick='showCreateCategory()'><svg viewBox='0 0 24 24'><path d='M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4'/><path d='M17 8l-5-5-5 5M12 3v12'/></svg><div class='cv'>Import</div><div class='cl'>Upload slides</div></div>";
+  h+="<div class='cr-card' onclick='showSlideImport()'><svg viewBox='0 0 24 24'><path d='M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4'/><path d='M17 8l-5-5-5 5M12 3v12'/></svg><div class='cv'>Import</div><div class='cl'>Upload slides</div></div>";
   h+="</div>";
 
   // All content list
@@ -4477,6 +4487,256 @@ function delLesson(catKey){
     sec.lessons.splice(idx,1);saveSection(catKey)
   }
   view="class";curL=null;render();csToast("🗑️ Lesson deleted");
+}
+
+// === SLIDE IMPORT / AUTO-GENERATE ===
+var _importFiles=[];
+
+function showSlideImport(){
+  var key=gk();
+  if(!key){_modal("<h2>🔑 API Key Required</h2><p style='color:rgba(200,190,230,.5);margin:12px 0'>To auto-generate lessons from slides, you need a Gemini API key.<br><br>Go to <b>More → Theodore AI</b> and set your key first.</p><div class='cmod-btns'><button class='cbtn-save' onclick='_closeModal()'>OK</button></div>");return}
+  _importFiles=[];
+  var opts="<option value='__new__'>+ Create new section</option>";
+  var cd=getCD();for(var k in cd)opts+="<option value='"+k+"'>"+esc(cd[k].name)+"</option>";
+  for(var k in D)opts+="<option value='"+k+"'>"+esc(D[k].name)+"</option>";
+  _modal("<h2>📤 Import Slides</h2>"+
+    "<p style='color:rgba(200,190,230,.4);font-size:13px;margin-bottom:14px'>Upload your slides and AI will auto-generate notes, quizzes &amp; test.</p>"+
+    "<label>File</label>"+
+    "<div id='importDropZone' class='import-drop' onclick='document.getElementById(\"importFileInput\").click()' ondrop='handleImportDrop(event)' ondragover='event.preventDefault();this.classList.add(\"dragover\")' ondragleave='this.classList.remove(\"dragover\")'>"+
+    "<svg viewBox='0 0 24 24' width='32' height='32' stroke='rgba(200,190,230,.2)' fill='none' stroke-width='1.5'><path d='M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4'/><path d='M17 8l-5-5-5 5M12 3v12'/></svg>"+
+    "<div id='importFileName'>Drop file or click to browse</div>"+
+    "<div style='font-size:10px;color:rgba(200,190,230,.2);margin-top:4px'>PDF, PPTX, or Images</div></div>"+
+    "<input type='file' id='importFileInput' accept='.pdf,.pptx,.ppt,.png,.jpg,.jpeg,.webp' multiple style='display:none' onchange='handleImportSelect(this)'>"+
+    "<label>Add to section</label>"+
+    "<select id='importSection' class='import-select'>"+opts+"</select>"+
+    "<label>Lesson title</label>"+
+    "<input type='text' id='importTitle' placeholder='e.g. Chapter 5: Cell Division'>"+
+    "<div class='cmod-btns'><button class='cbtn-cancel' onclick='_closeModal()'>Cancel</button><button class='cbtn-save' onclick='doSlideImport()'>Generate ✨</button></div>");
+}
+
+function handleImportSelect(input){
+  _importFiles=Array.from(input.files);
+  var names=_importFiles.map(function(f){return f.name}).join(", ");
+  document.getElementById("importFileName").textContent=names||"Drop file or click to browse";
+  document.getElementById("importDropZone").classList.add("has-file");
+}
+function handleImportDrop(e){
+  e.preventDefault();
+  var zone=e.target.closest?e.target.closest(".import-drop"):e.currentTarget;
+  if(zone)zone.classList.remove("dragover");
+  _importFiles=Array.from(e.dataTransfer.files);
+  var names=_importFiles.map(function(f){return f.name}).join(", ");
+  document.getElementById("importFileName").textContent=names;
+  document.getElementById("importDropZone").classList.add("has-file");
+}
+
+async function doSlideImport(){
+  if(!_importFiles.length){alert("Please select a file");return}
+  var title=(document.getElementById("importTitle").value||"").trim();
+  if(!title){alert("Please enter a lesson title");return}
+  var secKey=document.getElementById("importSection").value;
+  var key=gk();if(!key){alert("No API key");return}
+
+  // If new section, create one
+  if(secKey==="__new__"){
+    var cd=getCD();secKey="custom-"+Date.now();
+    var sName=title.split(":")[0].trim()||"Imported";
+    cd[secKey]={name:sName,sub:"Auto-generated from slides",icon:"📤",lessons:[]};
+    saveCD(cd);
+  }
+
+  _closeModal();
+  _showImpProg("Reading file...",0);
+
+  try{
+    // Step 1: Extract content
+    var content=await _extractSlides(_importFiles);
+    if(!content||(!content.text&&(!content.parts||!content.parts.length))){
+      _hideImpProg();alert("Could not extract content from file");return;
+    }
+
+    // Step 2: Generate notes
+    _updImpProg("Generating notes...",15);
+    var notes=await _genNotes(content,key);
+
+    // Step 3: Quiz batch 1 (MC)
+    _updImpProg("Creating questions (1/3)...",35);
+    var q1=await _genQuizMC(content,notes,key,1);
+
+    // Step 4: Quiz batch 2 (MC)
+    _updImpProg("Creating questions (2/3)...",55);
+    var q2=await _genQuizMC(content,notes,key,2);
+
+    // Step 5: Quiz batch 3 (TF + SA)
+    _updImpProg("Creating questions (3/3)...",75);
+    var q3=await _genQuizMix(content,notes,key);
+
+    var allQuiz=[].concat(q1||[],q2||[],q3||[]);
+    var allNotes=notes||[];
+
+    _updImpProg("Saving lesson...",92);
+
+    // Save lesson
+    var sec=getSection(secKey);
+    if(!sec){_hideImpProg();alert("Section not found");return}
+    var lessonId="import-"+Date.now();
+    var ln=sec.name+" · L"+(sec.lessons.length+1);
+    sec.lessons.push({id:lessonId,title:title,ln:ln,notes:allNotes,quiz:allQuiz});
+    saveSection(secKey);
+
+    _updImpProg("Done! ✨",100);
+    setTimeout(function(){
+      _hideImpProg();
+      if(curPage==="create")renderCreate();
+      if(curPage==="study"){view="home";render();}
+      csToast("✨ Generated "+allNotes.length+" notes & "+allQuiz.length+" questions!");
+    },1200);
+
+  }catch(e){
+    _hideImpProg();
+    alert("Generation failed: "+(e.message||e));
+    console.error("Import error:",e);
+  }
+}
+
+// ── Progress overlay ──
+function _showImpProg(msg,pct){
+  var ov=document.createElement("div");ov.id="impProgOv";
+  ov.style.cssText="position:fixed;inset:0;background:rgba(6,4,16,.88);z-index:100000;display:flex;align-items:center;justify-content:center";
+  ov.innerHTML="<div style='text-align:center;max-width:360px;padding:32px'>"+
+    "<div style='font-size:44px;margin-bottom:18px'>🧠</div>"+
+    "<div id='impProgMsg' style='color:#ede5ff;font-size:17px;font-weight:500;margin-bottom:18px'>"+msg+"</div>"+
+    "<div style='background:rgba(168,85,247,.1);border-radius:8px;height:6px;overflow:hidden'>"+
+    "<div id='impProgBar' style='height:100%;background:linear-gradient(90deg,#a855f7,#d946ef);border-radius:8px;transition:width .5s ease;width:"+pct+"%'></div></div>"+
+    "<div id='impProgPct' style='color:rgba(200,190,230,.3);font-size:12px;margin-top:8px'>"+pct+"%</div></div>";
+  document.body.appendChild(ov);
+}
+function _updImpProg(msg,pct){
+  var m=document.getElementById("impProgMsg"),b=document.getElementById("impProgBar"),p=document.getElementById("impProgPct");
+  if(m)m.textContent=msg;if(b)b.style.width=pct+"%";if(p)p.textContent=pct+"%";
+}
+function _hideImpProg(){var ov=document.getElementById("impProgOv");if(ov)ov.remove()}
+
+// ── File content extraction ──
+async function _extractSlides(files){
+  var file=files[0];
+  var ext=file.name.split(".").pop().toLowerCase();
+
+  if(ext==="pptx"||ext==="ppt"){
+    var buf=await file.arrayBuffer();
+    var text=await _extractPptxText(buf);
+    return{text:text,type:"text"};
+  }
+  if(ext==="pdf"){
+    var b64=await _fileB64(file);
+    return{parts:[{inline_data:{mime_type:"application/pdf",data:b64}}],type:"pdf"};
+  }
+  // Images — may be multiple
+  var imgParts=[];
+  for(var i=0;i<files.length;i++){
+    if(!files[i].type.startsWith("image/"))continue;
+    var b=await _fileB64(files[i]);
+    imgParts.push({inline_data:{mime_type:files[i].type,data:b}});
+  }
+  if(imgParts.length)return{parts:imgParts,type:"images"};
+  return null;
+}
+
+function _fileB64(file){
+  return new Promise(function(res,rej){
+    var r=new FileReader();
+    r.onload=function(){res(r.result.split(",")[1])};
+    r.onerror=rej;r.readAsDataURL(file);
+  });
+}
+
+async function _extractPptxText(buf){
+  if(typeof JSZip==="undefined")throw new Error("JSZip not loaded — refresh the page");
+  var zip=await JSZip.loadAsync(buf);
+  var sFiles=Object.keys(zip.files).filter(function(f){return/ppt\/slides\/slide\d+\.xml$/.test(f)})
+    .sort(function(a,b){return parseInt(a.match(/slide(\d+)/)[1])-parseInt(b.match(/slide(\d+)/)[1])});
+  var out=[];
+  for(var i=0;i<sFiles.length;i++){
+    var xml=await zip.files[sFiles[i]].async("text");
+    var texts=[];
+    var m=xml.match(/<a:t[^>]*>([^<]*)<\/a:t>/g);
+    if(m)m.forEach(function(x){var t=x.replace(/<[^>]+>/g,"").trim();if(t)texts.push(t)});
+    if(texts.length)out.push("=== Slide "+(i+1)+" ===\n"+texts.join(" "));
+  }
+  return out.join("\n\n");
+}
+
+// ── Gemini API helper ──
+async function _gemCall(parts,sys,key,maxTok){
+  maxTok=maxTok||8192;
+  var body={contents:[{role:"user",parts:parts}],systemInstruction:{parts:[{text:sys}]},generationConfig:{temperature:0.3,maxOutputTokens:maxTok}};
+  var models=["gemini-2.0-flash","gemini-1.5-flash"];
+  for(var i=0;i<models.length;i++){
+    try{
+      var r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+models[i]+":generateContent?key="+encodeURIComponent(key),
+        {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+      if(r.ok){var d=await r.json();if(d.candidates&&d.candidates[0]&&d.candidates[0].content)return d.candidates[0].content.parts[0].text||""}
+    }catch(e){console.error("Gemini call error:",e)}
+  }
+  return"";
+}
+
+function _parseJ(text){
+  text=text.replace(/```json\s*/g,"").replace(/```\s*/g,"").trim();
+  try{return JSON.parse(text)}catch(e){}
+  var m=text.match(/\[[\s\S]*\]/);
+  if(m)try{return JSON.parse(m[0])}catch(e2){}
+  console.error("JSON parse failed:",text.substring(0,300));
+  return null;
+}
+
+// ── Generate notes ──
+async function _genNotes(content,key){
+  var sys="You are an expert study guide creator. Given lecture slides, create detailed study notes.\n\n"+
+    "Output ONLY a JSON array — no markdown fences, no explanation. Each element:\n"+
+    "{\"heading\":\"Topic Name\",\"body\":\"Content with <b>bold</b> for key terms. Complete sentences.\"}\n\n"+
+    "Rules:\n- Create 10-30 note sections covering ALL slide material\n- Use <b>bold</b> HTML tags for key terms, definitions, important facts\n"+
+    "- Include ALL specific facts, numbers, formulas, examples from the slides\n- Write in clear, study-friendly language\n"+
+    "- Each section body should be a coherent paragraph, not bullets\n- Last section: Key Concepts Summary";
+  var parts;
+  if(content.type==="text")parts=[{text:"Create study notes from these lecture slides:\n\n"+content.text}];
+  else parts=content.parts.concat([{text:"Create detailed study notes from these lecture slides."}]);
+  var r=await _gemCall(parts,sys,key,8192);
+  return _parseJ(r)||[];
+}
+
+// ── Generate MC quiz ──
+async function _genQuizMC(content,notes,key,batch){
+  var nSum=notes.map(function(n){return n.heading+": "+n.body}).join("\n").substring(0,6000);
+  var third=batch===1?"first third":batch===2?"middle third":"final third";
+  var sys="You create multiple-choice quiz questions from study material.\n\n"+
+    "Output ONLY a JSON array — no markdown fences. Each element:\n"+
+    "{\"q\":\"Question?\",\"a\":[\"Option A\",\"Option B\",\"Option C\",\"Option D\"],\"c\":2,\"exp\":\"Explanation why correct answer is right.\"}\n\n"+
+    "Rules:\n- Generate exactly 25 multiple-choice questions\n- c = index (0-3) of the correct answer in the 'a' array\n"+
+    "- RANDOMIZE correct answer position across 0,1,2,3\n- Cover the "+third+" of the material\n"+
+    "- Test understanding, not just memorization\n- Each question has exactly 4 options\n- Explanations should say why the correct answer is right and why a common wrong answer is wrong";
+  var parts;
+  if(content.type==="text")parts=[{text:"Source slides:\n\n"+content.text+"\n\nStudy notes:\n\n"+nSum+"\n\nGenerate 25 MC quiz questions (batch "+batch+"/3, covering the "+third+")."}];
+  else parts=content.parts.concat([{text:"Study notes:\n\n"+nSum+"\n\nGenerate 25 MC quiz questions (batch "+batch+"/3, covering the "+third+")."}]);
+  var r=await _gemCall(parts,sys,key,8192);
+  return _parseJ(r)||[];
+}
+
+// ── Generate TF + SA quiz ──
+async function _genQuizMix(content,notes,key){
+  var nSum=notes.map(function(n){return n.heading+": "+n.body}).join("\n").substring(0,6000);
+  var sys="You create True/False and Short Answer quiz questions.\n\n"+
+    "Output ONLY a JSON array — no markdown fences. Two formats:\n\n"+
+    "True/False:\n{\"q\":\"TRUE or FALSE: Statement here.\",\"a\":[\"True\",\"False\"],\"c\":0,\"type\":\"tf\",\"exp\":\"This is TRUE. Explanation.\"}\n"+
+    "(c=0 means True is correct, c=1 means False)\n\n"+
+    "Short Answer:\n{\"q\":\"Question?\",\"type\":\"sa\",\"ans\":\"Brief answer\",\"exp\":\"The correct answer is X. Explanation.\"}\n\n"+
+    "Rules:\n- Generate 15 True/False + 10 Short Answer = 25 total\n- For TF: roughly half TRUE and half FALSE\n"+
+    "- For TF: make some tricky with plausible false statements\n- For SA: ans should be 1-5 words\n- Cover ALL topics across the material";
+  var parts;
+  if(content.type==="text")parts=[{text:"Source slides:\n\n"+content.text+"\n\nStudy notes:\n\n"+nSum+"\n\nGenerate 15 TF + 10 SA questions."}];
+  else parts=content.parts.concat([{text:"Study notes:\n\n"+nSum+"\n\nGenerate 15 TF + 10 SA questions."}]);
+  var r=await _gemCall(parts,sys,key,8192);
+  return _parseJ(r)||[];
 }
 
 // === NOTES MANAGEMENT ===
