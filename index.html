@@ -852,6 +852,7 @@ function doLogin(){
 <div class="footer"></div>
 <script>
 function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+function gk(){return localStorage.getItem("np_gk")}
 // Sparkles
 (function(){var c=document.getElementById("sparkles");for(var i=0;i<12;i++){var s=document.createElement("div");s.className="sparkle";s.top=(8+i*7.5)+"%";s.style.top=(8+i*7.5)+"%";s.style.left=(5+(i*8)%90)+"%";s.style.animationDelay=(i*.4)+"s";c.appendChild(s)}})();
 // Quotes
@@ -1444,9 +1445,9 @@ function renderCreate(){
   // Quick create cards
   h+="<div class='sec-label'>Create new</div>";
   h+="<div class='stat-grid'>";
-  h+="<div class='cr-card' onclick='showCreateCategory()'><svg viewBox='0 0 24 24'><path d='M4 19.5A2.5 2.5 0 016.5 17H20'/><path d='M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z'/><path d='M12 7v6M9 10h6'/></svg><div class='cv'>New Lesson</div><div class='cl'>Add notes & content</div></div>";
-  h+="<div class='cr-card' onclick='showCreateCategory()'><svg viewBox='0 0 24 24'><path d='M9 11l3 3L22 4'/><path d='M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11'/></svg><div class='cv'>New Quiz</div><div class='cl'>Build questions</div></div>";
-  h+="<div class='cr-card'><svg viewBox='0 0 24 24'><path d='M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z'/><path d='M14 2v6h6'/></svg><div class='cv'>Full Test</div><div class='cl'>Combine quizzes</div></div>";
+  h+="<div class='cr-card' onclick='showNewLesson()'><svg viewBox='0 0 24 24'><path d='M4 19.5A2.5 2.5 0 016.5 17H20'/><path d='M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z'/><path d='M12 7v6M9 10h6'/></svg><div class='cv'>New Lesson</div><div class='cl'>Add notes & content</div></div>";
+  h+="<div class='cr-card' onclick='showNewQuiz()'><svg viewBox='0 0 24 24'><path d='M9 11l3 3L22 4'/><path d='M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11'/></svg><div class='cv'>New Quiz</div><div class='cl'>Build questions</div></div>";
+  h+="<div class='cr-card' onclick='showNewTest()'><svg viewBox='0 0 24 24'><path d='M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z'/><path d='M14 2v6h6'/></svg><div class='cv'>Full Test</div><div class='cl'>Combine quizzes</div></div>";
   h+="<div class='cr-card' onclick='showSlideImport()'><svg viewBox='0 0 24 24'><path d='M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4'/><path d='M17 8l-5-5-5 5M12 3v12'/></svg><div class='cv'>Import</div><div class='cl'>Upload slides</div></div>";
   h+="</div>";
 
@@ -4488,6 +4489,141 @@ function delLesson(catKey){
     sec.lessons.splice(idx,1);saveSection(catKey)
   }
   view="class";curL=null;render();csToast("🗑️ Lesson deleted");
+}
+
+// === NEW LESSON (from Create tab) ===
+function _secOpts(includeBuiltIn){
+  var opts="<option value='__new__'>+ Create new section</option>";
+  var cd=getCD();for(var k in cd)opts+="<option value='"+k+"'>"+esc(cd[k].name)+"</option>";
+  if(includeBuiltIn!==false){for(var k in D)opts+="<option value='"+k+"'>"+esc(D[k].name)+"</option>"}
+  return opts;
+}
+function showNewLesson(){
+  _modal("<h2>📖 New Lesson</h2>"+
+    "<label>Section</label><select id='nlSec' class='import-select'>"+_secOpts()+"</select>"+
+    "<label>Lesson Title</label><input type='text' id='nlTitle' placeholder='e.g. Chapter 5: Cell Division'>"+
+    "<label>Short Label</label><input type='text' id='nlLabel' placeholder='e.g. L1 or Ch 5'>"+
+    "<div class='cmod-btns'><button class='cbtn-cancel' onclick='_closeModal()'>Cancel</button><button class='cbtn-save' onclick='doNewLesson()'>Create</button></div>");
+}
+function doNewLesson(){
+  var title=document.getElementById("nlTitle").value.trim();
+  if(!title){alert("Please enter a title");return}
+  var label=document.getElementById("nlLabel").value.trim()||"Lesson";
+  var secKey=document.getElementById("nlSec").value;
+  if(secKey==="__new__"){
+    var cd=getCD();secKey="custom-"+Date.now();
+    var sName=title.split(":")[0].trim()||"New Section";
+    cd[secKey]={name:sName,sub:"Custom Study Section",icon:"📚",lessons:[]};
+    saveCD(cd);
+  }
+  var sec=getSection(secKey);if(!sec)return;
+  var les={id:"cl-"+Date.now(),title:title,ln:(sec.name||"")+" · "+label,notes:[],quiz:[]};
+  sec.lessons.push(les);saveSection(secKey);
+  _closeModal();
+  curC=secKey;curL=les;view="lesson";tab="notes";
+  pushURL();render();scrollTo({top:0,behavior:"smooth"});
+  csToast("📖 Created: "+title);
+}
+
+// === NEW QUIZ (from Create tab) ===
+function showNewQuiz(){
+  var sh="<h2>✍️ New Quiz</h2>";
+  sh+="<label>Section</label><select id='nqSec' class='import-select' onchange='_nqSecChange()'>"+_secOpts()+"</select>";
+  sh+="<label>Lesson</label><select id='nqLes' class='import-select'><option value=''>— pick a section first —</option></select>";
+  sh+="<div class='cmod-btns'><button class='cbtn-cancel' onclick='_closeModal()'>Cancel</button><button class='cbtn-save' onclick='doNewQuiz()'>Open Quiz Builder</button></div>";
+  _modal(sh);
+  _nqSecChange();
+}
+function _nqSecChange(){
+  var secKey=document.getElementById("nqSec").value;
+  var sel=document.getElementById("nqLes");if(!sel)return;
+  sel.innerHTML="";
+  if(secKey==="__new__"){sel.innerHTML="<option value=''>Lesson will be created</option>";return}
+  var sec=getSection(secKey);
+  if(!sec||!sec.lessons||!sec.lessons.length){sel.innerHTML="<option value=''>No lessons yet</option>";return}
+  for(var i=0;i<sec.lessons.length;i++){
+    sel.innerHTML+="<option value='"+i+"'>"+esc(sec.lessons[i].title)+"</option>";
+  }
+}
+function doNewQuiz(){
+  var secKey=document.getElementById("nqSec").value;
+  var lesIdx=document.getElementById("nqLes").value;
+  if(secKey==="__new__"){
+    var cd=getCD();secKey="custom-"+Date.now();
+    cd[secKey]={name:"New Section",sub:"Custom Study Section",icon:"📝",lessons:[{id:"cl-"+Date.now(),title:"Lesson 1",ln:"Lesson 1",notes:[],quiz:[]}]};
+    saveCD(cd);lesIdx=0;
+  }
+  var sec=getSection(secKey);
+  if(!sec||!sec.lessons||!sec.lessons.length){alert("No lessons in this section. Create a lesson first.");return}
+  var idx=parseInt(lesIdx)||0;
+  if(!sec.lessons[idx]){alert("Please select a lesson");return}
+  curC=secKey;curL=sec.lessons[idx];
+  _closeModal();showQuizCreator(secKey);
+}
+
+// === NEW FULL TEST (from Create tab) ===
+function showNewTest(){
+  var D2=window.D||{};var cd=getCD();
+  var sh="<h2>📝 Create Full Test</h2>";
+  sh+="<p style='color:rgba(200,190,230,.4);font-size:13px;margin-bottom:14px'>Pick lessons to combine into one big test (up to 20 questions per lesson).</p>";
+  sh+="<div style='max-height:340px;overflow-y:auto;margin-bottom:14px'>";
+  var count=0;
+  var secColors={chemistry:"#7dd3fc",biology:"#34d399",psychology:"#d946ef"};
+  for(var sk in D2){
+    if(!D2[sk].lessons)continue;
+    var col=secColors[sk]||"#a855f7";
+    D2[sk].lessons.forEach(function(l,i){
+      if(!l.quiz||!l.quiz.length)return;
+      count++;
+      sh+="<label style='display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;margin-bottom:4px;background:rgba(18,10,40,.22);cursor:pointer;border:0.5px solid rgba(168,85,247,.06)'>";
+      sh+="<input type='checkbox' value='"+sk+":"+i+"' class='nt-cb' checked>";
+      sh+="<span style='flex:1;font-size:13px;color:#ede5ff'>"+esc(l.title)+"</span>";
+      sh+="<span style='font-size:11px;color:rgba(200,190,230,.3)'>"+l.quiz.length+"q</span></label>";
+    });
+  }
+  for(var ck in cd){
+    if(!cd[ck].lessons)continue;
+    cd[ck].lessons.forEach(function(l,i){
+      if(!l.quiz||!l.quiz.length)return;
+      count++;
+      sh+="<label style='display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;margin-bottom:4px;background:rgba(18,10,40,.22);cursor:pointer;border:0.5px solid rgba(168,85,247,.06)'>";
+      sh+="<input type='checkbox' value='"+ck+":"+i+"' class='nt-cb' checked>";
+      sh+="<span style='flex:1;font-size:13px;color:#ede5ff'>"+esc(l.title)+"</span>";
+      sh+="<span style='font-size:11px;color:rgba(200,190,230,.3)'>"+l.quiz.length+"q</span></label>";
+    });
+  }
+  sh+="</div>";
+  if(!count){sh+="<p style='color:rgba(200,190,230,.3);text-align:center;padding:20px 0'>No lessons with quiz questions found.</p>";}
+  sh+="<div class='cmod-btns'><button class='cbtn-cancel' onclick='_closeModal()'>Cancel</button>"+(count?"<button class='cbtn-save' onclick='doNewTest()'>Start Test</button>":"")+"</div>";
+  _modal(sh);
+}
+function doNewTest(){
+  var cbs=document.querySelectorAll(".nt-cb:checked");
+  if(!cbs.length){alert("Select at least one lesson");return}
+  var allQ=[];
+  cbs.forEach(function(cb){
+    var parts=cb.value.split(":");
+    var sk=parts[0],idx=parseInt(parts[1]);
+    var sec=getSection(sk);
+    if(sec&&sec.lessons[idx]&&sec.lessons[idx].quiz){
+      var lq=sec.lessons[idx].quiz.slice();
+      // shuffle and take up to 20
+      for(var i=lq.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=lq[i];lq[i]=lq[j];lq[j]=tmp}
+      allQ=allQ.concat(lq.slice(0,20));
+    }
+  });
+  if(!allQ.length){alert("No questions found");return}
+  _closeModal();
+  // Shuffle all combined questions
+  for(var i=allQ.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=allQ[i];allQ[i]=allQ[j];allQ[j]=tmp}
+  shuf=shuffleOpts(allQ);
+  tS={a:{},ta:{},done:false,sc:0,pg:0};
+  // Use first checked section as curC for display
+  var fp=cbs[0].value.split(":");
+  curC=fp[0];var sec0=getSection(fp[0]);
+  if(sec0)curL=sec0.lessons[parseInt(fp[1])];
+  view="lesson";tab="final";
+  pushURL();render();scrollTo({top:0,behavior:"smooth"});
 }
 
 // === SLIDE IMPORT / AUTO-GENERATE ===
