@@ -1258,6 +1258,7 @@ if(tab==="notes"){
 
 if(tab==="q1"||tab==="q2"||tab==="q3"||tab==="final"){
   if(pS.i>=shuf.length){var p=shuf.length?Math.round(pS.sc/shuf.length*100):0;
+    if(!pS.saved){pS.saved=true;if(curC&&curL)saveQStat(curC,curL.id,pS.sc,shuf.length)}
     app.innerHTML="<div class='res'><div style='font-size:48px;margin-bottom:12px'>"+(p>=80?"\uD83C\uDFC6":p>=60?"\uD83D\uDC4D":"\uD83D\uDCDA")+"</div><div style='font-size:28px;font-weight:800;background:linear-gradient(135deg,var(--hi),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent'>"+pS.sc+"/"+shuf.length+"</div><p style='color:var(--txd);margin:8px 0 24px'>"+(p>=90?"Amazing, Anhelina! \uD83C\uDF1F":p>=70?"Great job!":"Keep reviewing!")+"</p><button class='abtn' onclick='rq();render()'>Try Again</button></div>";return;}
   var q=shuf[pS.i];
   var h="<div style='font-size:13px;color:var(--txd);font-weight:600;margin-bottom:8px'>"+(q.type==="tf"?"\uD83D\uDFE2 True/False":q.type==="fib"?"\u270D\uFE0F Fill in the Blank":q.type==="sa"?"\u270D\uFE0F Short Answer":"\uD83D\uDD18 Multiple Choice")+" \u2014 Question "+(pS.i+1)+" / "+shuf.length+"</div><div class='pbar'><div class='pfill' style='width:"+(pS.i/shuf.length*100)+"%'></div></div>";
@@ -1296,7 +1297,7 @@ function fibCheck(){var el=document.getElementById("fibIn");if(!el)return;var v=
 function qN(){pS.i++;pS.sel=null;pS.sh=false;pS.fibAns="";render()}
 function tTa(i,v){if(tS.done)return;if(!tS.ta)tS.ta={};tS.ta[i]=v;tS.a[i]=v.trim()?-99:undefined;var ac=0;for(var k in tS.a){if(tS.a.hasOwnProperty(k)){var qq=shuf[k];if((qq.type==="fib"||qq.type==="sa")&&tS.ta&&tS.ta[k]&&tS.ta[k].trim())ac++;else if(tS.a[k]!=null&&tS.a[k]>=0)ac++}};var info=document.querySelector(".tinfo small");if(info)info.textContent="Answered: "+ac+" / "+shuf.length;var btn=document.getElementById("tSubBtn");if(btn)btn.disabled=ac<shuf.length}
 function tA(i,j){if(tS.done)return;tS.a[i]=j;render()}
-function subT(){var s=0;for(var i=0;i<shuf.length;i++){var q=shuf[i];if(q.type==="fib"||q.type==="sa"){if(tS.ta&&tS.ta[i]&&saMatch(tS.ta[i],q.ans)){s++;tS.a[i]=q.c}}else{if(tS.a[i]===q.c)s++}}tS.sc=s;tS.done=true;render();scrollTo({top:0,behavior:"smooth"})}
+function subT(){var s=0;for(var i=0;i<shuf.length;i++){var q=shuf[i];if(q.type==="fib"||q.type==="sa"){if(tS.ta&&tS.ta[i]&&saMatch(tS.ta[i],q.ans)){s++;tS.a[i]=q.c}}else{if(tS.a[i]===q.c)s++}}tS.sc=s;tS.done=true;if(curC&&curL)saveQStat(curC,curL.id,s,shuf.length);render();scrollTo({top:0,behavior:"smooth"})}
 
 // Init from URL — restore saved state if on home page
 (function(){
