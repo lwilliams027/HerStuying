@@ -779,8 +779,10 @@ function doLogin(){
       </div>
       <div id="ytplayer"></div>
     </div>
+    <div class="wrap">
     <div id="nav"></div>
     <div id="app"></div>
+    </div>
   </div>
 </div>
 
@@ -838,6 +840,7 @@ function doLogin(){
 </div>
 <div class="footer"></div>
 <script>
+function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
 // Sparkles
 (function(){var c=document.getElementById("sparkles");for(var i=0;i<12;i++){var s=document.createElement("div");s.className="sparkle";s.top=(8+i*7.5)+"%";s.style.top=(8+i*7.5)+"%";s.style.left=(5+(i*8)%90)+"%";s.style.animationDelay=(i*.4)+"s";c.appendChild(s)}})();
 // Quotes
