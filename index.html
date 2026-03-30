@@ -107,6 +107,125 @@ h1{font-size:clamp(28px,5vw,44px);font-weight:800;background:linear-gradient(135
 .res{background:var(--card);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--bdr);border-radius:20px;padding:40px 28px;text-align:center;animation:fadeUp .5s ease;margin-bottom:24px}
 .rw{background:rgba(255,107,138,.03);border:1px solid rgba(255,107,138,.2);border-radius:14px;padding:16px 20px;margin-bottom:10px}
 
+/* ═══ REDESIGNED VIEW STYLES ═══ */
+
+/* -- Class View: Lesson Cards V2 -- */
+.lc2{background:var(--card);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--bdr);border-radius:16px;padding:0;cursor:pointer;transition:all .35s cubic-bezier(.4,0,.2,1);display:flex;align-items:stretch;margin-bottom:12px;overflow:hidden;position:relative}
+.lc2:hover{transform:translateY(-2px);border-color:rgba(155,89,255,.4);box-shadow:0 8px 32px rgba(155,89,255,.12)}
+.lc2:active{transform:scale(.985)}
+.lc2-num{width:52px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:var(--accent);background:linear-gradient(180deg,rgba(155,89,255,.08),rgba(155,89,255,.03));flex-shrink:0;border-right:1px solid var(--bdr)}
+.lc2-body{flex:1;padding:16px 18px;min-width:0}
+.lc2-title{font-size:15px;font-weight:700;line-height:1.35;margin-bottom:6px}
+.lc2-meta{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--txd)}
+.lc2-meta .tag{padding:2px 7px;border-radius:5px;background:rgba(155,89,255,.1);color:var(--glow);font-weight:600;font-size:10px;letter-spacing:.3px}
+.lc2-prog{width:40px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 10px;flex-shrink:0}
+.lc2-ring{width:32px;height:32px;position:relative}
+.lc2-ring svg{width:32px;height:32px;transform:rotate(-90deg)}
+.lc2-ring .ring-bg{stroke:rgba(155,89,255,.12);fill:none;stroke-width:3}
+.lc2-ring .ring-fg{fill:none;stroke-width:3;stroke-linecap:round;transition:stroke-dashoffset .6s ease}
+.lc2-pct{font-size:9px;font-weight:700;color:var(--txd);margin-top:2px}
+.lc2 .arr2{color:var(--accent);font-size:16px;display:flex;align-items:center;padding-right:14px;opacity:.5;transition:opacity .3s}
+.lc2:hover .arr2{opacity:1}
+
+/* -- Final Exam Button V2 -- */
+.final-btn{position:relative;display:inline-flex;align-items:center;gap:10px;padding:16px 36px;border-radius:16px;background:linear-gradient(135deg,#ff6b9d 0%,var(--accent) 50%,#7c3aed 100%);background-size:200% 200%;animation:gradShift 4s ease infinite;color:#fff;font-size:16px;font-weight:700;border:none;cursor:pointer;transition:all .3s;box-shadow:0 4px 24px rgba(255,107,154,.2)}
+.final-btn:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(255,107,154,.3)}
+@keyframes gradShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+
+/* -- Quiz View V2 -- */
+.quiz-hud{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px;flex-wrap:wrap}
+.quiz-type{font-size:12px;font-weight:700;padding:5px 12px;border-radius:8px;background:rgba(155,89,255,.1);color:var(--glow);letter-spacing:.3px}
+.quiz-counter{font-size:13px;font-weight:600;color:var(--txd)}
+.quiz-streak{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;padding:4px 10px;border-radius:8px}
+.quiz-streak.hot{background:rgba(255,165,0,.12);color:#ffa500}
+.quiz-streak.cold{background:rgba(155,89,255,.08);color:var(--txd)}
+.pbar2{height:6px;border-radius:3px;background:rgba(155,89,255,.1);margin-bottom:20px;overflow:hidden;position:relative}
+.pfill2{height:100%;border-radius:3px;background:linear-gradient(90deg,#7c3aed,var(--accent),var(--glow));transition:width .5s cubic-bezier(.4,0,.2,1);position:relative}
+.pfill2::after{content:'';position:absolute;right:0;top:0;width:20px;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3));border-radius:3px}
+.qcard2{background:var(--card);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--bdr);border-radius:20px;padding:28px;animation:qSlide .35s cubic-bezier(.4,0,.2,1)}
+@keyframes qSlide{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.qcard2 h3{font-size:18px;font-weight:700;margin-bottom:22px;line-height:1.45}
+.opt2{width:100%;background:rgba(26,18,48,.4);border:1.5px solid var(--bdr);border-radius:14px;padding:15px 18px;text-align:left;cursor:pointer;color:var(--tx);font-size:15px;font-family:inherit;display:flex;align-items:center;gap:12px;transition:all .25s cubic-bezier(.4,0,.2,1);margin-bottom:8px;position:relative;overflow:hidden}
+.opt2::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(155,89,255,.06),transparent);opacity:0;transition:opacity .3s}
+.opt2:hover:not(.done)::before{opacity:1}
+.opt2:hover:not(.done){border-color:rgba(155,89,255,.5);transform:translateX(4px)}
+.opt2.ok{background:rgba(124,255,142,.06);border-color:var(--ok);animation:optOk .4s ease}
+.opt2.no{background:rgba(255,107,138,.06);border-color:var(--err);animation:optNo .4s ease}
+@keyframes optOk{from{background:rgba(124,255,142,.2)}to{background:rgba(124,255,142,.06)}}
+@keyframes optNo{from{background:rgba(255,107,138,.2)}to{background:rgba(255,107,138,.06)}}
+.opt2 .circ{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;background:rgba(155,89,255,.08);color:var(--accent);transition:all .25s}
+.opt2.ok .circ{background:var(--ok);color:#000}.opt2.no .circ{background:var(--err);color:#000}
+.quiz-score-bar{display:flex;justify-content:center;gap:20px;font-size:14px;color:var(--txd);margin-top:16px;padding:10px;border-radius:12px;background:rgba(26,18,48,.3)}
+.quiz-score-bar span{display:flex;align-items:center;gap:5px}
+.exp-box2{margin-top:14px;padding:14px 18px;border-radius:14px;font-size:13px;line-height:1.6;color:var(--txd);position:relative;overflow:hidden}
+.exp-box2::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;border-radius:2px}
+.exp-box2.correct{background:rgba(76,175,80,.04);border:1px solid rgba(76,175,80,.15)}
+.exp-box2.correct::before{background:var(--ok)}
+.exp-box2.wrong{background:rgba(155,89,255,.04);border:1px solid var(--bdr)}
+.exp-box2.wrong::before{background:var(--accent)}
+
+/* -- Full Test View V2 -- */
+.test-header{background:var(--card);backdrop-filter:blur(14px);border:1px solid var(--bdr);border-radius:16px;padding:18px 22px;margin-bottom:16px;text-align:center}
+.test-header h4{font-size:16px;font-weight:700;margin-bottom:6px}
+.test-prog-text{font-size:13px;color:var(--txd)}
+.test-nav{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;padding:12px 0}
+.test-dot{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:1.5px solid var(--bdr);background:rgba(26,18,48,.4);color:var(--txd);cursor:pointer;transition:all .2s}
+.test-dot.filled{border-color:rgba(155,89,255,.4);background:rgba(155,89,255,.12);color:var(--accent)}
+.test-dot:hover{border-color:var(--accent);transform:scale(1.1)}
+.tq2{background:var(--card);backdrop-filter:blur(14px);border:1px solid var(--bdr);border-radius:16px;padding:22px;margin-bottom:14px;transition:border-color .3s}
+.tq2.ans{border-color:rgba(155,89,255,.3)}
+.tq2-num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:8px;background:rgba(155,89,255,.1);color:var(--accent);font-size:11px;font-weight:800;margin-bottom:10px}
+.tq2-q{font-size:15px;font-weight:600;margin-bottom:14px;line-height:1.45}
+
+/* -- Results Screen V2 -- */
+.res2{background:var(--card);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--bdr);border-radius:24px;padding:44px 28px 36px;text-align:center;animation:resIn .6s cubic-bezier(.4,0,.2,1);margin-bottom:24px;position:relative;overflow:hidden}
+@keyframes resIn{from{opacity:0;transform:scale(.92) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.res2::before{content:'';position:absolute;top:-60%;left:-20%;width:140%;height:140%;background:radial-gradient(circle,rgba(155,89,255,.06) 0%,transparent 70%);pointer-events:none}
+.res2-emoji{font-size:56px;margin-bottom:8px;animation:emojiBounce .6s ease .2s both}
+@keyframes emojiBounce{from{opacity:0;transform:scale(0) rotate(-20deg)}60%{transform:scale(1.2) rotate(5deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+.res2-score{font-size:40px;font-weight:800;background:linear-gradient(135deg,var(--hi),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:scoreIn .5s ease .3s both}
+@keyframes scoreIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.res2-pct{font-size:14px;color:var(--txd);margin:2px 0 4px}
+.res2-msg{color:var(--txd);margin:8px 0 24px;font-size:15px;animation:fadeUp .5s ease .4s both}
+.res2-stats{display:flex;justify-content:center;gap:16px;margin:20px 0;animation:fadeUp .5s ease .5s both}
+.res2-stat{padding:12px 18px;border-radius:12px;background:rgba(26,18,48,.5);border:1px solid var(--bdr);min-width:80px}
+.res2-stat .val{font-size:22px;font-weight:800;line-height:1}
+.res2-stat .lbl{font-size:11px;color:var(--txd);margin-top:4px;font-weight:600}
+.res2-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;animation:fadeUp .5s ease .6s both}
+.res2-review-label{font-size:14px;font-weight:700;color:var(--txd);margin:28px 0 14px;text-align:left;display:flex;align-items:center;gap:8px}
+.rw2{background:rgba(255,107,138,.02);border:1px solid rgba(255,107,138,.15);border-radius:16px;padding:18px 20px;margin-bottom:12px;animation:fadeUp .3s ease both;position:relative;overflow:hidden}
+.rw2::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--err);border-radius:2px}
+.rw2-q{font-size:14px;font-weight:600;margin-bottom:10px;line-height:1.45;padding-left:6px}
+.rw2-ans{font-size:13px;padding-left:6px}
+.rw2-exp{margin-top:8px;font-size:12px;line-height:1.5;color:var(--txd);opacity:.8;border-top:1px solid var(--bdr);padding-top:8px;padding-left:6px}
+
+/* -- Confetti -- */
+.confetti-container{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;overflow:hidden}
+.confetti-piece{position:absolute;width:8px;height:8px;top:-10px;animation:confettiFall 3s ease-in forwards}
+@keyframes confettiFall{0%{transform:translateY(0) rotate(0deg) scale(1);opacity:1}80%{opacity:1}100%{transform:translateY(100vh) rotate(720deg) scale(.5);opacity:0}}
+
+/* responsive overrides for V2 */
+@media(max-width:600px){
+  .lc2-num{width:42px;font-size:15px}
+  .lc2-body{padding:12px 14px}
+  .lc2-title{font-size:14px}
+  .lc2-prog{width:36px;padding:0 8px}
+  .lc2-ring{width:28px;height:28px}.lc2-ring svg{width:28px;height:28px}
+  .qcard2{padding:20px 16px;border-radius:16px}
+  .qcard2 h3{font-size:15px;margin-bottom:16px;line-height:1.5}
+  .opt2{padding:12px 14px;font-size:13px;border-radius:10px;gap:10px}
+  .opt2 .circ{width:26px;height:26px;font-size:12px}
+  .pbar2{margin-bottom:16px}
+  .tq2{padding:14px 16px;border-radius:12px}
+  .res2{padding:32px 20px 28px;border-radius:18px}
+  .res2-emoji{font-size:44px}
+  .res2-score{font-size:32px}
+  .res2-stat{padding:10px 14px;min-width:65px}
+  .res2-stat .val{font-size:18px}
+  .quiz-hud{gap:8px}
+  .final-btn{padding:14px 28px;font-size:15px}
+}
+
 /* Dedicated Quote Section */
 .qs{padding:80px 24px 90px;text-align:center;position:relative;overflow:hidden;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .qs::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:160px;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent)}
@@ -182,8 +301,8 @@ html,body,.np-canvas-wrap{-webkit-overflow-scrolling:touch;scroll-behavior:smoot
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
 /* Better tap targets (min 44px per Apple HIG) */
-button,a,.pill,.opt,.topt,.lc,.cc,.mp-btn{min-height:44px}
-.lc{min-height:52px}
+button,a,.pill,.opt,.opt2,.topt,.lc,.lc2,.cc,.mp-btn{min-height:44px}
+.lc{min-height:52px}.lc2{min-height:52px}
 
 /* ── Tablets & large phones (< 768px) ── */
 @media(max-width:768px){
@@ -858,6 +977,10 @@ function sf(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.floor(Ma
 function rq(){if(!curL)return;var q=curL.quiz,s=50;if(tab==="q1")shuf=sf(q.slice(0,s));else if(tab==="q2")shuf=sf(q.slice(s,s*2));else if(tab==="q3")shuf=sf(q.slice(s*2,s*3));else if(tab==="final"){var all=[];var c=D[curC]||getCD()[curC];if(!c)return;for(var i=0;i<c.lessons.length;i++){var lq=sf(c.lessons[i].quiz.slice());all=all.concat(lq.slice(0,20))}shuf=sf(all)}else shuf=sf(q);pS={i:0,sel:null,sh:false,sc:0,an:0,fibAns:""};tS={a:{},ta:{},done:false,sc:0}}
 function startFinal(cls){curC=cls;var src=D[cls]||getCD()[cls];if(!src)return;curL=src.lessons[0];view="lesson";tab="final";rq();pushURL();render();scrollTo({top:0,behavior:"smooth"})}
 
+function fireConfetti(){var c=document.createElement("div");c.className="confetti-container";var colors=["#9B59FF","#FF6B8A","#7CFF8E","#FFD700","#60A5FA","#E0C6FF","#FF9F43"];for(var i=0;i<40;i++){var p=document.createElement("div");p.className="confetti-piece";p.style.left=Math.random()*100+"%";p.style.background=colors[Math.floor(Math.random()*colors.length)];p.style.animationDelay=Math.random()*1.5+"s";p.style.animationDuration=(2+Math.random()*2)+"s";p.style.borderRadius=Math.random()>.5?"50%":"2px";p.style.width=(5+Math.random()*8)+"px";p.style.height=(5+Math.random()*8)+"px";c.appendChild(p)}document.body.appendChild(c);setTimeout(function(){c.remove()},4000)}
+function getLessonBest(cls,lid){var s=getQStats();var key=cls+":"+lid;return s[key]?s[key].best:0}
+function getQuizStreak(){return pS.sc>0&&(pS.sc===pS.an)?pS.sc:0}
+
 // URL helpers
 function buildPath(){
   if(view==="home")return"/";
@@ -1231,11 +1354,17 @@ if(view==="class"){
     nav.innerHTML="<div style='display:flex;gap:8px;justify-content:center;padding:6px 0;flex-wrap:wrap'><button class='cn-edit' onclick=\"requirePasscode(function(){showEditBuiltIn('"+curC+"')})\" style='padding:8px 16px;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;border:none'>🔐 Edit Section</button></div>";
   }
   if(!c.lessons.length){app.innerHTML="<p style='color:var(--txd);padding:40px 0;text-align:center'>"+(isCustom?"No lessons yet \u2014 tap below to add one! \u2728":"No lessons yet \uD83D\uDC9C")+"</p><div style='text-align:center'><button class='abtn cn-add' style='padding:14px 32px;font-size:15px;border-radius:14px' onclick=\""+(isCustom?"showCreateLesson('"+curC+"')":"requirePasscode(function(){showCreateLesson('"+curC+"')})")+"\">+ Add Lesson</button></div>";return}
-  var h="";for(var i=0;i<c.lessons.length;i++){var l=c.lessons[i];
-    h+="<div class='lc' style='animation:slideIn .3s ease "+(i*.04)+"s both' onclick=\"go('lesson','"+curC+"',"+i+")\"><div><span class='ln'>"+l.ln+"</span></div><div style='flex:1'><h4>"+l.title+"</h4><div class='meta'>"+l.notes.length+" sections \u00B7 "+l.quiz.length+" questions</div></div><span class='arr'>\u2192</span></div>"}
+  var pctAll=getCourseProgress(curC);
+  var h="<div style='display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px'><div style='font-size:13px;color:var(--txd);font-weight:600'>"+c.lessons.length+" Lesson"+(c.lessons.length!==1?"s":"")+"</div><div style='display:flex;align-items:center;gap:8px;font-size:12px;color:var(--txd);font-weight:600'><div style='width:80px;height:5px;border-radius:3px;background:rgba(155,89,255,.1);overflow:hidden'><div style='height:100%;border-radius:3px;background:linear-gradient(90deg,#7c3aed,var(--accent));width:"+pctAll+"%'></div></div>"+pctAll+"% complete</div></div>";
+  for(var i=0;i<c.lessons.length;i++){var l=c.lessons[i];var lBest=getLessonBest(curC,l.id);var r=14.5,circ=2*Math.PI*r,dash=circ-(lBest/100*circ);var ringClr=lBest>=80?"var(--ok)":lBest>=50?"#FFD700":"var(--accent)";
+    h+="<div class='lc2' style='animation:slideIn .3s ease "+(i*.04)+"s both' onclick=\"go('lesson','"+curC+"',"+i+")\">";
+    h+="<div class='lc2-num'>"+(i+1)+"</div>";
+    h+="<div class='lc2-body'><div class='lc2-title'>"+l.title+"</div><div class='lc2-meta'><span>"+l.notes.length+" sections</span><span>\u00B7</span><span>"+l.quiz.length+" questions</span>"+(lBest>0?"<span class='tag'>Best: "+lBest+"%</span>":"")+"</div></div>";
+    h+="<div class='lc2-prog'><div class='lc2-ring'><svg viewBox='0 0 36 36'><circle class='ring-bg' cx='18' cy='18' r='"+r+"'/><circle class='ring-fg' cx='18' cy='18' r='"+r+"' stroke='"+ringClr+"' stroke-dasharray='"+circ+"' stroke-dashoffset='"+dash+"'/></svg></div><div class='lc2-pct'>"+(lBest>0?lBest+"%":"\u2014")+"</div></div>";
+    h+="<div class='arr2'>\u203A</div></div>"}
   h+="<div style='margin-top:20px;text-align:center'><button class='abtn cn-add' style='padding:14px 32px;font-size:15px;border-radius:14px' onclick=\""+(isCustom?"showCreateLesson('"+curC+"')":"requirePasscode(function(){showCreateLesson('"+curC+"')})")+"\">+ Add Lesson</button></div>";
   if(c.lessons.length>0){var finalQ=c.lessons.length*20;for(var i=0;i<c.lessons.length;i++){if(c.lessons[i].quiz.length<20)finalQ-=(20-c.lessons[i].quiz.length)}
-  if(finalQ>0)h+="<div style='margin-top:24px;text-align:center'><button class='abtn' style='padding:16px 40px;font-size:17px;border-radius:16px;background:linear-gradient(135deg,#ff6b9d,var(--accent))' onclick=\"startFinal('"+curC+"')\">\uD83C\uDF93 Final Exam Practice ("+finalQ+" questions)</button><p style='font-size:13px;color:var(--txd);margin-top:8px'>20 from each lesson \u2014 randomized every time</p></div>";}
+  if(finalQ>0)h+="<div style='margin-top:28px;text-align:center'><button class='final-btn' onclick=\"startFinal('"+curC+"')\">\uD83C\uDF93 Final Exam Practice<span style='opacity:.8;font-weight:400;font-size:14px'>\u00B7 "+finalQ+" Qs</span></button><p style='font-size:12px;color:var(--txd);margin-top:10px;opacity:.7'>20 from each lesson \u2014 randomized every time</p></div>";}
   app.innerHTML=h;return;
 }
 
@@ -1259,30 +1388,50 @@ if(tab==="notes"){
 
 if(tab==="q1"||tab==="q2"||tab==="q3"||tab==="final"){
   if(pS.i>=shuf.length){var p=shuf.length?Math.round(pS.sc/shuf.length*100):0;
-    if(!pS.saved){pS.saved=true;if(curC&&curL)saveQStat(curC,curL.id,pS.sc,shuf.length)}
-    app.innerHTML="<div class='res'><div style='font-size:48px;margin-bottom:12px'>"+(p>=80?"\uD83C\uDFC6":p>=60?"\uD83D\uDC4D":"\uD83D\uDCDA")+"</div><div style='font-size:28px;font-weight:800;background:linear-gradient(135deg,var(--hi),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent'>"+pS.sc+"/"+shuf.length+"</div><p style='color:var(--txd);margin:8px 0 24px'>"+(p>=90?"Amazing, Anhelina! \uD83C\uDF1F":p>=70?"Great job!":"Keep reviewing!")+"</p><button class='abtn' onclick='rq();render()'>Try Again</button></div>";return;}
-  var q=shuf[pS.i];
-  var h="<div style='font-size:13px;color:var(--txd);font-weight:600;margin-bottom:8px'>"+(q.type==="tf"?"\uD83D\uDFE2 True/False":q.type==="fib"?"\u270D\uFE0F Fill in the Blank":q.type==="sa"?"\u270D\uFE0F Short Answer":"\uD83D\uDD18 Multiple Choice")+" \u2014 Question "+(pS.i+1)+" / "+shuf.length+"</div><div class='pbar'><div class='pfill' style='width:"+(pS.i/shuf.length*100)+"%'></div></div>";
-  h+="<div class='qcard'><h3>"+q.q+"</h3>";
-  if(q.type==="fib"||q.type==="sa"){if(!pS.sh){h+="<div style='margin:16px 0'><input id='fibIn' type='text' placeholder='Type your answer...' style='width:100%;padding:14px;border-radius:12px;border:2px solid var(--bdr);background:rgba(26,18,48,.6);color:var(--tx);font-size:16px;font-family:inherit;outline:none;box-sizing:border-box' onkeydown=\"if(event.key==='Enter')fibCheck()\"><button class='abtn' style='margin-top:12px;padding:10px 28px;font-size:14px' onclick='fibCheck()'>Check Answer</button></div>"}else{var got=pS.fibAns||"";var ok=saMatch(got,q.ans);h+="<div style='margin:16px 0;padding:14px;border-radius:12px;background:"+(ok?"rgba(76,175,80,.15);border:1px solid var(--ok)":"rgba(239,83,80,.15);border:1px solid var(--err)")+"'><div style='font-weight:700;color:"+(ok?"var(--ok)":"var(--err)")+"'>"+(ok?"\u2705 Correct!":"\u274C Not quite.")+"</div>"+(ok?"":"<div style='margin-top:6px;font-size:14px;color:var(--txd)'>Your answer: <b>"+got+"</b></div>")+"<div style='margin-top:6px;font-size:14px;color:var(--ok)'>Correct answer: <b>"+q.ans+"</b></div>"+(q.exp?"<div style='margin-top:8px;font-size:13px;line-height:1.5;color:var(--txd);opacity:.85;border-top:1px solid var(--bdr);padding-top:8px'>\uD83D\uDCA1 "+q.exp+"</div>":"")+"</div><button class='abtn' style='padding:10px 22px;font-size:14px' onclick='qN()'>"+(pS.i+1<shuf.length?"Next \u2192":"Results")+"</button>"}}
-  else{for(var j=0;j<q.a.length;j++){var cl="opt",lt=String.fromCharCode(65+j);if(pS.sh){cl+=" done";if(j===q.c){cl+=" ok";lt="\u2713"}else if(j===pS.sel){cl+=" no";lt="\u2717"}}
+    if(!pS.saved){pS.saved=true;if(curC&&curL)saveQStat(curC,curL.id,pS.sc,shuf.length);if(p>=80)setTimeout(fireConfetti,300)}
+    var wrong=shuf.length-pS.sc;
+    var h="<div class='res2'><div class='res2-emoji'>"+(p>=90?"\uD83C\uDFC6":p>=70?"\uD83C\uDF1F":p>=50?"\uD83D\uDC4D":"\uD83D\uDCDA")+"</div><div class='res2-score'>"+pS.sc+"/"+shuf.length+"</div><div class='res2-pct'>"+p+"%</div><div class='res2-msg'>"+(p>=90?"Amazing, Anhelina! You crushed it!":p>=70?"Great work! Keep it up!":p>=50?"Good effort \u2014 review the ones below!":"Let\u2019s review and try again!")+"</div>";
+    h+="<div class='res2-stats'><div class='res2-stat'><div class='val' style='color:var(--ok)'>"+pS.sc+"</div><div class='lbl'>Correct</div></div><div class='res2-stat'><div class='val' style='color:var(--err)'>"+wrong+"</div><div class='lbl'>Missed</div></div><div class='res2-stat'><div class='val' style='color:var(--accent)'>"+p+"%</div><div class='lbl'>Score</div></div></div>";
+    h+="<div class='res2-actions'><button class='abtn' onclick='rq();render()'>Try Again</button></div></div>";
+    app.innerHTML=h;return;}
+  var q=shuf[pS.i];var streakN=getQuizStreak();
+  var typeLabel=q.type==="tf"?"\uD83D\uDFE2 True / False":q.type==="fib"?"\u270D\uFE0F Fill-in":q.type==="sa"?"\u270D\uFE0F Short Answer":"\uD83D\uDD18 Multiple Choice";
+  var h="<div class='quiz-hud'><span class='quiz-type'>"+typeLabel+"</span>"+(streakN>=3?"<span class='quiz-streak hot'>\uD83D\uDD25 "+streakN+" streak</span>":"")+"<span class='quiz-counter'>"+(pS.i+1)+" / "+shuf.length+"</span></div>";
+  h+="<div class='pbar2'><div class='pfill2' style='width:"+((pS.i+1)/shuf.length*100)+"%'></div></div>";
+  h+="<div class='qcard2'><h3>"+q.q+"</h3>";
+  if(q.type==="fib"||q.type==="sa"){if(!pS.sh){h+="<div style='margin:16px 0'><input id='fibIn' type='text' placeholder='Type your answer...' style='width:100%;padding:14px;border-radius:12px;border:2px solid var(--bdr);background:rgba(26,18,48,.6);color:var(--tx);font-size:16px;font-family:inherit;outline:none;box-sizing:border-box' onkeydown=\"if(event.key==='Enter')fibCheck()\"><button class='abtn' style='margin-top:12px;padding:10px 28px;font-size:14px' onclick='fibCheck()'>Check Answer</button></div>"}else{var got=pS.fibAns||"";var ok=saMatch(got,q.ans);h+="<div class='exp-box2 "+(ok?"correct":"wrong")+"' style='margin:16px 0'><div style='font-weight:700;font-size:15px;color:"+(ok?"var(--ok)":"var(--err)")+"'>"+(ok?"\u2705 Correct!":"\u274C Not quite")+"</div>"+(ok?"":"<div style='margin-top:6px;font-size:14px;color:var(--txd)'>Your answer: <b>"+got+"</b></div>")+"<div style='margin-top:6px;font-size:14px;color:var(--ok)'>Correct answer: <b>"+q.ans+"</b></div>"+(q.exp?"<div style='margin-top:8px;font-size:13px;line-height:1.6;color:var(--txd);opacity:.85;border-top:1px solid var(--bdr);padding-top:8px'>\uD83D\uDCA1 "+q.exp+"</div>":"")+"</div><button class='abtn' style='padding:10px 22px;font-size:14px' onclick='qN()'>"+(pS.i+1<shuf.length?"Next \u2192":"See Results")+"</button>"}}
+  else{for(var j=0;j<q.a.length;j++){var cl="opt2",lt=String.fromCharCode(65+j);if(pS.sh){cl+=" done";if(j===q.c){cl+=" ok";lt="\u2713"}else if(j===pS.sel){cl+=" no";lt="\u2717"}}
     h+="<button class='"+cl+"' onclick='qA("+j+")'><span class='circ'>"+lt+"</span>"+q.a[j]+"</button>"}
-  if(pS.sh){var isOk=pS.sel===q.c;h+="<div style='margin-top:16px'><div style='display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px'><span style='font-size:14px;font-weight:600;color:"+(isOk?"var(--ok)":"var(--err)")+"'>"+(isOk?"Correct! \uD83C\uDF89":"Not quite.")+"</span><button class='abtn' style='padding:10px 22px;font-size:14px' onclick='qN()'>"+(pS.i+1<shuf.length?"Next \u2192":"Results")+"</button></div>";h+="<div id='expBox' style='margin-top:12px;padding:12px 16px;border-radius:10px;background:"+(isOk?"rgba(76,175,80,.06);border:1px solid rgba(76,175,80,.2)":"rgba(155,89,255,.08);border:1px solid var(--bdr)")+";font-size:13px;line-height:1.5;color:var(--txd)'>";if(!isOk){h+="\uD83D\uDCA1 <b>Correct answer: "+q.a[q.c]+"</b><br>"}if(q.exp){h+="<span style='opacity:.85'>"+(isOk?"\uD83C\uDF1F ":"")+q.exp+"</span>"}h+="</div>";h+="</div>"}}
-  h+="</div><div style='margin-top:14px;display:flex;justify-content:center;gap:20px;font-size:14px;color:var(--txd)'><span>\u2705 "+pS.sc+"</span><span>\u274C "+(pS.an-pS.sc)+"</span></div>";
-  app.innerHTML=h;if(q.type==="fib"&&!pS.sh){var el=document.getElementById("fibIn");if(el)el.focus()}return;
+  if(pS.sh){var isOk=pS.sel===q.c;h+="<div style='margin-top:16px'><div style='display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px'><span style='font-size:14px;font-weight:600;color:"+(isOk?"var(--ok)":"var(--err)")+"'>"+(isOk?"Correct! \uD83C\uDF89":"Not quite.")+"</span><button class='abtn' style='padding:10px 22px;font-size:14px' onclick='qN()'>"+(pS.i+1<shuf.length?"Next \u2192":"See Results")+"</button></div>";
+    h+="<div class='exp-box2 "+(isOk?"correct":"wrong")+"'>";if(!isOk){h+="\uD83D\uDCA1 <b>Correct answer: "+q.a[q.c]+"</b><br>"}if(q.exp){h+="<span style='opacity:.85'>"+(isOk?"\uD83C\uDF1F ":"")+q.exp+"</span>"}h+="</div></div>"}}
+  h+="</div>";
+  h+="<div class='quiz-score-bar'><span>\u2705 "+pS.sc+" correct</span><span>\u274C "+(pS.an-pS.sc)+" wrong</span></div>";
+  app.innerHTML=h;if((q.type==="fib"||q.type==="sa")&&!pS.sh){var el=document.getElementById("fibIn");if(el)el.focus()}return;
 }
 
 // TEST
 if(tS.done){var p=shuf.length?Math.round(tS.sc/shuf.length*100):0;
-  var h="<div class='res'><div style='font-size:52px;margin-bottom:8px'>"+(p>=90?"\uD83C\uDFC6":p>=70?"\uD83C\uDF1F":"\uD83D\uDCDA")+"</div><div style='font-size:36px;font-weight:800;background:linear-gradient(135deg,var(--hi),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent'>"+p+"%</div><p style='font-size:18px;color:var(--txd);margin:4px 0'>"+tS.sc+"/"+shuf.length+"</p><p style='color:var(--txd);font-size:14px;margin:8px 0 20px'>"+(p>=90?"You crushed it Anhelina! \uD83D\uDC9C":p>=70?"Solid work!":"Review below!")+"</p><button class='abtn' onclick='rq();render()'>Retake</button></div>";
-  for(var i=0;i<shuf.length;i++){if(tS.a[i]!==shuf[i].c){var rq=shuf[i];h+="<div class='rw'><div style='font-size:14px;font-weight:600;margin-bottom:8px'>"+rq.q+"</div>";if(rq.type==="fib"||rq.type==="sa"){h+="<div style='font-size:13px;color:var(--err)'>Yours: "+(tS.ta&&tS.ta[i]?tS.ta[i]:"(blank)")+"</div><div style='font-size:13px;color:var(--ok);margin-top:2px'>Correct: "+rq.ans+"</div>"}else{h+="<div style='font-size:13px;color:var(--err)'>Yours: "+(tS.a[i]!=null&&tS.a[i]>=0?rq.a[tS.a[i]]:"None")+"</div><div style='font-size:13px;color:var(--ok);margin-top:2px'>Correct: "+rq.a[rq.c]+"</div>"}h+=(rq.exp?"<div style='margin-top:6px;font-size:12px;line-height:1.4;color:var(--txd);opacity:.8;border-top:1px solid var(--bdr);padding-top:6px'>\uD83D\uDCA1 "+rq.exp+"</div>":"")+"</div>"}}
+  if(!tS.confettiFired&&p>=80){tS.confettiFired=true;setTimeout(fireConfetti,300)}
+  var wrong=shuf.length-tS.sc;var wrongItems=[];
+  for(var i=0;i<shuf.length;i++){if(tS.a[i]!==shuf[i].c)wrongItems.push(i)}
+  var h="<div class='res2'><div class='res2-emoji'>"+(p>=90?"\uD83C\uDFC6":p>=70?"\uD83C\uDF1F":p>=50?"\uD83D\uDC4D":"\uD83D\uDCDA")+"</div><div class='res2-score'>"+p+"%</div><div class='res2-pct'>"+tS.sc+" out of "+shuf.length+"</div><div class='res2-msg'>"+(p>=90?"You crushed it, Anhelina! \uD83D\uDC9C":p>=70?"Solid work!":p>=50?"Getting there \u2014 review below!":"Let\u2019s study and try again!")+"</div>";
+  h+="<div class='res2-stats'><div class='res2-stat'><div class='val' style='color:var(--ok)'>"+tS.sc+"</div><div class='lbl'>Correct</div></div><div class='res2-stat'><div class='val' style='color:var(--err)'>"+wrong+"</div><div class='lbl'>Missed</div></div><div class='res2-stat'><div class='val' style='color:var(--accent)'>"+p+"%</div><div class='lbl'>Score</div></div></div>";
+  h+="<div class='res2-actions'><button class='abtn' onclick='rq();render()'>Retake Test</button></div></div>";
+  if(wrongItems.length>0){h+="<div class='res2-review-label'>\uD83D\uDD0D Review missed questions ("+wrongItems.length+")</div>";
+  for(var wi=0;wi<wrongItems.length;wi++){var idx=wrongItems[wi];var rq=shuf[idx];
+    h+="<div class='rw2' style='animation-delay:"+(wi*.05)+"s'><div class='rw2-q'>"+(wi+1)+". "+rq.q+"</div><div class='rw2-ans'>";
+    if(rq.type==="fib"||rq.type==="sa"){h+="<span style='color:var(--err)'>Yours: "+(tS.ta&&tS.ta[idx]?tS.ta[idx]:"(blank)")+"</span><br><span style='color:var(--ok)'>Correct: "+rq.ans+"</span>"}
+    else{h+="<span style='color:var(--err)'>Yours: "+(tS.a[idx]!=null&&tS.a[idx]>=0?rq.a[tS.a[idx]]:"None")+"</span><br><span style='color:var(--ok)'>Correct: "+rq.a[rq.c]+"</span>"}
+    h+="</div>"+(rq.exp?"<div class='rw2-exp'>\uD83D\uDCA1 "+rq.exp+"</div>":"")+"</div>"}}
   app.innerHTML=h;return;}
 var ac=0;for(var k in tS.a){if(tS.a.hasOwnProperty(k)){var qq=shuf[k];if((qq.type==="fib"||qq.type==="sa")&&tS.ta&&tS.ta[k]&&tS.ta[k].trim())ac++;else if(tS.a[k]!=null&&tS.a[k]>=0)ac++}};
-var h="<div class='tinfo'>Answer all "+shuf.length+" questions, then submit.<br><small style='opacity:.6'>Answered: "+ac+" / "+shuf.length+"</small></div>";
+var progPct=shuf.length?Math.round(ac/shuf.length*100):0;
+var h="<div class='test-header'><h4>\uD83D\uDCDD Full Test \u2014 "+shuf.length+" Questions</h4><div class='test-prog-text'>"+ac+" of "+shuf.length+" answered ("+progPct+"%)</div><div class='pbar2' style='margin:10px 0 0'><div class='pfill2' style='width:"+progPct+"%'></div></div></div>";
+h+="<div class='test-nav'>";for(var i=0;i<shuf.length;i++){var isFilled=(tS.a[i]!=null&&tS.a[i]>=0)||((shuf[i].type==="fib"||shuf[i].type==="sa")&&tS.ta&&tS.ta[i]&&tS.ta[i].trim());h+="<div class='test-dot"+(isFilled?" filled":"")+"' onclick='document.getElementById(\"tq"+i+"\").scrollIntoView({behavior:\"smooth\",block:\"center\"})'>"+(i+1)+"</div>"}h+="</div>";
 for(var i=0;i<shuf.length;i++){var q=shuf[i];
-  h+="<div class='tq "+(tS.a[i]!=null?"ans":"")+"'><div style='font-size:12px;font-weight:700;color:var(--txd);margin-bottom:8px'>#"+(i+1)+"</div><div style='font-size:15px;font-weight:600;margin-bottom:12px;line-height:1.45'>"+q.q+"</div>";
+  h+="<div class='tq2 "+(tS.a[i]!=null?"ans":"")+"' id='tq"+i+"'><div class='tq2-num'>"+(i+1)+"</div><div class='tq2-q'>"+q.q+"</div>";
   if(q.type==="fib"||q.type==="sa"){h+="<div style='margin:8px 0'><input type='text' id='tin"+i+"' placeholder='Type your answer...' value='"+(tS.ta&&tS.ta[i]||"")+"' oninput='tTa("+i+",this.value)' style='width:100%;padding:12px;border-radius:10px;border:2px solid var(--bdr);background:rgba(26,18,48,.6);color:var(--tx);font-size:16px;font-family:inherit;outline:none;box-sizing:border-box'></div>"}else{for(var j=0;j<q.a.length;j++){h+="<button class='topt "+(tS.a[i]===j?"sel":"")+"' onclick='tA("+i+","+j+")'><span class='tl'>"+String.fromCharCode(65+j)+"</span>"+q.a[j]+"</button>"}}h+="</div>"}
-h+="<div style='text-align:center;padding:20px 0'><button id='tSubBtn' class='abtn' style='padding:14px 48px;font-size:16px;border-radius:14px' "+(ac<shuf.length?"disabled":"")+" onclick='subT()'>Submit Test</button></div>";
+h+="<div style='text-align:center;padding:20px 0'><button id='tSubBtn' class='abtn' style='padding:14px 48px;font-size:16px;border-radius:14px' "+(ac<shuf.length?"disabled":"")+" onclick='subT()'>Submit Test</button>"+(ac<shuf.length?"<p style='font-size:12px;color:var(--txd);margin-top:8px;opacity:.6'>Answer all questions to submit</p>":"")+"</div>";
 app.innerHTML=h;
 }
 
