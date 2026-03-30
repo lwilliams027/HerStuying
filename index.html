@@ -1009,6 +1009,7 @@ function saveQStat(cls,lessonId,score,total){
   var day=new Date().toISOString().split("T")[0];
   s.weekLog[day]=(s.weekLog[day]||0)+total;
   localStorage.setItem(QSTATS_KEY,JSON.stringify(s));
+  if(typeof statsPush==="function")statsPush();
 }
 function getTotalQuestions(){
   var s=getQStats(),total=0;
@@ -2363,6 +2364,69 @@ function forceSync(){
     console.log("Cloud notes detail:",JSON.stringify(rows.map(function(r){var d=r.data||{};return{id:r.id,title:d.title,strokes:d.strokes?d.strokes.length:0,arrows:d.arrows?d.arrows.length:0,elements:d.elements?d.elements.length:0}})));
     cloudPull();
   }).catch(function(e){toast("❌ Pull failed: "+(e&&e.message?e.message:String(e)));_syncStatus("Offline","#ef4444")});
+}
+
+/* ═══ QUIZ STATS CLOUD SYNC ═══ */
+var _statsSyncing=false;
+function statsPush(){
+  var sb=_supaClient();if(!sb||_statsSyncing)return;
+  _statsSyncing=true;
+  var s=getQStats();
+  var row={id:"global",data:s,updated_at:Math.floor(Date.now())};
+  sb.from("quiz_stats").upsert([row],{onConflict:"id"}).select().then(function(res){
+    _statsSyncing=false;
+    if(res.error){console.warn("Stats push error:",res.error.message||String(res.error))}
+    else{console.log("Stats push OK")}
+  }).catch(function(e){_statsSyncing=false;console.warn("Stats push failed:",e&&e.message?e.message:String(e))});
+}
+function statsPull(cb){
+  var sb=_supaClient();if(!sb){if(cb)cb();return}
+  sb.from("quiz_stats").select("*").eq("id","global").then(function(res){
+    if(res.error){console.warn("Stats pull error:",res.error.message||String(res.error));if(cb)cb();return}
+    var rows=res.data||[];
+    if(!rows.length){
+      /* nothing in cloud yet — push local if we have any */
+      var local=getQStats();
+      if(Object.keys(local).length>0)statsPush();
+      if(cb)cb();return;
+    }
+    var cloud=rows[0].data||{};
+    var local=getQStats();
+    /* merge: per-lesson key, keep richer data */
+    var merged={};
+    var allKeys={};
+    for(var k in local)allKeys[k]=true;
+    for(var k in cloud)allKeys[k]=true;
+    for(var k in allKeys){
+      if(k==="lastActivity"){merged[k]=Math.max(local[k]||0,cloud[k]||0);continue}
+      if(k==="weekLog"){
+        var lw=local.weekLog||{};var cw=cloud.weekLog||{};var mw={};
+        for(var d in lw)mw[d]=lw[d];
+        for(var d in cw){mw[d]=Math.max(mw[d]||0,cw[d])}
+        merged.weekLog=mw;continue;
+      }
+      var lv=local[k],cv=cloud[k];
+      if(!lv){merged[k]=cv;continue}
+      if(!cv){merged[k]=lv;continue}
+      /* both exist — merge scores arrays, keep higher best/total/attempts */
+      var ms=[];var seen={};
+      (lv.scores||[]).concat(cv.scores||[]).forEach(function(s){
+        var uid=s.ts+"_"+s.pct;
+        if(!seen[uid]){seen[uid]=true;ms.push(s)}
+      });
+      ms.sort(function(a,b){return a.ts-b.ts});
+      merged[k]={
+        scores:ms,
+        best:Math.max(lv.best||0,cv.best||0),
+        total:Math.max(lv.total||0,cv.total||0),
+        attempts:Math.max(lv.attempts||0,cv.attempts||0)
+      };
+    }
+    localStorage.setItem(QSTATS_KEY,JSON.stringify(merged));
+    console.log("Stats pull OK, merged "+Object.keys(merged).length+" keys");
+    if(curPage==="stats")renderStats();
+    if(cb)cb();
+  }).catch(function(e){console.warn("Stats pull failed:",e&&e.message?e.message:String(e));if(cb)cb()});
 }
 
 function setBg(el){
@@ -4239,8 +4303,18 @@ function showApiKeyModal(){
   document.body.appendChild(m);
 }
 
-</script>
+/* ═══ PULL QUIZ STATS ON LOAD ═══ */
+(function(){
+  var t=setInterval(function(){
+    if(typeof _supaClient==="function"&&_supaClient()){
+      clearInterval(t);
+      statsPull();
+    }
+  },300);
+  setTimeout(function(){clearInterval(t)},10000);
+})();
 
+</script>
 <script>
 // v2.1: Register self-destructing SW to replace old cached version, then clear caches
 if('serviceWorker' in navigator){
